@@ -8,7 +8,7 @@
   import ArrowWhite from '../assets/arrow-white.svg';
   import Settings from '../assets/settings.svg';
   import Layout from '../assets/layout.svg';
-  import penSetting from '../components/Editor/penSetting.vue';
+  import PenSetting from '../components/Editor/PenSetting.vue';
   import Close from '../assets/close.svg';
   import HTMLIcon from '../assets/html.svg';
   import CSSIcon from '../assets/css.svg';
@@ -17,6 +17,7 @@
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
   import ConsolePreview from '../components/Editor/ConsolePreview.vue'
+  import AnonLoginModal from '../components/AnonLoginModal.vue'
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
@@ -118,6 +119,17 @@
     consoleRef.value.consoleClear();
   }
 
+  const isLoginModalShow = ref(false)
+
+  const handleSave = () => {
+    if(isLoggedIn.value) {
+      // 執行儲存api
+    } else {
+      isLoginModalShow.value = true;
+    }
+  }
+
+  
   const toggleConsole = ()=> {
     isConsoleShow.value = !isConsoleShow.value
   };
@@ -334,6 +346,7 @@
 
 <template>
   <div class="flex flex-col h-dvh">
+    <AnonLoginModal v-if="isLoginModalShow" @modalClose="isLoginModalShow = false" :show="isLoginModalShow"/>
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
         <a href="/" class="flex text-0 ">
@@ -363,8 +376,11 @@
           </div>
         </button>
         <div class="md:flex hidden">
-          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
-            :class="{ 'rounded mr-[2px]': !isLoggedIn }">
+          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px]
+            editorSmallButton-hover-bgc  hover:cursor-pointer"
+            :class="{ 'rounded mr-[2px]': !isLoggedIn }"
+            @click.prevent="handleSave"
+          >
             <div class="h-7 flex items-center gap-1">
               <img :src="Cloud" alt="" class="w-4">
               <span>Save</span>
@@ -442,7 +458,7 @@
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
-        <penSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
+        <PenSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
 
         <div class="relative md:flex hidden">
           <button type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
