@@ -17,6 +17,7 @@
           <label class="text-white text-sm font-bold">Current Password</label>
           <input
             v-model="currentPassword"
+            autocomplete="off"
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
@@ -24,6 +25,7 @@
           <label class="text-white text-sm font-bold">New Password</label>
           <input
             v-model="newPassword"
+            autocomplete="off"
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
@@ -33,6 +35,7 @@
           >
           <input
             v-model="confirmPassword"
+            autocomplete="off"
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
@@ -115,12 +118,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { auth } from "../config/firebase";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 const currentPassword = ref("");
@@ -165,12 +169,25 @@ const handleUpdatePassword = async () => {
       case "auth/missing-password":
         message.value = "Please enter your current password.";
         break;
+      case "auth/password-does-not-meet-requirements":
+        message.value = "Password must contain at least 8 characters.";
+        break;
       default:
         message.value = "Password update failed: " + error.message;
     }
     messageType.value = "error";
   }
 };
+
+onMounted(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      email.value = user.email || "";
+    } else {
+      email.value = "";
+    }
+  });
+});
 </script>
 
 <style scoped>
