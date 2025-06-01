@@ -249,6 +249,9 @@ const handleChangeEmail = async () => {
         emailMessage.value =
           "This email address is already in use. Please use another one.";
         break;
+      case "auth/wrong-password":
+        emailMessage.value = "Current password is incorrect. Please try again.";
+        break;
       default:
         emailMessage.value = "Email update failed: " + error.message;
     }
