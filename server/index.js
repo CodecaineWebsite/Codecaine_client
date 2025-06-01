@@ -12,13 +12,14 @@ import tagsRouter from "./src/routes/tags.js";
 import favoritesRouter from "./src/routes/favorites.js";
 import commentsRouter from "./src/routes/comments.js";
 import followsRouter from "./src/routes/follows.js";
-import searchRouter from "./src/routes/search.js"
+import searchRouter from "./src/routes/search.js";
+import profileRouter from "./src/routes/profile.js";
 
 const { Pool } = pg;
 dotenv.config();
 
 const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
 });
 const db = drizzle(pool);
 
@@ -26,9 +27,9 @@ const PORT = 3000;
 
 const app = express();
 app.use(
-	cors({
-		origin: "http://localhost:5173",
-	})
+  cors({
+    origin: "http://localhost:5173",
+  })
 );
 app.use(express.json());
 
@@ -40,7 +41,8 @@ app.use("/api/favorites", favoritesRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/follows", followsRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/profile", profileRouter);
 
 app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
