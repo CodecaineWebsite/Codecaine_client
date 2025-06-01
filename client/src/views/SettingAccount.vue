@@ -42,15 +42,15 @@
           />
           <div class="flex flex-col gap-2">
             <div
-              v-if="message"
+              v-if="passwordMessage"
               class="px-4 py-2 rounded text-sm font-medium"
               :class="
-                messageType === 'success'
+                passwordMessageType === 'success'
                   ? 'bg-green-500 text-white'
                   : 'bg-red-500 text-white'
               "
             >
-              {{ message }}
+              {{ passwordMessage }}
             </div>
             <button
               @click="handleUpdatePassword"
@@ -80,11 +80,10 @@
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm font-bold">Current Password</label>
           <input
-            v-model="currentPassword"
+            v-model="currentPasswordForEmail"
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
-            placeholder="請輸入目前密碼以驗證身份"
           />
           <label class="text-white text-sm font-bold">Email Address </label>
           <input
@@ -92,19 +91,18 @@
             type="email"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="100"
-            placeholder="請輸入新電子信箱"
           />
           <div class="flex flex-col gap-2">
             <div
-              v-if="message"
+              v-if="emailMessage"
               class="px-4 py-2 rounded text-sm font-medium"
               :class="
-                messageType === 'success'
+                emailMessageType === 'success'
                   ? 'bg-green-500 text-white'
                   : 'bg-red-500 text-white'
               "
             >
-              {{ message }}
+              {{ emailMessage }}
             </div>
             <button
               @click="handleChangeEmail"
@@ -153,13 +151,15 @@ import {
 const currentPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
-const email = ref("");
 const passwordMessage = ref("");
 const passwordMessageType = ref("");
+const currentPasswordForEmail = ref("");
+const email = ref("");
 const emailMessage = ref("");
 const emailMessageType = ref("");
 //修改密碼
 const handleUpdatePassword = async () => {
+  const user = auth.currentUser;
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = "The new password and confirmation do not match.";
     passwordMessageType.value = "error";
@@ -167,7 +167,6 @@ const handleUpdatePassword = async () => {
   }
 
   try {
-    const user = auth.currentUser;
     if (!user || !user.email) throw new Error("User not logged in.");
 
     const credential = EmailAuthProvider.credential(
@@ -202,53 +201,54 @@ const handleUpdatePassword = async () => {
       default:
         passwordMessage.value = "Password update failed: " + error.message;
     }
-    messageType.value = "error";
+    passwordMessageType.value = "error";
   }
 };
 //修改信箱
 const handleChangeEmail = async () => {
-  message.value = ""; // 清空訊息
-  messageType.value = "";
   const user = auth.currentUser;
-
-  if (!user || !email.value || !currentPassword.value) {
-    message.value = "請輸入完整資料";
-    messageType.value = "error";
+  if (!user || !email.value || !currentPasswordForEmail.value) {
+    emailMessage.value = "Please fill in all required fields.";
+    emailMessageType.value = "error";
     return;
   }
 
   try {
     if (email.value === user.email) {
-      message.value = "新信箱與目前信箱相同，請輸入不同的信箱。";
-      messageType.value = "error";
+      emailMessage.value =
+        "The new email is the same as the current one. Please enter a different email address.";
+      emailMessageType.value = "error";
       return;
     }
-
+    //前端
     const credential = EmailAuthProvider.credential(
       user.email,
-      currentPassword.value
+      currentPasswordForEmail.value
     );
     await reauthenticateWithCredential(user, credential);
     await updateEmail(user, email.value);
-    message.value = "信箱更新成功";
+    emailMessage.value = "Email updated successfully.";
+    emailMessageType.value = "success";
+    //後端
   } catch (error) {
     switch (error.code) {
       case "auth/invalid-credential":
-        message.value = "目前密碼錯誤，請再試一次。";
+        emailMessage.value = "Current password is incorrect. Please try again.";
         break;
       case "auth/missing-password":
-        message.value = "請輸入目前密碼。";
+        emailMessage.value = "Please enter your current password.";
         break;
-
       case "auth/invalid-email":
-        message.value = "請輸入有效的電子信箱格式。";
+        emailMessage.value = "Please enter a valid email address.";
         break;
       case "auth/email-already-in-use":
-        message.value = "這個電子信箱已被使用，請使用其他信箱。";
+        emailMessage.value =
+          "This email address is already in use. Please use another one.";
         break;
       default:
-        message.value = "操作失敗：" + error.message;
+        emailMessage.value = "Email update failed: " + error.message;
     }
+    emailMessageType.value = "error";
   }
 };
 
