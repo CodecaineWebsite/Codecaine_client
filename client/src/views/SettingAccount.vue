@@ -147,6 +147,7 @@ import {
   updatePassword,
   onAuthStateChanged,
 } from "firebase/auth";
+import api from "../stores/api";
 
 const currentPassword = ref("");
 const newPassword = ref("");
@@ -230,6 +231,9 @@ const handleChangeEmail = async () => {
     emailMessage.value = "Email updated successfully.";
     emailMessageType.value = "success";
     //後端
+    await api.post("/api/profile/update-email", {
+      email: email.value,
+    });
   } catch (error) {
     switch (error.code) {
       case "auth/invalid-credential":
@@ -262,7 +266,3 @@ onMounted(() => {
   });
 });
 </script>
-
-<style scoped>
-/* 你可以根據需要調整樣式 */
-</style>
