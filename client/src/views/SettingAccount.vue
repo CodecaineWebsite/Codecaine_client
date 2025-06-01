@@ -20,7 +20,6 @@
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
-            placeholder="請輸入目前密碼"
           />
           <label class="text-white text-sm font-bold">New Password</label>
           <input
@@ -28,7 +27,6 @@
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
-            placeholder="請輸入新密碼"
           />
           <label class="text-white text-sm font-bold"
             >Confirm New Password</label
@@ -38,7 +36,6 @@
             type="password"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
-            placeholder="請再次輸入新密碼"
           />
           <div>
             <div
@@ -134,18 +131,14 @@ const message = ref("");
 const messageType = ref("");
 const handleUpdatePassword = async () => {
   if (newPassword.value !== confirmPassword.value) {
-    message.value = "新密碼與確認密碼不一致";
+    message.value = "The new password and confirmation do not match.";
     messageType.value = "error";
-    setTimeout(() => {
-      message.value = "";
-      messageType.value = "";
-    }, 3000);
     return;
   }
 
   try {
     const user = auth.currentUser;
-    if (!user || !user.email) throw new Error("使用者未登入");
+    if (!user || !user.email) throw new Error("User not logged in.");
 
     const credential = EmailAuthProvider.credential(
       user.email,
@@ -155,24 +148,25 @@ const handleUpdatePassword = async () => {
     await reauthenticateWithCredential(user, credential);
     await updatePassword(user, newPassword.value);
 
-    message.value = "密碼已成功更新";
+    message.value = "Password updated successfully.";
     messageType.value = "success";
   } catch (error) {
     switch (error.code) {
       case "auth/invalid-credential":
-        message.value = "目前密碼錯誤，請重新輸入";
+        message.value = "Current password is incorrect. Please try again.";
         break;
       case "auth/weak-password":
-        message.value = "新密碼強度不足，請至少輸入 6 個字元";
+        message.value =
+          "The new password is too weak. Please enter at least 6 characters.";
         break;
       case "auth/requires-recent-login":
-        message.value = "請先重新登入，才能更改密碼";
+        message.value = "Please re-login to update your password.";
         break;
       case "auth/missing-password":
-        message.value = "請輸入目前密碼";
+        message.value = "Please enter your current password.";
         break;
       default:
-        message.value = "密碼更新失敗：" + error.message;
+        message.value = "Password update failed: " + error.message;
     }
     messageType.value = "error";
   }
