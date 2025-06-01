@@ -40,7 +40,7 @@
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="50"
           />
-          <div>
+          <div class="flex flex-col gap-2">
             <div
               v-if="message"
               class="px-4 py-2 rounded text-sm font-medium"
@@ -78,6 +78,14 @@
         class="w-full max-w-160 bg-[#1E1F26] rounded-lg flex flex-col gap-4 p-6"
       >
         <div class="flex flex-col gap-2">
+          <label class="text-white text-sm font-bold">Current Password</label>
+          <input
+            v-model="currentPassword"
+            type="password"
+            class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
+            maxlength="50"
+            placeholder="請輸入目前密碼以驗證身份"
+          />
           <label class="text-white text-sm font-bold">Email Address </label>
           <input
             v-model="email"
@@ -86,11 +94,25 @@
             maxlength="100"
             placeholder="請輸入新電子信箱"
           />
-          <button
-            class="self-end mt-2 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition cursor-pointer"
-          >
-            Change Email
-          </button>
+          <div class="flex flex-col gap-2">
+            <div
+              v-if="message"
+              class="px-4 py-2 rounded text-sm font-medium"
+              :class="
+                messageType === 'success'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-red-500 text-white'
+              "
+            >
+              {{ message }}
+            </div>
+            <button
+              @click="handleChangeEmail"
+              class="self-end mt-2 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition cursor-pointer"
+            >
+              Change Email
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -122,6 +144,7 @@ import { ref, onMounted } from "vue";
 import { auth } from "../config/firebase";
 import {
   EmailAuthProvider,
+  updateEmail,
   reauthenticateWithCredential,
   updatePassword,
   onAuthStateChanged,
@@ -131,12 +154,15 @@ const currentPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
 const email = ref("");
-const message = ref("");
-const messageType = ref("");
+const passwordMessage = ref("");
+const passwordMessageType = ref("");
+const emailMessage = ref("");
+const emailMessageType = ref("");
+//修改密碼
 const handleUpdatePassword = async () => {
   if (newPassword.value !== confirmPassword.value) {
-    message.value = "The new password and confirmation do not match.";
-    messageType.value = "error";
+    passwordMessage.value = "The new password and confirmation do not match.";
+    passwordMessageType.value = "error";
     return;
   }
 
@@ -152,30 +178,77 @@ const handleUpdatePassword = async () => {
     await reauthenticateWithCredential(user, credential);
     await updatePassword(user, newPassword.value);
 
-    message.value = "Password updated successfully.";
-    messageType.value = "success";
+    passwordMessage.value = "Password updated successfully.";
+    passwordMessageType.value = "success";
   } catch (error) {
     switch (error.code) {
       case "auth/invalid-credential":
-        message.value = "Current password is incorrect. Please try again.";
+        passwordMessage.value =
+          "Current password is incorrect. Please try again.";
         break;
       case "auth/weak-password":
-        message.value =
+        passwordMessage.value =
           "The new password is too weak. Please enter at least 6 characters.";
         break;
       case "auth/requires-recent-login":
-        message.value = "Please re-login to update your password.";
+        passwordMessage.value = "Please re-login to update your password.";
         break;
       case "auth/missing-password":
-        message.value = "Please enter your current password.";
+        passwordMessage.value = "Please enter your current password.";
         break;
       case "auth/password-does-not-meet-requirements":
-        message.value = "Password must contain at least 8 characters.";
+        passwordMessage.value = "Password must contain at least 8 characters.";
         break;
       default:
-        message.value = "Password update failed: " + error.message;
+        passwordMessage.value = "Password update failed: " + error.message;
     }
     messageType.value = "error";
+  }
+};
+//修改信箱
+const handleChangeEmail = async () => {
+  message.value = ""; // 清空訊息
+  messageType.value = "";
+  const user = auth.currentUser;
+
+  if (!user || !email.value || !currentPassword.value) {
+    message.value = "請輸入完整資料";
+    messageType.value = "error";
+    return;
+  }
+
+  try {
+    if (email.value === user.email) {
+      message.value = "新信箱與目前信箱相同，請輸入不同的信箱。";
+      messageType.value = "error";
+      return;
+    }
+
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      currentPassword.value
+    );
+    await reauthenticateWithCredential(user, credential);
+    await updateEmail(user, email.value);
+    message.value = "信箱更新成功";
+  } catch (error) {
+    switch (error.code) {
+      case "auth/invalid-credential":
+        message.value = "目前密碼錯誤，請再試一次。";
+        break;
+      case "auth/missing-password":
+        message.value = "請輸入目前密碼。";
+        break;
+
+      case "auth/invalid-email":
+        message.value = "請輸入有效的電子信箱格式。";
+        break;
+      case "auth/email-already-in-use":
+        message.value = "這個電子信箱已被使用，請使用其他信箱。";
+        break;
+      default:
+        message.value = "操作失敗：" + error.message;
+    }
   }
 };
 
