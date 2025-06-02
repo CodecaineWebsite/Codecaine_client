@@ -1,5 +1,5 @@
 <script setup>
-	import { provide, ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
+	import { provide, ref, onMounted, onUnmounted, watch } from 'vue';
   import Icon from '../assets/icon.svg';
   import Edit from '../assets/edit.svg';
   import Like from '../assets/like.svg';
@@ -23,8 +23,11 @@
   import { useWorkStore } from '@/stores/workStore';
 
   import { useRoute } from 'vue-router'
+  import { useRouter } from 'vue-router'
 
   const route = useRoute();
+  const router = useRouter();
+  
   const workStore = useWorkStore()
   const { updateCurrentCode, handleCurrentIdChange }= workStore;
   const { currentWork } = storeToRefs(workStore)
@@ -38,6 +41,7 @@
 
 	
 	const isLoggedIn = ref(false);
+
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
@@ -121,12 +125,22 @@
 
   const isLoginModalShow = ref(false)
 
-  const handleSave = () => {
+  const handleSave = async() => {
     if(isLoggedIn.value) {
       // 執行儲存api
     } else {
       isLoginModalShow.value = true;
+      router.push({ path: '/pen', query: { modal: 'login' } })
     }
+  }
+  const closeModal = () => {
+    isLoginModalShow.value = false;
+    router.replace({
+      query: {
+        ...route.query,
+        modal: undefined,
+      },
+    })
   }
 
   
@@ -346,7 +360,10 @@
 
 <template>
   <div class="flex flex-col h-dvh">
-    <AnonLoginModal v-if="isLoginModalShow" @modalClose="isLoginModalShow = false" :show="isLoginModalShow"/>
+    <AnonLoginModal 
+      v-if="isLoginModalShow"
+      @modalClose="closeModal"
+    />
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
         <a href="/" class="flex text-0 ">
