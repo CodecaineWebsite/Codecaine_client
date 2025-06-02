@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
+  const isAuthReady = ref(false);
   const idToken = ref("");
   const user = ref(null);
   function setToken(token) {
@@ -16,5 +17,16 @@ export const useAuthStore = defineStore("auth", () => {
   function setUser(u) {
     user.value = u;
   }
-  return { idToken, user, setToken, clearToken, setUser};
+  function setAuthReady(ready) {
+    isAuthReady.value = ready;
+  }
+  return {
+    idToken,
+    user,
+    setToken,
+    clearToken,
+    setUser,
+    isAuthReady,
+    setAuthReady,
+  };
 });
