@@ -147,7 +147,7 @@ import {
   updatePassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import api from "../stores/api";
+import api from "../config/api";
 
 const currentPassword = ref("");
 const newPassword = ref("");

@@ -158,7 +158,7 @@ function toggleSidebar() {
 }
 //測試用
 
-import api from "../stores/api";
+import api from "../config/api";
 async function callApi() {
   if (!authStore.idToken) {
     error.value = "請先登入取得 token";
