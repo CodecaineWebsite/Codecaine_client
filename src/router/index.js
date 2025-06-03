@@ -67,12 +67,12 @@ const router = createRouter({
 					children: [
 						{
 							path: "",
-							redirect: "/profile/cains",
+							redirect: "/profile/caines",
 						},
 						{
-							path: "cains",
-							name: "userscains",
-							component: () => import("../views/usersCains.vue"),
+							path: "caines",
+							name: "userscaines",
+							component: () => import("../views/usersCaines.vue"),
 							children: [
 								{
 									path: "",
