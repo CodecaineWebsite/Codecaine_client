@@ -1,5 +1,5 @@
 <template>
-	<div class="flex justify-center items-start min-h-screen bg-black py-24 px-4">
+	<div class="flex justify-center items-start min-h-screen bg py-24 px-4">
 		<div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
 			<!-- Google 登入 -->
 			<form class="mb-4">
@@ -190,3 +190,10 @@ function leave(el, done) {
 	setTimeout(done, 300);
 }
 </script>
+
+<style scoped>
+.bg{
+		background-image: url("https://cpwebassets.codepen.io/assets/logos/codepen-logo-pattern-b477875ac66ffc21e4485a989358c220fac283caf17e602346a50d4250970254.png");
+
+}
+</style>
