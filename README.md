@@ -2,6 +2,8 @@
 
 Codecaine 是一個 CodePen-inspired 的線上程式碼編輯與分享平台，提供即時預覽、作品儲存、社群互動等功能，讓使用者可以更輕鬆地創作與展示前端作品。
 
+此 repo 為專案的 client 側 repositry，下載 server 請至 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server)
+
 ##  技術架構
 
 - **Frontend:** Vue 3 + TailwindCSS + Pinia + Vue Router + Monaco Editor
@@ -36,30 +38,19 @@ git clone https://github.com/ViviSun0725/Codecaine.git
 2. cd 進專案資料夾
 
 ```bash
-cd Codecaine
+cd Codecaine_client
 ```
 
 
-### 第一次下載後請依序至以下資料夾安裝 npm 套件
-
-1. 在 client 資料夾
+### 第一次下載後請安裝 npm 套件
 
 ```bash
-cd client    // 移動至 client 資料夾
 npm install
 ```
 
-2. 在 server 資料夾
-```bash
-cd ..        // 回上一層
-cd server    // 移動至 server 資料夾
-npm install  
-```
-
 ### 設定環境變數
-請小組成員自行設定
+請在根目錄建立 `.env`檔，並填入以下環境變數
 
-1. client
 ```bash
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
@@ -68,41 +59,22 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
-2. server
-```
-DATABASE_URL=
-FIREBASE_SERVICE_ACCOUNT=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=
-S3_BUCKET_NAME=
-```
-
-### 建立資料庫欄位
-
-```bash
-# 請至 server 資料夾
-cd server
-npm run generate
-npm run migrate
-```
 
 ### 執行方式
 
 請開啟兩個 Terminal 分別運行 client 與 server
 
 1. 前端開發
-請至 client 資料夾
+請開啟 Codecaine_client 專案，並執行：
 
 ```bash
-cd client
 npm run dev
 ```
 
 2. 後端開發
-請至 server 資料夾
+請開啟 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server) 專案，建立測試資料庫與設定環境變數後，執行：
+
 ```bash
-cd server
 npm run dev
 ```
 
@@ -132,8 +104,6 @@ git checkout -b issue/1
 3. 本地 commit → push 上 github
 
 ```bash
-git add .
-# 或
 git add <你要加進這次 commit 的檔案>
 
 git commit -m "commit訊息"
@@ -179,7 +149,6 @@ git push origin feat/your-task  # 將分支上傳至遠端
 ### 分支/commit類型 範例
 
 [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)
-[助教提供的github流程pdf](https://drive.google.com/file/d/15vxFHq6fgofokIE4NoyUlqnlQ7L1g4bJ/view)
 
 | 類型       | 說明                                   |
 | ---------- | -------------------------------------- |
