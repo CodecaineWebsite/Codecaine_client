@@ -32,7 +32,7 @@ Codecaine 是一個 CodePen-inspired 的線上程式碼編輯與分享平台，�
 1. 在自己電腦要存專案的位置 把專案Clone下來
 
 ```bash
-git clone https://github.com/ViviSun0725/Codecaine.git
+git clone https://github.com/ViviSun0725/Codecaine_client.git
 ```
 
 2. cd 進專案資料夾
@@ -72,7 +72,7 @@ npm run dev
 ```
 
 2. 後端開發
-請開啟 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server) 專案，建立測試資料庫與設定環境變數後，執行：
+請安裝 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server) 專案並安裝套件，建立測試資料庫與設定環境變數後，執行：
 
 ```bash
 npm run dev
