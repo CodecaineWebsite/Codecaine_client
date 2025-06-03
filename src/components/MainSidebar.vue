@@ -151,11 +151,16 @@ const goSearch = () => {
   router.push("/search");
 };
 
-const isSidebarOpen = ref(true);
+const isSidebarOpen = ref(
+  localStorage.getItem("sidebarOpen") === null
+    ? true
+    : localStorage.getItem("sidebarOpen") === "true"
+);
 
-const emit = defineEmits(["toggle"]);
+const emit = defineEmits(["toggle"]); 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
+  localStorage.setItem("sidebarOpen", isSidebarOpen.value); // 同步寫入 localStorage
   emit("toggle", isSidebarOpen.value);
 }
 //測試用

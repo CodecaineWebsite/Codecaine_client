@@ -14,13 +14,18 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import SubHeader from "../components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "../components/MainSidebar.vue";
 
-const isSidebarOpen = ref(true); //預設值是true=打開
+const isSidebarOpen = ref(
+    localStorage.getItem("sidebarOpen") === null
+        ? false
+        : localStorage.getItem("sidebarOpen") === "true"
+);
+
 const layoutColumns = computed(() =>
 	isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
 );
@@ -29,6 +34,10 @@ function toggleSidebar() {
 	//切換true or false
 	isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+watch(isSidebarOpen, (val) => {
+    localStorage.setItem("sidebarOpen", val);
+});
 </script>
 
 <style scoped>
