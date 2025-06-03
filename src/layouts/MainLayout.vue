@@ -39,7 +39,8 @@ function toggleSidebar() {
 		"sidebar content"
 		"sidebar footer";
 	grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
-	height: 100vh;
+	min-height: 100vh; /* 讓畫面高度至少是100vh */
+	overflow: hidden
 }
 
 .sidebar {
