@@ -174,6 +174,12 @@ const setActiveTab = (tab) => {
 
 const goAndCloseMenu = (path) => {
   showMenu.value = false;
+
+  // 同步 activeTab 狀態
+  if (path === "/your-work") activeTab.value = "Your Work";
+  else if (path === "/following") activeTab.value = "Following";
+  else if (path === "/trending") activeTab.value = "Trending";
+
   router.push(path);
 };
 
