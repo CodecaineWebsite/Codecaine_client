@@ -19,7 +19,7 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, handleCurrentIdChange  }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
@@ -27,15 +27,12 @@
   const cssCode = ref(currentWork.value.css);
   const javascriptCode = ref(currentWork.value.javascript);
   const isAutoPreview = ref(currentWork.value.isAutoPreview);
+  const cdns = ref(currentWork.value.cdns)
+  const links = ref(currentWork.value.links)
 
-	
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-
-
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
 
   watch(cdns, (newCDNs) => {
     workStore.updateCDNs(newCDNs)
@@ -221,7 +218,6 @@
         newA = a + b - minPercent
       }
     }
-
     columnSizes.value[index] = newA
     columnSizes.value[index + 1] = newB
   }
@@ -286,6 +282,7 @@
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
+
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
