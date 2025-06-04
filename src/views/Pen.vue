@@ -29,7 +29,7 @@
   const isAutoPreview = ref(currentWork.value.isAutoPreview);
   const cdns = ref(currentWork.value.cdns)
   const links = ref(currentWork.value.links)
-
+	
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
@@ -41,7 +41,6 @@
   watch(links, (newLinks) => {
     workStore.updateLinks(newLinks)
   }, { deep: true })
-
 
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
@@ -269,6 +268,7 @@
 <template>
   <div class="flex flex-col h-dvh">
     <PenHeader/>
+
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
       <div
