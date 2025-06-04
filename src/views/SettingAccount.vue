@@ -231,7 +231,7 @@ const handleChangeEmail = async () => {
 		emailMessage.value = "Email updated successfully.";
 		emailMessageType.value = "success";
 		//後端
-		await api.post("/api/profile/update-email", {
+		await api.post("/api/users/update-email", {
 			email: email.value,
 		});
 	} catch (error) {
