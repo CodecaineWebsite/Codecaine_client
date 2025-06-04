@@ -56,18 +56,6 @@
     workStore.updateLinks(newLinks)
   }, { deep: true })
 
-  // const startConsoleDragging = () => {
-  //   isConsoleDragging.value = true
-  //   document.body.classList.add('select-none')
-  // };
-
-  // const stopConsoleDragging = () => {
-  //   if (isConsoleDragging.value) {
-  //     isConsoleDragging.value = false;
-  //     document.body.classList.remove('select-none');
-  //   }
-  // };
-
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
   const bookmarkVisible = ref(false);
@@ -239,7 +227,9 @@
     currentColumnIndex.value = null
     dragElement.value = null
     disableNoSelect()
-    e.target.releasePointerCapture?.(e.pointerId)
+    if (e?.target?.releasePointerCapture && e.pointerId != null) {
+      e.target.releasePointerCapture(e.pointerId)
+    }
   }
 
   function handleColumnDrag(e) {
@@ -288,10 +278,10 @@
     }
   }
 
-  function onPointerUp() {
-    stopConsoleDrag()
-    stopEditorDrag()
-    stopColumnDrag()
+  function onPointerUp(e) {
+    stopConsoleDrag(e)
+    stopEditorDrag(e)
+    stopColumnDrag(e)
   }
 
   onMounted(() => {
@@ -504,7 +494,9 @@
           class="resizer editor-resizer-border-color editor-bgc "
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-4 border-y'"
         ></div>
-        <div :style="{ flexBasis: columnSizes[0] + '%', minWidth: '0px' }" class="relative">
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
@@ -530,7 +522,9 @@
           @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: columnSizes[1] + '%', minWidth: '0px' }" class="relative">
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
@@ -556,7 +550,9 @@
           @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: columnSizes[2] + '%', minWidth: '0px' }" class="relative">
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
