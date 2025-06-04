@@ -21,9 +21,7 @@ import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "../components/MainSidebar.vue";
 
 const isSidebarOpen = ref(
-    localStorage.getItem("sidebarOpen") === null
-        ? false
-        : localStorage.getItem("sidebarOpen") === "true"
+	localStorage.getItem("sidebarOpen") === "false" ? false : true
 );
 
 const layoutColumns = computed(() =>
@@ -36,7 +34,7 @@ function toggleSidebar() {
 }
 
 watch(isSidebarOpen, (val) => {
-    localStorage.setItem("sidebarOpen", val);
+	localStorage.setItem("sidebarOpen", val);
 });
 </script>
 
@@ -49,7 +47,7 @@ watch(isSidebarOpen, (val) => {
 		"sidebar footer";
 	grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
 	min-height: 100vh; /* 讓畫面高度至少是100vh */
-	overflow: hidden
+	overflow: hidden;
 }
 
 .sidebar {
