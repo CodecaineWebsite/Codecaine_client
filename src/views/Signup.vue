@@ -95,10 +95,13 @@
 <script setup>
 import { ref } from "vue";
 import { auth } from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "vue-router";
 //google登入的部分
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+	GoogleAuthProvider,
+	signInWithPopup,
+	createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "../stores/api"; // 假設有一個 api.js 檔案處理 API 請求
 
@@ -192,8 +195,7 @@ function leave(el, done) {
 </script>
 
 <style scoped>
-.bg{
-		background-image: url("https://cpwebassets.codepen.io/assets/logos/codepen-logo-pattern-b477875ac66ffc21e4485a989358c220fac283caf17e602346a50d4250970254.png");
-
+.bg {
+	background-image: url("https://cpwebassets.codepen.io/assets/logos/codepen-logo-pattern-b477875ac66ffc21e4485a989358c220fac283caf17e602346a50d4250970254.png");
 }
 </style>
