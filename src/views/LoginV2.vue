@@ -18,6 +18,7 @@
 						Log In with Google
 					</button>
 					<button
+						@click="signInWithGithub"
 						class="w-3/4 flex items-center py-3 px-4 mb-4 bg-[#444857] rounded cursor-pointer transition hover:bg-[black]"
 					>
 						<GithubIcon class="w-5 h-5 mr-3" />
@@ -166,6 +167,7 @@ import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { auth } from "../config/firebase";
 import {
+	GithubAuthProvider,
 	GoogleAuthProvider,
 	signInWithPopup,
 	signInWithEmailAndPassword,
@@ -181,8 +183,15 @@ const provider = new GoogleAuthProvider();
 const email = ref("");
 const password = ref("");
 const error = ref("");
+const infoOpen = ref(false);
+const infoContent = ref(null);
 
-async function login() {
+const resetOpen = ref(false);
+const resetBox = ref(null);
+
+const router = useRouter();
+
+const login = async () => {
 	error.value = "";
 
 	try {
@@ -198,22 +207,27 @@ async function login() {
 		console.log("登入成功，JWT:", token);
 		alert("登入成功！"); // alert最後可以再調整美觀的樣式
 		await syncUser();
+		email.value = "";
+		password.value = "";
+		router.push("/trending");
 	} catch (e) {
 		if (
 			e.code === "auth/invalid-credential" ||
 			e.code === "auth/wrong-password"
 		) {
-			error.value = "帳號或密碼錯誤，請重新輸入。";
+			error.value = "Incorrect email or password. Please try again.";
 		} else if (e.code === "auth/user-not-found") {
-			error.value = "查無此帳號，請註冊或確認輸入。";
+			error.value = "Account not found. Please sign up or check your input.";
+		} else if (e.code === "auth/invalid-email") {
+			error.value = "Invalid email format. Please enter a valid email.";
 		} else {
-			error.value = `登入失敗：${e.message}`;
+			error.value = `Login failed: ${e.message}`;
 		}
 		console.error(e);
 	}
-}
+};
 
-async function syncUser() {
+const syncUser = async () => {
 	try {
 		const res = await api.get(
 			"/api/auth/me" // 原為 POST http://localhost:3000/api/addusers , 改為 GET http://localhost:3000/api/auth/me
@@ -223,32 +237,38 @@ async function syncUser() {
 	} catch (err) {
 		console.error("身份驗證失敗：", err.response?.data || err.message);
 	}
-}
+};
 
-async function signInWithGoogle() {
+const signInWithGoogle = async () => {
 	try {
 		const result = await signInWithPopup(auth, provider);
 		const user = result.user;
 		const token = await user.getIdToken();
-		authStore.setToken(token); // 儲存 token 到 store
-		// 呼叫後端，送出 Firebase Token 做登入或註冊
+		authStore.setToken(token);
 		await api.get("/api/auth/me");
-
 		alert("Google 登入成功！");
 		router.push("/trending"); // 登入成功後導向你想的頁面
 	} catch (error) {
 		console.error("Google 登入錯誤:", error);
 		alert("Google 登入失敗");
 	}
-}
+};
+const signInWithGithub = async () => {
+	try {
+		const provider = new GithubAuthProvider();
+		const result = await signInWithPopup(auth, provider);
+		const user = result.user;
+		const token = await user.getIdToken();
+		authStore.setToken(token);
+		await api.get("/api/auth/me");
+		alert("GitHub 登入成功！");
+		router.push("/trending");
+	} catch (error) {
+		console.error("GitHub 登入錯誤:", error);
+		alert("GitHub 登入失敗");
+	}
+};
 
-const infoOpen = ref(false);
-const infoContent = ref(null);
-
-const resetOpen = ref(false);
-const resetBox = ref(null);
-
-const router = useRouter();
 const goSignup = () => {
 	router.push("/signup");
 };
