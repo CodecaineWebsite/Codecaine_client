@@ -1,15 +1,7 @@
 <script setup>
-	import { provide, ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
-  import Icon from '../assets/icon.svg';
-  import Edit from '../assets/edit.svg';
-  import Like from '../assets/like.svg';
-  import Run from '../assets/run.svg';
-  import Cloud from '../assets/cloud.svg';
-  import Arrow from '../assets/arrow.svg';
+	import { ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
   import ArrowWhite from '../assets/arrow-white.svg';
   import Settings from '../assets/settings.svg';
-  import Layout from '../assets/layout.svg';
-  import PenSetting from '../components/Editor/PenSetting.vue';
   import Close from '../assets/close.svg';
   import HTMLIcon from '../assets/html.svg';
   import CSSIcon from '../assets/css.svg';
@@ -18,6 +10,7 @@
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
   import ConsolePreview from '../components/Editor/ConsolePreview.vue'
+  import PenHeader from '@/components/Editor/PenHeader.vue';
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
@@ -26,7 +19,7 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, toggleAutoSave, toggleAutoPreview, handleCurrentIdChange  }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   const { html, css, javascript } = toRefs(currentWork.value)
   handleCurrentIdChange(route.params.id)
@@ -37,17 +30,13 @@
   const isAutoPreview = ref(currentWork.value.isAutoPreview);
 
 	
-	const isLoggedIn = ref(true);
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-  const navListVisible = ref(false);
 
 
-  const cdns = ref([
-    'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'
-  ])
-  const links = ref([])
+  const cdns = ref(currentWork.value.cdns)
+  const links = ref(currentWork.value.links)
 
   watch(cdns, (newCDNs) => {
     workStore.updateCDNs(newCDNs)
@@ -100,17 +89,10 @@
     window.removeEventListener('pointerup', stopConsoleDragging);
   });
 
-  const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  const bookmarkVisible = ref(false);
-  const title = ref(currentWork.value.title);
-  const userName = ref(currentWork.value.user_name);
-  const isEditing = ref(false);
-  const settingOptionVisible = ref(false);
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)
 
-  provide('title', title)
 
   const handleConsoleClose = () => {
     isConsoleShow.value = false;
@@ -122,18 +104,6 @@
 
   const toggleConsole = ()=> {
     isConsoleShow.value = !isConsoleShow.value
-  };
-  const toggleSave = () => {
-    saveOptionVisible.value = !saveOptionVisible.value
-  };
-  const toggleLayout = () => {
-    layoutOptionVisible.value = !layoutOptionVisible.value
-  };
-  const toggleSetting = () => {
-    settingOptionVisible.value = !settingOptionVisible.value
-  };
-  const toggleList = () => {
-    navListVisible.value = !navListVisible.value
   };
 
 
@@ -150,17 +120,6 @@
     layoutOptionVisible.value = false
   };
 
-
-  const toggleEdit = () => {
-    isEditing.value = true
-    setTimeout(() => {
-      document.getElementById('title-input')?.focus()
-    }, 0)
-  };
-
-  const stopEdit = () => {
-    isEditing.value = false
-  };
 
   // 計算變更高度或寬度
   const isDraggingEditor = ref(false)
@@ -336,184 +295,7 @@
 
 <template>
   <div class="flex flex-col h-dvh">
-    <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
-      <div class="flex items-center ml-2">
-        <a href="/" class="flex text-0 ">
-          <img :src="Icon" alt="icon" class=" w-9 mb-2 ml-1 mr-2 ">
-        </a>
-        <div>
-          <template v-if="isEditing">
-            <input id="title-input" v-model="title" @blur="stopEdit" @keyup.enter="stopEdit"
-              class="bg-transparent border-b border-white text-white outline-none" />
-          </template>
-          <template v-else>
-            <span class="text-white font-black">{{ title.length? title : "Untitled" }}</span>
-          </template>
-          <button type="button" class="ml-1" @click="toggleEdit">
-            <img :src="Edit" alt="editBtn" class="w-[13px] h-[13px] hover:cursor-pointer" />
-          </button>
-          <div>
-            <a href="#" class="text-sm text-gray-400">{{ userName ? userName : "Captain Anonymous" }}</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 mr-3">
-        <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
-          <div class="h-7 flex">
-            <img :src="Like" alt="likeBtn" class="w-4">
-          </div>
-        </button>
-        <button v-if="!currentWork.isAutoPreview" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
-            <img :src="Run" alt="runBtn" class="w-4">
-            <span>Run</span>
-          </div>
-        </button>
-        <div class="md:flex hidden">
-          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
-            :class="{ 'rounded mr-[2px]': !isLoggedIn }">
-            <div class="h-7 flex items-center gap-1">
-              <img :src="Cloud" alt="saveBtn" class="w-4">
-              <span>Save</span>
-            </div>
-          </button>
-          <div class="relative ">
-            <div v-if="saveOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleSave"></div>
-            <button v-if="isLoggedIn" @click.prevent="toggleSave" type="button"
-              class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-5 editorSmallButton-hover-bgc  hover:cursor-pointer">
-              <div class="h-7 flex justify-center items-center">
-                <img :src="Arrow" alt="arrow" class="w-2.5">
-              </div>
-            </button>
-            <div v-if="saveOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleSave"></div>
-            <ul 
-              v-if="saveOptionVisible" class="absolute z-50 flex flex-col rounded-sm top-12 right-0 bg-[#2C303A] text-white w-80 justify-around border-4 border-gray-800 px-5"
-            >
-              <label class="flex py-2  justify-between border-b border-gray-600 hover:cursor-pointer">
-                <span>Private</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer">
-                    <span
-                      class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
-                  </div>
-                  <span class="ml-2">off</span>  
-                </div>
-              </label>
-              <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer">
-                <span>Template</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer">
-                    <span
-                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
-                  </div>
-                  <span class="ml-2">off</span>   
-                </div>
-              </label>
-              <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer" >
-                <span>Auto Save</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer" @click="toggleAutoSave" v-model="currentWork.isAutoSave" >
-                    <span
-                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
-                  </div>
-                  <span class="ml-2">{{ currentWork.isAutoSave ? 'on' : 'off' }}</span>              
-                </div>
-                
-              </label>
-              <label class="flex py-2 justify-between hover:cursor-pointer">
-                <span>Format Code on Save</span>
-                <div>
-                <div class="relative inline-block w-13 h-7 ">
-                  <input type="checkbox" class="opacity-0 w-0 h-0 peer">
-                  <span
-                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"
-                    ></span>
-                </div>
-                <span class="ml-2">off</span>  
-                </div>
-              </label>
-            </ul>
-          </div>
-        </div>
-        <div v-if="navListVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleList"></div>
-        <button @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
-          <div class="h-7 flex justify-between w-6 items-center">
-            <div class="transition-transform h-0.5 bg-gray-200 relative before:content-[''] before:w-1.5 before:h-0.5 before:bg-gray-200 before:absolute before:-top-1.5 before:left-0 after:content-[''] after:w-3.5 after:h-0.5 after:bg-gray-200 after:absolute after:-bottom-1.5 after:left-0" :class="navListVisible ? 'before:w-2 w-1.5' : 'before:w-1.5 w-2.5'"></div>
-            <img :src="ArrowWhite" alt="arrowWhite" class=" transition-transform	w-3 self-start mt-1.5 " :class=" {'scale-y-[-1]':navListVisible}">
-          </div>
-        </button>
-        <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
-          <button class="flex w-full px-2 py-1 hover:bg-gray-500">
-            <img :src="Cloud" alt="saveBtn" class="w-4">
-            <span>Save</span>
-          </button>
-          <button @click.prevent="toggleSetting" class="flex w-full px-2 py-1 hover:bg-gray-500">
-            <img :src="Settings" alt="settingBtn" class="w-4">
-            <span>Settings</span>
-          </button>
-          <div class="w-full bg-gray-700 h-[1px] mb-4"></div>
-        </div>
-        <button @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
-          <div class="h-7 flex items-center gap-1">
-            <img :src="Settings" alt="settingBtn" class="w-4">
-            <span>Settings</span>
-          </div>
-        </button>
-        <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
-        <penSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
-
-        <div class="relative md:flex hidden">
-          <button type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
-            <div class="h-7 flex items-center gap-1">
-              <img :src="Layout" alt="" class="w-[14px]" :style="{ transform: `rotate(${selectedLayout.rotation}deg)` }">
-            </div>
-          </button>
-          <div v-if="layoutOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleLayout"></div>
-          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 py-3 rounded-lg border-4 border-gray-800">
-            <div class="px-3 text-white">
-              <span>Change View</span>
-            </div>
-            <div class="flex justify-center align-middle py-3">
-              <div class="flex justify-center align-middle py-3 ">
-                <label
-                  v-for="option in layoutOptions" :key="option.id" class="border-2 border-[#444857] w-20 flex justify-center h-12 editorSmallButton-hover-bgc   hover:cursor-pointer" :class="{ 'rounded-l-sm': option.id === 'left', 'rounded-r-sm': option.id === 'right', 'bg-[#444857]': selectedLayout.id === option.id }"
-                >
-                  <button @click="selectLayout(option) " class=" hover:cursor-pointer">
-                    <img :src="Layout" :style="{ transform: `rotate(${option.rotation}deg)` }" class="w-5 "  alt="">
-                  </button>
-                </label>
-              </div>
-            </div>
-            <ul class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65  justify-between ">
-              <div class="flex py-1 px-5 justify-between">
-                <a href="#" class="flex justify-between w-full" target="_blank">
-                  <div>Full Page View</div>
-                  <div>full/</div>
-                </a>
-              </div>
-            </ul>
-          </div>
-        </div>
-
-        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-2 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
-            <span>Sign Up</span>
-          </div>
-        </button>
-        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
-            <span>Log In</span>
-          </div>
-        </button>
-        <div v-if="isLoggedIn" class="w-9 h-9 md:w-11 md:h-11 overflow-hidden mx-1 rounded hover:cursor-pointer">
-          <img src="https://fakeimg.pl/300x200/500" class="w-full h-full object-cover" />
-        </div>
-      </div>
-    </nav>
+    <PenHeader/>
 
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->

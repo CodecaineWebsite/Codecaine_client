@@ -12,7 +12,7 @@ export const useWorkStore = defineStore('work', () => {
     viewMode: "center",
     createAt: new Date(),
     lastSavedTime: null,
-    cdns: [], 
+    cdns: ['https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'], 
     links: [], 
   }
   const currentId = ref('');
