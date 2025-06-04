@@ -269,7 +269,6 @@
 <template>
   <div class="flex flex-col h-dvh">
     <PenHeader/>
-
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
       <div
