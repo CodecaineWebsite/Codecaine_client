@@ -191,8 +191,12 @@ const signInWithGithub = async () => {
 		alert("GitHub 登入成功！");
 		router.push("/trending");
 	} catch (error) {
+		if (error.code === "auth/account-exists-with-different-credential") {
+			alert(
+				"This email is already registered with another sign-in method. Please use the original method to log in."
+			);
+		}
 		console.error("GitHub 登入錯誤:", error);
-		alert("GitHub 登入失敗");
 	}
 };
 

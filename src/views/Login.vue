@@ -276,7 +276,6 @@ const signInWithGithub = async () => {
 			);
 		}
 		console.error("GitHub 登入錯誤:", error);
-		alert("GitHub 登入失敗");
 	}
 };
 
