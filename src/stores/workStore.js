@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
@@ -54,8 +55,8 @@ export const useWorkStore = defineStore('work', () => {
   const updateCDNs = (newCDNs) => {
     currentWork.value.cdns = newCDNs
   }
-    const updateLinks = (newLinks) => {
-    currentWork.value.links = newLinks
+  const updateLinks = (newLinks) => {
+  currentWork.value.links = newLinks
   }
 
 
@@ -75,9 +76,24 @@ export const useWorkStore = defineStore('work', () => {
   
   // 更新CurrentCode 
   // todo: 改v-model綁定
+  const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
-    currentWork.value[language] = newCode
-  }
+    if (!currentWork.value) return;
+
+    currentWork.value[language] = newCode;
+
+    if (currentWork.value.isAutoSave) {
+      // 清掉前一個 debounce
+      if (autoSaveTimeout.value) {
+        clearTimeout(autoSaveTimeout.value);
+      }
+
+      // 設定新的 debounce
+      autoSaveTimeout.value = setTimeout(() => {
+        saveCurrentWork();
+      }, 1000); // 自動儲存延遲 1 秒，可調整
+    }
+  };
 
   // 開關自動存檔狀態
   const toggleAutoSave = () => {
@@ -191,7 +207,13 @@ export const useWorkStore = defineStore('work', () => {
     toggleAutoPreview,
     updatePreviewSrc,
     updateCDNs,
-    updateLinks
+    updateLinks,
+    fetchWorks,
+    saveCurrentWork,
+    deleteWork,
+    createNewWork,
+    autoUpdateCurrentCode,
+    works
   }
 })
   
@@ -201,4 +223,76 @@ export const useWorkStore = defineStore('work', () => {
   // 儲存作品function
   // 執行作品function
   // 刪除作品function
- 
+
+  // 更新作品Preview function
+
+  const api = axios.create({
+    baseURL: 'https://localhost:3000/api/pens', // <- 請換成你的實際 API 網址
+    timeout: 5000,
+  });
+  const TOKEN_NAME = 'your_token_key'; // localStorage 中的 token key 名稱
+
+
+  const fetchWorks = async () => {
+  try {
+    const token = localStorage.getItem(TOKEN_NAME);
+    const res = await api.get('/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    works.value = res.data;
+  } catch (err) {
+    console.error('取得作品失敗', err);
+  }
+};
+
+const createNewWork = async (newWorkData) => {
+  try {
+    const token = localStorage.getItem(TOKEN_NAME);
+    const res = await api.post('/', newWorkData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    works.value.push(res.data);
+    currentId.value = res.data.id;
+    currentWork.value = res.data;
+    console.log('作品建立成功');
+  } catch (err) {
+    console.error('作品建立失敗', err);
+  }
+};
+
+const saveCurrentWork = async () => {
+  try {
+    const token = localStorage.getItem(TOKEN_NAME);
+    const res = await api.put(`/${currentId.value}`, currentWork.value, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    currentWork.value.lastSavedTime = new Date();
+    console.log('儲存成功');
+  } catch (err) {
+    console.error('儲存失敗', err);
+  }
+};
+
+const deleteWork = async (id) => {
+  try {
+    const token = localStorage.getItem(TOKEN_NAME);
+    await api.delete(`/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    works.value = works.value.filter(work => work.id !== id);
+    if (currentId.value === id) {
+      handleCurrentIdChange(null);
+    }
+    console.log('刪除成功');
+  } catch (err) {
+    console.error('刪除失敗', err);
+  }
+};
