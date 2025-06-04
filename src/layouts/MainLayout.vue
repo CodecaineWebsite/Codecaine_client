@@ -9,16 +9,28 @@
       <component :is="Component" class="content" />
     </RouterView>
     <SubFooter class="footer" />
+
+    <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
+    <PenDetailModal
+      v-if="modalStore.showDetailModal"
+      :pen-id="modalStore.penId"
+      :from="modalStore.from"
+      @close="modalStore.closeModal"
+    />
   </div>
   <!--routerview 內容一定要寫在div class="content"裡面!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
+import { useModalStore } from "@/stores/useModalStore";
 
-import SubHeader from "../components/SubHeader.vue";
+import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
-import MainSidebar from "../components/MainSidebar.vue";
+import MainSidebar from "@/components/MainSidebar.vue";
+import PenDetailModal from "@/components/PenDetailModal.vue";
+
+const modalStore = useModalStore()
 
 const isSidebarOpen = ref(true); //預設值是true=打開
 const layoutColumns = computed(() =>
