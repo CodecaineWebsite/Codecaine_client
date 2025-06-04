@@ -33,9 +33,6 @@
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
   
   watch(cdns, (newCDNs) => {
     workStore.updateCDNs(newCDNs)
