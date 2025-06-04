@@ -42,7 +42,7 @@
           v-if="searchFocused"
           class="absolute left-0 mt-2 bg-gray-900 text-white min-w-full rounded-md shadow-lg border border-gray-700 z-50 flex space-x-2 px-2 py-2"
         >
-          <button class="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700" @click="goAndCloseMenu('/your-work')">
+          <button class="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700" @click="goToPath('/your-work')">
             Your Work
           </button>
           <button class="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700">
@@ -100,19 +100,19 @@
           >
             <ul class="flex flex-col text-sm">
               <li>
-                <button class="px-4 py-2 text-left hover:bg-gray-700 w-full" @click="goAndCloseMenu('/your-work')">
+                <button class="px-4 py-2 text-left hover:bg-gray-700 w-full" @click="goToPath('/your-work')">
                   Your Work
                 </button>
               </li>
               <li>
-                <button class="px-4 py-2 text-left hover:bg-gray-700 w-full" @click="goAndCloseMenu(`/user/${authStore.userId || 'me'}`)">
+                <button class="px-4 py-2 text-left hover:bg-gray-700 w-full" @click="goToPath(`/user/${authStore.userId || 'me'}`)">
                   Profile
                 </button>
               </li>
 
               <hr class="border-gray-700 my-1 mx-4" />
 
-              <li class="flex items-center px-4 py-2 hover:bg-gray-700 cursor-pointer" @click="goAndCloseMenu('/pen')">
+              <li class="flex items-center px-4 py-2 hover:bg-gray-700 cursor-pointer" @click="goToPath('/pen')">
                 <i class="fas fa-pen mr-2 w-4 text-gray-400"></i>
                 <span>New Pen</span>
               </li>
