@@ -74,26 +74,26 @@ const router = createRouter({
 							children: [
 								{
 									path: "",
-									redirect: "/profile/cains/showcase",
+									redirect: "/profile/caines/showcase",
 								},
 								{
 									path: "showcase",
-									name: "Cainsshowcase",
+									name: "cainesshowcase",
 									component: () => import("../views/Showcase.vue"),
 								},
 								{
 									path: "public",
-									name: "CainsPublic",
+									name: "cainesPublic",
 									component: () => import("../views/Public.vue"),
 								},
 								{
 									path: "private",
-									name: "Cainsprivate",
+									name: "cainesprivate",
 									component: () => import("../views/Private.vue"),
 								},
 								{
 									path: "loved",
-									name: "Cainsloved",
+									name: "cainesloved",
 									component: () => import("../views/Loved.vue"),
 								},
 							],
