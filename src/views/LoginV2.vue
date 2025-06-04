@@ -69,12 +69,13 @@
 				</div>
 
 				<div class="flex-1 flex flex-col px-16 pb-8">
-					<form>
+					<form @submit.prevent="login">
 						<div class="mb-5">
 							<label for="username" class="block mb-1 text-sm"
 								>Username or Email</label
 							>
 							<input
+								v-model="email"
 								id="username"
 								type="text"
 								class="w-full py-3 px-4 rounded bg-[#b3b4ba] text-black border-none focus:bg-[white] focus:outline-none focus:ring-2 focus:ring-[#38c172] text-base"
@@ -83,11 +84,14 @@
 						<div class="mb-5">
 							<label for="password" class="block mb-1 text-sm">Password</label>
 							<input
+								v-model="password"
 								id="password"
 								type="password"
+								autocomplete="off"
 								class="w-full py-3 px-4 rounded bg-[#b3b4ba] text-black border-none focus:bg-[white] focus:outline-none focus:ring-2 focus:ring-[#38c172] text-base"
 							/>
 						</div>
+						<p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
 						<button
 							type="submit"
 							class="w-full py-3 bg-[#38c172] rounded text-[#1e1f26] text-base font-medium cursor-pointer transition hover:bg-[#248C46] hover:text-white"
@@ -161,7 +165,11 @@
 import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { auth } from "../config/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+	GoogleAuthProvider,
+	signInWithPopup,
+	signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "../stores/api";
 
@@ -170,6 +178,52 @@ import GithubIcon from "@/components/icons/GithubIcon.vue";
 
 const authStore = useAuthStore();
 const provider = new GoogleAuthProvider();
+const email = ref("");
+const password = ref("");
+const error = ref("");
+
+async function login() {
+	error.value = "";
+
+	try {
+		const userCredential = await signInWithEmailAndPassword(
+			auth,
+			email.value,
+			password.value
+		);
+
+		const user = userCredential.user;
+		const token = await user.getIdToken(); // 拿到 JWT
+		authStore.setToken(token);
+		console.log("登入成功，JWT:", token);
+		alert("登入成功！"); // alert最後可以再調整美觀的樣式
+		await syncUser();
+	} catch (e) {
+		if (
+			e.code === "auth/invalid-credential" ||
+			e.code === "auth/wrong-password"
+		) {
+			error.value = "帳號或密碼錯誤，請重新輸入。";
+		} else if (e.code === "auth/user-not-found") {
+			error.value = "查無此帳號，請註冊或確認輸入。";
+		} else {
+			error.value = `登入失敗：${e.message}`;
+		}
+		console.error(e);
+	}
+}
+
+async function syncUser() {
+	try {
+		const res = await api.get(
+			"/api/auth/me" // 原為 POST http://localhost:3000/api/addusers , 改為 GET http://localhost:3000/api/auth/me
+		);
+
+		console.log("身份驗證成功：", res.data);
+	} catch (err) {
+		console.error("身份驗證失敗：", err.response?.data || err.message);
+	}
+}
 
 async function signInWithGoogle() {
 	try {
