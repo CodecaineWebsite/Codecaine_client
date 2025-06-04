@@ -1,6 +1,6 @@
 <script setup>
 import { inject, ref, watch } from 'vue';
-import Arrow from '../../assets/arrow.svg';
+import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/workStore';
 import { storeToRefs } from 'pinia'
 
@@ -129,8 +129,8 @@ const removeLink = (index) => {
                   <option value="Pug">Pug</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
-                  <img :src="Arrow" class="w-3 rotate-180" alt="">
-                  <img :src="Arrow" class="w-3" alt="">
+                  <Arrow class="w-3 h-3 fill-current rotate-180"/>
+                  <Arrow class="w-3 h-3 fill-current"/>
                 </div>
               </div>
             </div>

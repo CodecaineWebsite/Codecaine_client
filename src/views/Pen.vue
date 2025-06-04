@@ -1,6 +1,6 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
-  import ArrowWhite from '../assets/arrow-white.svg';
+  import Arrow from '../assets/arrow.vue';
   import Settings from '../assets/settings.svg';
   import Close from '../assets/close.svg';
   import HTMLIcon from '../assets/html.svg';
@@ -324,7 +324,7 @@
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 fill-current"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -350,7 +350,7 @@
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 fill-current"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -376,7 +376,7 @@
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 fill-current"/>
               </EditorSmallButton>
             </div>
           </div>

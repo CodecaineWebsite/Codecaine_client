@@ -12,8 +12,7 @@
   import Like from '../../assets/like.svg';
   import Run from '../../assets/run.svg';
   import Cloud from '../../assets/cloud.svg';
-  import Arrow from '../../assets/arrow.svg';
-  import ArrowWhite from '../../assets/arrow-white.svg';
+  import Arrow from '@/assets/arrow.vue';
   import Settings from '../../assets/settings.svg';
   import Layout from '../../assets/layout.svg';
   import { computed } from 'vue';
@@ -42,7 +41,6 @@
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  const bookmarkVisible = ref(false);
   const userName = ref(currentWork.value.user_name);
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
@@ -149,7 +147,7 @@
             <button v-if="isLoggedIn" @click.prevent="toggleSave" type="button"
               class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-5 editorSmallButton-hover-bgc  hover:cursor-pointer">
               <div class="h-7 flex justify-center items-center">
-                <img :src="Arrow" alt="arrow" class="w-2.5">
+                <Arrow class="w-3 h-3 fill-current"/>
               </div>
             </button>
             <div v-if="saveOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleSave"></div>
@@ -209,7 +207,7 @@
         <button @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex justify-between w-6 items-center">
             <div class="transition-transform h-0.5 bg-gray-200 relative before:content-[''] before:w-1.5 before:h-0.5 before:bg-gray-200 before:absolute before:-top-1.5 before:left-0 after:content-[''] after:w-3.5 after:h-0.5 after:bg-gray-200 after:absolute after:-bottom-1.5 after:left-0" :class="navListVisible ? 'before:w-2 w-1.5' : 'before:w-1.5 w-2.5'"></div>
-            <img :src="ArrowWhite" alt="arrowWhite" class=" transition-transform	w-3 self-start mt-1.5 " :class=" {'scale-y-[-1]':navListVisible}">
+            <Arrow class="w-3 h-3 fill-current transition-transform self-start mt-1.5" :class=" {'scale-y-[-1]':navListVisible}"/>
           </div>
         </button>
         <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
