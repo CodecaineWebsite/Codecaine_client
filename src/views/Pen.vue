@@ -284,13 +284,11 @@
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
-
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-
               <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
               <div>
                 HTML
