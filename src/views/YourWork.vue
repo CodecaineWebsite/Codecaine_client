@@ -18,36 +18,29 @@
 					{{ tab }}
 				</button>
 
-				<div class="ml-auto">
-					<button
-						v-if="activeTab === 'Collections'"
-						class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
-					>
-						<CollectionIcon
-							class="fill-current w-3 h-3"
-							:class="{
-								'text-white': activeTab === 'Collections',
-								'text-gray-400': activeTab !== 'Collections',
-							}"
-						/>
-						<span>New Collection</span>
-					</button>
-					<button
-						v-else-if="activeTab === 'Pens' || activeTab === 'Deleted'"
-						class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
-					>
-						<PensIcon
-							class="fill-current w-4 h-4"
-							:class="{
-								'text-white': activeTab === 'Pens' || activeTab === 'Deleted',
-								'text-gray-400':
-									activeTab !== 'Pens' && activeTab !== 'Deleted',
-							}"
-						/>
-						<span>New Pen</span>
-					</button>
-				</div>
-			</div>
+        <div class="ml-auto">
+          <button
+            v-if="activeTab === 'Collections'"
+            class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
+          >
+            <CollectionIcon
+              class="fill-current w-3 h-3"
+              :class="{ 'text-white': activeTab === 'Collections', 'text-gray-400': activeTab !== 'Collections' }"
+            />
+            <span>New Collection</span> 
+          </button>
+          <button
+            v-else 
+            class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
+          >
+            <PensIcon 
+              class="fill-current w-4 h-4"
+              :class="{ 'text-white': activeTab === 'Pens' || activeTab === 'Deleted', 'text-gray-400': activeTab !== 'Pens' && activeTab !== 'Deleted' }"
+            />
+            <span>New Pen</span>
+          </button>
+        </div>
+      </div>
 
 			<!-- Search + Filter Bar -->
 			<div>
