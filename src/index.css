@@ -49,6 +49,13 @@
   --color-cc-posts: #47cf73;
   --color-cc-collections: #ae63e4;
   --color-cc-projects: #ffdd40;
+
+  /* editor theme */
+  --color-cc-editor-column-bg: #1c1c1c;
+  --color-cc-editor-column-border: #2d2d2d;
+  --color-cc-editor-column-title: #b2b8c5;
+  --color-cc-editor-column-tab-bg: #1C1E22;
+  --color-cc-editor-column-tab-text: #ABAEBD;
 }
 
 .editor-bgc {
