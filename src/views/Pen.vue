@@ -25,9 +25,8 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, toggleAutoSave, toggleAutoPreview handleCurrentIdChange  }= workStore; //放function
+  const { updateCurrentCode, toggleAutoSave, toggleAutoPreview, handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
-  const { html, css, javascript, isAutoPreview } = toRefs(currentWork.value)
   handleCurrentIdChange(route.params.id)
 
   const htmlCode = ref(currentWork.value.html);
