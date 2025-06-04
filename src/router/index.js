@@ -31,7 +31,7 @@ const router = createRouter({
 				{
 					path: "user/:userId",
 					name: "profile",
-					component: () => import("../views/Profile.vue"),
+					component: () => import("../layouts/ProfileLayout.vue"),
 				},
 				{
 					path: "search",
@@ -57,6 +57,57 @@ const router = createRouter({
 					component: () => import("../views/Login.vue"),
 				},
 				{
+					path: "profile",
+					component: () => import("../layouts/ProfileLayout.vue"),
+					children: [
+						{
+							path: "",
+							redirect: "/profile/cains",
+						},
+						{
+							path: "cains",
+							name: "userscains",
+							component: () => import("../views/usersCains.vue"),
+							children: [
+								{
+									path: "",
+									redirect: "/profile/cains/showcase",
+								},
+								{
+									path: "showcase",
+									name: "Cainsshowcase",
+									component: () => import("../views/Showcase.vue"),
+								},
+								{
+									path: "public",
+									name: "CainsPublic",
+									component: () => import("../views/Public.vue"),
+								},
+								{
+									path: "private",
+									name: "Cainsprivate",
+									component: () => import("../views/Private.vue"),
+								},
+								{
+									path: "loved",
+									name: "Cainsloved",
+									component: () => import("../views/Loved.vue"),
+								},
+							],
+						},
+						{
+							path: "following",
+							name: "Profilefollowing",
+							component: () => import("../views/usersFollowing.vue"),
+						},
+						{
+							path: "followers",
+							name: "Profilefollowers",
+							component: () => import("../views/usersFollowers.vue"),
+						},
+					],
+				},
+				{
 					path: "settings",
 					component: () => import("../layouts/SettingLayout.vue"),
 					children: [
@@ -79,15 +130,15 @@ const router = createRouter({
 			],
 		},
 		{
-      path: "/pen",
-      name: "newPen",
-      component: () => import("../views/Pen.vue"),
-    },
-    {
-      path: "/:username/pen/:id",
-      name: "pen",
-      component: () => import("../views/Pen.vue"),
-    }
+			path: "/pen",
+			name: "newPen",
+			component: () => import("../views/Pen.vue"),
+		},
+		{
+			path: "/:username/pen/:id",
+			name: "pen",
+			component: () => import("../views/Pen.vue"),
+		},
 	],
 });
 router.beforeEach((to, from, next) => {
