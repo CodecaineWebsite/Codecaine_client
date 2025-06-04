@@ -172,7 +172,7 @@ const setActiveTab = (tab) => {
   else if (tab === "Trending") router.push("/trending");
 };
 
-const goAndCloseMenu = (path) => {
+const goToPath = (path) => {
   showMenu.value = false;
 
   // 同步 activeTab 狀態
