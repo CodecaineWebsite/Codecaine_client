@@ -212,7 +212,8 @@
     }
   }
 
-  const columnSizes = ref([33.3, 33.3, 33.4])
+  const columnSizes = ref([33.3, 33.3, 33.4]);
+  const columnTitleRef = ref(null)
 
   function startColumnDrag(index, el, e) {
     e.preventDefault()
@@ -240,20 +241,31 @@
     if (index === null || !el || !el.parentElement) return
 
     const parent = el.parentElement
-    const totalSize =
-      layoutId === 'center' ? parent.clientWidth : parent.clientHeight
+    const totalSize = layoutId === 'center' ? parent.clientWidth : parent.clientHeight
     const delta = layoutId === 'center' ? e.movementX : e.movementY
     const a = columnSizes.value[index]
     const b = columnSizes.value[index + 1]
     const change = (delta / totalSize) * 100
 
-    const newA = a + change
-    const newB = b - change
+    let newA = a + change
+    let newB = b - change
 
-    if (newA >= 0 && newB >= MIN_SIZE) {
-      columnSizes.value[index] = newA
-      columnSizes.value[index + 1] = newB
+    if (layoutId !== 'center') {
+      // 僅在直向模式下限制最小高度
+      const titleHeight = columnTitleRef.value?.offsetHeight || 0
+      const minPercent = (titleHeight / totalSize) * 100
+
+      if (newA < minPercent) {
+        newA = minPercent
+        newB = a + b - minPercent
+      } else if (newB < minPercent) {
+        newB = minPercent
+        newA = a + b - minPercent
+      }
     }
+
+    columnSizes.value[index] = newA
+    columnSizes.value[index + 1] = newB
   }
 
   // 如果有顯示console 且 顯示模式是center  maxEditorHeight保留(console拖曳欄高 + editor拖曳欄高)
@@ -492,12 +504,12 @@
       >
         <div
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-4 border-y'"
+          :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
               <div>
@@ -518,14 +530,20 @@
 
         <div
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
+          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
 
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc" 
+            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+            @pointerdown="(e) => {
+              if(selectedLayout.id !== 'center') {
+                startColumnDrag(0, editorWrapperRef, e)
+              }
+            }">
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
               <div>
@@ -546,14 +564,22 @@
 
         <div
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
+          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
 
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg">
+
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
+            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+            @pointerdown="(e) => {
+              if(selectedLayout.id !== 'center') {
+                startColumnDrag(1, editorWrapperRef, e)
+              }
+            }"
+          >
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
               <div>
