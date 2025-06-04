@@ -42,6 +42,7 @@
     workStore.updateLinks(newLinks)
   }, { deep: true })
 
+
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)
