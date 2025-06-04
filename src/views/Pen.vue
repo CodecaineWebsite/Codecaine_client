@@ -28,7 +28,6 @@
   const workStore = useWorkStore()
   const { updateCurrentCode, toggleAutoSave, toggleAutoPreview, handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
-  const { html, css, javascript } = toRefs(currentWork.value)
   handleCurrentIdChange(route.params.id)
 
   const htmlCode = ref(currentWork.value.html);
@@ -57,48 +56,17 @@
     workStore.updateLinks(newLinks)
   }, { deep: true })
 
-  const startConsoleDragging = () => {
-    isConsoleDragging.value = true
-    document.body.classList.add('select-none')
-  };
+  // const startConsoleDragging = () => {
+  //   isConsoleDragging.value = true
+  //   document.body.classList.add('select-none')
+  // };
 
-  const stopConsoleDragging = () => {
-    if (isConsoleDragging.value) {
-      isConsoleDragging.value = false;
-      document.body.classList.remove('select-none');
-    }
-  };
-
-  const handleConsoleMouseMove = (e) => {
-    if (!isConsoleDragging.value || !previewContainer.value) return;
-
-    const containerHeight = previewContainer.value.clientHeight;
-    const rect = previewContainer.value.getBoundingClientRect();
-    const offsetY = e.clientY - rect.top;
-    const newHeight = containerHeight - offsetY;
-
-    const minHeight = 0;
-    const maxHeight = containerHeight;
-
-    if (newHeight >= minHeight && newHeight <= maxHeight) {
-      consoleHeight.value = newHeight;
-    } else if (newHeight < minHeight) {
-      consoleHeight.value = minHeight;
-    } else if (newHeight > maxHeight) {
-      consoleHeight.value = maxHeight;
-    }
-  };
-
-
-  onMounted(() => {
-    window.addEventListener('pointermove', handleConsoleMouseMove);
-    window.addEventListener('pointerup', stopConsoleDragging);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('pointermove', handleConsoleMouseMove);
-    window.removeEventListener('pointerup', stopConsoleDragging);
-  });
+  // const stopConsoleDragging = () => {
+  //   if (isConsoleDragging.value) {
+  //     isConsoleDragging.value = false;
+  //     document.body.classList.remove('select-none');
+  //   }
+  // };
 
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
@@ -109,8 +77,6 @@
   const settingOptionVisible = ref(false);
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)
-
-  provide('title', title)
 
   const handleConsoleClose = () => {
     isConsoleShow.value = false;
@@ -135,7 +101,6 @@
   const toggleList = () => {
     navListVisible.value = !navListVisible.value
   };
-
 
   const layoutOptions = [
     { id: 'left', rotation: -90, display: 'flex-row'},
@@ -162,14 +127,11 @@
     isEditing.value = false
   };
 
-  // 計算變更高度或寬度
+  // 拖拉改欄位大小 計算變更高度或寬度
   const isDraggingEditor = ref(false)
   const isDraggingConsole = ref(false)
   const isDraggingColumn = ref(false)
 
-  const editorWrapperSize = ref(300)
-
-  const sizes = ref([33.3, 33.3, 33.4])
   const currentColumnIndex = ref(null)
   const dragElement = ref(null)
   const mainRef = ref(null);
@@ -185,12 +147,15 @@
   }
 
   // Console 拖曳
-  function startConsoleDrag() {
+  function startConsoleDrag(e) {
+    e.preventDefault()
     isDraggingConsole.value = true
+    e.target.setPointerCapture?.(e.pointerId)
     enableNoSelect()
   }
-  function stopConsoleDrag() {
+  function stopConsoleDrag(e) {
     isDraggingConsole.value = false
+    e?.target?.releasePointerCapture?.(e.pointerId)
     disableNoSelect()
   }
   function handleConsoleDrag(e) {
@@ -205,16 +170,25 @@
     consoleHeight.value = Math.min(Math.max(newHeight, 0), containerHeight)
   }
 
-  // EditorWrapper拖曳
+  // Editor拖曳
+  const editorWrapperSize = ref(300)
   let startY = 0
   let initialHeight = 0
   const editorWrapperRef = ref(null)
   
   function startEditorDrag(e) {
+    e.preventDefault()
+    e.target.setPointerCapture?.(e.pointerId)
     isDraggingEditor.value = true
     startY = e.clientY
     initialHeight = editorWrapperSize.value
     enableNoSelect()
+  }
+
+  function stopEditorDrag(e) {
+    e?.target?.releasePointerCapture?.(e.pointerId)
+    isDraggingEditor.value = false
+    disableNoSelect()
   }
 
   function handleEditorDrag(e) {
@@ -250,24 +224,24 @@
     }
   }
 
-  function stopEditorDrag() {
-    isDraggingEditor.value = false
-    disableNoSelect()
-  }
+  const columnSizes = ref([33.3, 33.3, 33.4])
 
-  // EditorWrapper內 Editor比例拖曳
-  function startColumnDrag(index, el) {
+  function startColumnDrag(index, el, e) {
+    e.preventDefault()
+    e.target.setPointerCapture?.(e.pointerId)
     currentColumnIndex.value = index
     dragElement.value = el
     isDraggingColumn.value = true
     enableNoSelect()
   }
-  function stopColumnDrag() {
+  function stopColumnDrag(e) {
     isDraggingColumn.value = false
     currentColumnIndex.value = null
     dragElement.value = null
     disableNoSelect()
+    e.target.releasePointerCapture?.(e.pointerId)
   }
+
   function handleColumnDrag(e) {
     const index = currentColumnIndex.value
     const el = dragElement.value
@@ -279,19 +253,20 @@
     const totalSize =
       layoutId === 'center' ? parent.clientWidth : parent.clientHeight
     const delta = layoutId === 'center' ? e.movementX : e.movementY
-    const a = sizes.value[index]
-    const b = sizes.value[index + 1]
+    const a = columnSizes.value[index]
+    const b = columnSizes.value[index + 1]
     const change = (delta / totalSize) * 100
 
     const newA = a + change
     const newB = b - change
 
     if (newA >= 0 && newB >= MIN_SIZE) {
-      sizes.value[index] = newA
-      sizes.value[index + 1] = newB
+      columnSizes.value[index] = newA
+      columnSizes.value[index + 1] = newB
     }
   }
 
+  // 如果有顯示console 且 顯示模式是center  maxEditorHeight保留(console拖曳欄高 + editor拖曳欄高)
   watch(isConsoleShow, (show) => {
     if (show && selectedLayout.value.id === 'center') {
       const mainHeight = mainRef.value?.getBoundingClientRect().height || window.innerHeight
@@ -529,7 +504,7 @@
           class="resizer editor-resizer-border-color editor-bgc "
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-4 border-y'"
         ></div>
-        <div :style="{ flexBasis: sizes[0] + '%', minWidth: '0px' }" class="relative">
+        <div :style="{ flexBasis: columnSizes[0] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
@@ -552,10 +527,10 @@
         <div
           class="resizer editor-resizer-border-color editor-bgc"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(0, e.currentTarget)"
+          @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: sizes[1] + '%', minWidth: '0px' }" class="relative">
+        <div :style="{ flexBasis: columnSizes[1] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
@@ -578,10 +553,10 @@
         <div
           class="resizer editor-resizer-border-color editor-bgc"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(1, e.currentTarget)"
+          @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: sizes[2] + '%', minWidth: '0px' }" class="relative">
+        <div :style="{ flexBasis: columnSizes[2] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
               <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
@@ -603,8 +578,14 @@
 
       </div>
       <div
-        :class="selectedLayout.id === 'center' ? 'h-4 cursor-row-resize border-y': 'w-4 cursor-col-resize border-x'"
-        class="editor-bgc editor-resizer-border-color"
+      :class="[
+        'editor-bgc',
+        'editor-resizer-border-color',
+        'select-none', 
+        selectedLayout.id === 'center'
+          ? 'h-4 cursor-row-resize border-y'
+          : 'w-4 cursor-col-resize border-x'
+      ]"
         @pointerdown="startEditorDrag"
       ></div>
       <!-- preview -->
@@ -643,10 +624,10 @@
 
     <footer class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-[#2C303A] text-white">
         <div class="flex items-center h-full">
-          <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="toggleConsole">Console</EditorSmallButton>
+          <EditorSmallButton class="hover:bg-cc-12" @buttonClick="toggleConsole">Console</EditorSmallButton>
         </div>
         <div class="flex items-center h-full">
-          <EditorSmallButton class="hover:bg-[#ff3c41]">Delete</EditorSmallButton>
+          <EditorSmallButton class="hover:bg-cc-red">Delete</EditorSmallButton>
         </div>
     </footer>
   </div>
