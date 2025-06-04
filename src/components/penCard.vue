@@ -6,14 +6,14 @@
     <div class="relativegroup">
       <img
         :src="imageUrl"
-        @error="imageUrl = fallbackImage"
         alt="Card Preview"
         class="w-full aspect-video object-cover"
       />
+      <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page並跳出小視窗 -->
       <a
-        :href="externalLink"
+        :href="detailPageLink"
         target="_blank"
-        class="absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
+        class="detailPageLink absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
       >
         <ExternalLinkIcon />
       </a>
@@ -24,28 +24,27 @@
       <div class="flex items-center justify-between w-full">
         <!-- 左：頭像與資訊 -->
         <div class="flex items-center gap-3">
-          <a :href="authorLink" target="_blank">
+          <a :href="userPageLink" target="_blank" class="userPageLink">
             <img
-              :src="authorAvatar"
+              :src="userProfileImage"
               class="w-10 h-10 rounded-full shrink-0"
-              :alt="author + ' 的頭像'"
+              :alt="userDisplayName + ' 的頭像'"
             />
           </a>
           <div>
             <a
-              :href="editorLink"
+              :href="editorPageLink"
               target="_blank"
-              class="block font-bold text-base text-white"
+              class="editorPageLink block font-bold text-base text-white"
             >
               {{ title }}
             </a>
             <a
-              :href="authorLink"
+              :href="userPageLink"
               target="_blank"
-              class="block text-sm text-gray-300 hover:underline"
+              class="authorPageLink block text-sm text-gray-300 hover:underline"
             >
-              <span class="font-medium">{{ author }}</span>
-              <span class="text-xs text-gray-400">{{ authorNote }}</span>
+              <span class="font-medium">{{ userDisplayName }}</span>
             </a>
           </div>
         </div>
@@ -89,7 +88,7 @@
                 class="block px-4 py-2 hover-bg-card-hover text-blue-400 flex items-center gap-2"
               >
                 <CheckIcon />
-                Follow {{ authorHandle }}
+                Follow {{ "@" + userName }}
               </a>
             </div>
           </div>
@@ -116,7 +115,7 @@
           <ChatBubbleIcon />
           <span>{{ comments }}</span>
         </button>
-
+        <!-- 這裡不用 goToAnalyticPage 這個連結會連到的是 /:user_name/full/:id -->
         <button
           @click="goToAnalyticsPage"
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm"
@@ -131,7 +130,7 @@
 
 <script setup>
 import { ref } from "vue";
-import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue";
+import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
 import BookmarkIcon from "@/components/icons/BookmarkIcon.vue";
 import CheckIcon from "@/components/icons/CheckIcon.vue";
@@ -139,57 +138,59 @@ import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import HeartFilledIcon from "@/components/icons/HeartFilledIcon.vue";
-
 // 1. 傳入 props
 const props = defineProps({
-  imageUrl: String,
-  fallbackImage: {
-    type: String,
-    default: "https://via.placeholder.com/600x400?text=No+Preview",
-  },
-  externalLink: String,
-  editorLink: String,
-  authorLink: String,
-  authorAvatar: String,
-  proLink: String,
+  // 作品資訊
+  id: Number,
   title: String,
-  author: String,
-  authorNote: String,
-  authorHandle: String,
-  likes: Number,
-  comments: Number,
-  views: [Number, String],
-  detailPageLink: String,
-  analyticsPageLink: String,
+  imageUrl: { // 預覽圖
+    type: String,
+    default: "https://picsum.photos/600/400", // 無法取得作品預覽圖時的備用圖,這個不需要傳props,寫死就好
+  },
+  
+  // 作者資訊
+  userName: String,
+  userDisplayName: String,
+  userProfileImage: String, 
+  // 統計資料
+  favorites_count: Number,
+  comments_count: Number,
+  views_count: Number,
 });
 
-const fallbackImage = "https://via.placeholder.com/600x400?text=No+Preview";
-const imageUrl = ref("https://picsum.photos/600/400");
-const externalLink = "https://codepen.io/simeydotme/pen/gObXYZo";
-const editorLink = "https://codepen.io/simeydotme/pen/gObXYZo";
-const authorLink = "#";
-const authorAvatar =
-  "https://assets.codepen.io/123/internal/avatars/users/default.png";
-const proLink = "PRO 的購買頁面";
-const title = "RC_mob_5-21";
-const author = "Sophia";
-const authorNote = "(fractal kitty) (she/her)";
-const authorHandle = "@fractalkitty";
-const likes = 2;
-const comments = 0;
-const views = "13";
+// 作品資訊
+const workId = props.id;
+const title = props.title;
+const imageUrl = props.imageUrl;
+// 作者資訊
+const userName = props.userName;
+const userDisplayName = props.userDisplayName;
+const userProfileImage = props.userProfileImage;
+// 統計資料
+const likes = props.favorites_count;
+const comments = props.comments_count;
+const views = props.views_count;
 
+
+// 連結
+const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
+const userPageLink = `/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
+const detailPageLink = `/${userName}/details/${workId}`; //目前還沒設定，先參考官方route暫定 /:username/details/:id
+const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
+
+// 元件狀態
 const menuOpen = ref(false);
 const liked = ref(false);
 
+// 改成 router links
 const goToDetailPage = () => {
-  window.location.href = `/details/rc-mob-5-21`;
+  window.location.href = detailPageLink;
 };
 
+// 這裡不用 goToAnalyticPage 這個連結會連到的是 /:user_name/full/:id
 const goToAnalyticsPage = () => {
-  window.location.href = `/analytics/rc-mob-5-21`;
+  window.location.href = `/${userName}/full/${workId}`;
 };
-
-// TODO: fallbackImage 的預設圖片要改
+// TODO: 如果預覽要用iframe預覽，props該傳什麼欄位
+// TODO: 設定imageUrl 的 fallback image
 </script>
-
