@@ -15,6 +15,17 @@
 					/>
 					<span>Sign Up with Google</span>
 				</button>
+				<button
+					type="button"
+					@click="signInWithGithub"
+					class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200 mt-3"
+				>
+					<img
+						src="https://img.icons8.com/ios-glyphs/24/ffffff/github.png"
+						alt="GitHub logo"
+					/>
+					<span>Sign Up with GitHub</span>
+				</button>
 			</form>
 
 			<!-- 分隔文字 -->
@@ -50,6 +61,7 @@
 								type="email"
 								id="email"
 								required
+								autocomplete="email"
 								maxlength="20"
 								class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
 							/>
@@ -65,6 +77,7 @@
 								v-model="password"
 								id="password"
 								type="password"
+								autocomplete="new-password"
 								required
 								class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
 							/>
@@ -98,6 +111,7 @@ import { auth } from "../config/firebase";
 import { useRouter } from "vue-router";
 //google登入的部分
 import {
+	GithubAuthProvider,
 	GoogleAuthProvider,
 	signInWithPopup,
 	createUserWithEmailAndPassword,
@@ -115,7 +129,7 @@ const password = ref("");
 const error = ref("");
 const success = ref("");
 
-async function register() {
+const register = async () => {
 	error.value = "";
 	success.value = "";
 
@@ -146,10 +160,10 @@ async function register() {
 		}
 		alert(msg);
 	}
-}
+};
 
 // Google 登入函式
-async function signInWithGoogle() {
+const signInWithGoogle = async () => {
 	try {
 		const result = await signInWithPopup(auth, provider);
 		const user = result.user;
@@ -164,7 +178,23 @@ async function signInWithGoogle() {
 		console.error("Google 登入錯誤:", error);
 		alert("Google 登入失敗");
 	}
-}
+};
+
+const signInWithGithub = async () => {
+	try {
+		const provider = new GithubAuthProvider();
+		const result = await signInWithPopup(auth, provider);
+		const user = result.user;
+		const token = await user.getIdToken();
+		authStore.setToken(token);
+		await api.get("/api/auth/me");
+		alert("GitHub 登入成功！");
+		router.push("/trending");
+	} catch (error) {
+		console.error("GitHub 登入錯誤:", error);
+		alert("GitHub 登入失敗");
+	}
+};
 
 // 顯示與動畫
 function beforeEnter(el) {
