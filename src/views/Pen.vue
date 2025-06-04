@@ -34,6 +34,9 @@
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
 
+  const cdns = ref(currentWork.value.cdns)
+  const links = ref(currentWork.value.links)
+  
   watch(cdns, (newCDNs) => {
     workStore.updateCDNs(newCDNs)
   }, { deep: true })
@@ -70,6 +73,7 @@
     selectedLayout.value = layout
     layoutOptionVisible.value = false
   };
+
 
   // 拖拉改欄位大小 計算變更高度或寬度
   const isDraggingEditor = ref(false)
