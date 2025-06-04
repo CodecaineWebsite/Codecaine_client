@@ -11,14 +11,14 @@
 			<div class="flex max-w-[960px] w-full rounded-lg overflow-hidden px-8">
 				<div class="flex-1 pr-16 flex flex-col items-end">
 					<button
-						@click="signInWithGoogle"
+						@click="() => socialSignIn(new GoogleAuthProvider())"
 						class="w-3/4 flex items-center py-3 px-4 mb-4 bg-[#444857] rounded cursor-pointer transition hover:bg-[black]"
 					>
 						<GoogleIcon class="w-5 h-5 mr-3" />
 						Log In with Google
 					</button>
 					<button
-						@click="signInWithGithub"
+						@click="() => socialSignIn(new GithubAuthProvider())"
 						class="w-3/4 flex items-center py-3 px-4 mb-4 bg-[#444857] rounded cursor-pointer transition hover:bg-[black]"
 					>
 						<GithubIcon class="w-5 h-5 mr-3" />
@@ -169,9 +169,6 @@ import { auth } from "../config/firebase";
 import {
 	GithubAuthProvider,
 	GoogleAuthProvider,
-	EmailAuthProvider,
-	linkWithCredential,
-	fetchSignInMethodsForEmail,
 	signInWithPopup,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -182,7 +179,6 @@ import GoogleIcon from "@/components/icons/GoogleIcon.vue";
 import GithubIcon from "@/components/icons/GithubIcon.vue";
 
 const authStore = useAuthStore();
-const provider = new GoogleAuthProvider();
 const email = ref("");
 const password = ref("");
 const error = ref("");
@@ -240,34 +236,18 @@ const syncUser = async () => {
 	}
 };
 
-const signInWithGoogle = async () => {
+const socialSignIn = async (provider) => {
 	try {
 		const result = await signInWithPopup(auth, provider);
 		const user = result.user;
 		const token = await user.getIdToken();
 		authStore.setToken(token);
 		await api.get("/api/auth/me");
-		alert("Google 登入成功！");
-		router.push("/trending"); // 登入成功後導向你想的頁面
-	} catch (error) {
-		if (error.code === "auth/account-exists-with-different-credential") {
-			alert(
-				"This email is already registered with another sign-in method. Please use the original method to log in."
-			);
-		}
-		console.error("Google 登入錯誤:", error);
-		alert("Google 登入失敗");
-	}
-};
-const signInWithGithub = async () => {
-	try {
-		const provider = new GithubAuthProvider();
-		const result = await signInWithPopup(auth, provider);
-		const user = result.user;
-		const token = await user.getIdToken();
-		authStore.setToken(token);
-		await api.get("/api/auth/me");
-		alert("GitHub 登入成功！");
+		alert(
+			`${
+				provider.providerId.includes("google") ? "Google" : "GitHub"
+			} 登入成功！`
+		);
 		router.push("/trending");
 	} catch (error) {
 		if (error.code === "auth/account-exists-with-different-credential") {
@@ -275,7 +255,10 @@ const signInWithGithub = async () => {
 				"This email is already registered with another sign-in method. Please use the original method to log in."
 			);
 		}
-		console.error("GitHub 登入錯誤:", error);
+		console.error(`${provider.providerId} 登入錯誤:`, error);
+		alert(
+			`${provider.providerId.includes("google") ? "Google" : "GitHub"} 登入失敗`
+		);
 	}
 };
 
