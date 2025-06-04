@@ -117,7 +117,7 @@
         </button>
         <!-- 這裡不用 goToAnalyticPage 這個連結會連到的是 /:user_name/full/:id -->
         <button
-          @click="goToAnalyticsPage"
+          @click="goToFullPage"
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm"
         >
           <EyeIcon />
@@ -130,6 +130,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
 import BookmarkIcon from "@/components/icons/BookmarkIcon.vue";
@@ -138,6 +139,8 @@ import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import HeartFilledIcon from "@/components/icons/HeartFilledIcon.vue";
+
+const router = useRouter();
 // 1. 傳入 props
 const props = defineProps({
   // 作品資訊
@@ -176,20 +179,20 @@ const views = props.views_count;
 const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
 const userPageLink = `/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
 const detailPageLink = `/${userName}/details/${workId}`; //目前還沒設定，先參考官方route暫定 /:username/details/:id
+const fullPageLink = `/${userName}/full/${workId}` // 設定了嗎
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
 // 元件狀態
 const menuOpen = ref(false);
 const liked = ref(false);
 
-// 改成 router links
+
 const goToDetailPage = () => {
-  window.location.href = detailPageLink;
+  wrouter.push(detailPageLink);
 };
 
-// 這裡不用 goToAnalyticPage 這個連結會連到的是 /:user_name/full/:id
-const goToAnalyticsPage = () => {
-  window.location.href = `/${userName}/full/${workId}`;
+const goToFullPage = () => {
+  wrouter.push(fullPageLink);
 };
 // TODO: 如果預覽要用iframe預覽，props該傳什麼欄位
 // TODO: 設定imageUrl 的 fallback image
