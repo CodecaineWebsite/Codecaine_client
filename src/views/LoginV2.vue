@@ -11,6 +11,7 @@
 			<div class="flex max-w-[960px] w-full rounded-lg overflow-hidden px-8">
 				<div class="flex-1 pr-16 flex flex-col items-end">
 					<button
+						@click="signInWithGoogle"
 						class="w-3/4 flex items-center py-3 px-4 mb-4 bg-[#444857] rounded cursor-pointer transition hover:bg-[black]"
 					>
 						<GoogleIcon class="w-5 h-5 mr-3" />
@@ -159,9 +160,33 @@
 <script setup>
 import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
+import { auth } from "../config/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useAuthStore } from "../stores/useAuthStore";
+import api from "../stores/api";
 
 import GoogleIcon from "@/components/icons/GoogleIcon.vue";
 import GithubIcon from "@/components/icons/GithubIcon.vue";
+
+const authStore = useAuthStore();
+const provider = new GoogleAuthProvider();
+
+async function signInWithGoogle() {
+	try {
+		const result = await signInWithPopup(auth, provider);
+		const user = result.user;
+		const token = await user.getIdToken();
+		authStore.setToken(token); // 儲存 token 到 store
+		// 呼叫後端，送出 Firebase Token 做登入或註冊
+		await api.get("/api/auth/me");
+
+		alert("Google 登入成功！");
+		router.push("/trending"); // 登入成功後導向你想的頁面
+	} catch (error) {
+		console.error("Google 登入錯誤:", error);
+		alert("Google 登入失敗");
+	}
+}
 
 const infoOpen = ref(false);
 const infoContent = ref(null);
