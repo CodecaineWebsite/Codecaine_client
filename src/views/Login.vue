@@ -93,7 +93,7 @@ async function login() {
 	}
 }
 
-import api from "../stores/api";
+import api from "../config/api";
 async function syncUser() {
 	try {
 		const res = await api.get(

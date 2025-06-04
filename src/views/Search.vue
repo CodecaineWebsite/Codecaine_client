@@ -1,5 +1,5 @@
 <script setup>
-import api from "../stores/api";
+import api from "../config/api";
 import { ref, computed, watchEffect, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
