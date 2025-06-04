@@ -129,18 +129,26 @@
 									>Username Or Email</label
 								>
 								<input
+									v-model="resetEmail"
 									id="reset-email"
 									type="text"
 									placeholder="your@email.com"
-									class="w-full py-3 px-4 rounded bg-[#b3b4ba] text-white text-base border-none"
+									class="w-full py-3 px-4 rounded bg-[#b3b4ba] text-black border-none focus:bg-[white] focus:outline-none focus:ring-2 focus:ring-[#38c172] text-base"
 								/>
 							</div>
 							<button
 								type="button"
+								@click="handleResetPassword"
 								class="w-full py-3 bg-[#3a3c46] text-[#ececf1] rounded text-base cursor-pointer transition hover:bg-[#4b4e5a]"
 							>
 								Send Password Reset Email
 							</button>
+							<p v-if="resetError" class="text-red-400 mt-2">
+								{{ resetError }}
+							</p>
+							<p v-if="resetSuccess" class="text-green-400 mt-2">
+								{{ resetSuccess }}
+							</p>
 						</form>
 					</div>
 				</div>
@@ -171,6 +179,7 @@ import {
 	GoogleAuthProvider,
 	signInWithPopup,
 	signInWithEmailAndPassword,
+	sendPasswordResetEmail,
 } from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "../stores/api";
@@ -189,6 +198,10 @@ const resetOpen = ref(false);
 const resetBox = ref(null);
 
 const router = useRouter();
+
+const resetEmail = ref("");
+const resetError = ref("");
+const resetSuccess = ref("");
 
 const login = async () => {
 	try {
@@ -259,6 +272,28 @@ const socialSignIn = async (provider) => {
 		alert(
 			`${provider.providerId.includes("google") ? "Google" : "GitHub"} 登入失敗`
 		);
+	}
+};
+
+const handleResetPassword = async () => {
+	resetError.value = "";
+	resetSuccess.value = "";
+	if (!resetEmail.value) {
+		resetError.value = "Please enter your email.";
+		return;
+	}
+	try {
+		await sendPasswordResetEmail(auth, resetEmail.value);
+		resetSuccess.value = "Password reset email sent! Please check your inbox.";
+		resetEmail.value = "";
+	} catch (e) {
+		if (e.code === "auth/user-not-found") {
+			resetError.value = "No account found with this email.";
+		} else if (e.code === "auth/invalid-email") {
+			resetError.value = "Invalid email format.";
+		} else {
+			resetError.value = "Failed to send reset email. Please try again.";
+		}
 	}
 };
 
