@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col text-[#ececf1] font-sans bg pt-16">
+	<div class="flex flex-col text-white font-sans bg pt-16">
 		<div class="mx-auto">
 			<div class="max-w-[960px] w-full pl-28 pr-0">
 				<div class="text-xl font-bold text-white tracking-wide select-none">
@@ -61,11 +61,11 @@
 						class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-[41%] bg-[white]"
 					></div>
 					<span
-						class="absolute w-12 h-[18%] left-1/2 top-[41%] -translate-x-1/2 border-2 border-[white] text-center flex items-center justify-center rounded-[10px] text-lg leading-[30px] bg-[#1e1f26] text-[#ccc]"
+						class="absolute w-12 h-[18%] left-1/2 top-[41%] -translate-x-1/2 border-2 border-white text-center flex items-center justify-center rounded-[10px] text-lg leading-[30px] bg-[#1e1f26] text-gray"
 						>OR</span
 					>
 					<div
-						class="absolute left-1/2 -translate-x-1/2 w-px h-[41%] bg-[white] top-[59%]"
+						class="absolute left-1/2 -translate-x-1/2 w-px h-[41%] bg-white top-[59%]"
 					></div>
 				</div>
 
