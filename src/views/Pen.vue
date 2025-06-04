@@ -26,7 +26,7 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, toggleAutoSave, toggleAutoPreview, handleCurrentIdChange  }= workStore; //放function
+  const { updateCurrentCode, toggleAutoSave, toggleAutoPreview, handleCurrentIdChange }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
@@ -301,7 +301,7 @@
 
 <template>
   <div class="flex flex-col h-dvh">
-    <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
+    <nav class="relative md:h-16 h-14 w-full bg-cc-20 flex items-center justify-between">
       <div class="flex items-center ml-2">
         <a href="/" class="flex text-0 ">
           <img :src="Icon" alt="icon" class=" w-9 mb-2 ml-1 mr-2 ">
@@ -469,7 +469,7 @@
             <span>Sign Up</span>
           </div>
         </button>
-        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
+        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-cc-13 hover:cursor-pointer">
           <div class="h-7 flex items-center gap-1">
             <span>Log In</span>
           </div>
@@ -491,24 +491,24 @@
         :class="selectedLayout.id === 'center' ? 'flex-row' : 'flex-col'"
       >
         <div
-          class="resizer editor-resizer-border-color editor-bgc "
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-4 border-y'"
         ></div>
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg">
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
               <div>
                 HTML
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
               </EditorSmallButton>
             </div>
@@ -517,7 +517,7 @@
         </div>
 
         <div
-          class="resizer editor-resizer-border-color editor-bgc"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
@@ -526,17 +526,17 @@
           ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
               <div>
                 CSS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
               </EditorSmallButton>
             </div>
@@ -545,7 +545,7 @@
         </div>
 
         <div
-          class="resizer editor-resizer-border-color editor-bgc"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
@@ -553,18 +553,18 @@
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg">
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
               <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
               <div>
                 JS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
+              <EditorSmallButton class="hover:bg-cc-12">
                 <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
               </EditorSmallButton>
             </div>
@@ -575,8 +575,8 @@
       </div>
       <div
       :class="[
-        'editor-bgc',
-        'editor-resizer-border-color',
+        'bg-cc-editor-column-bg',
+        'border-cc-editor-column-border',
         'select-none', 
         selectedLayout.id === 'center'
           ? 'h-4 cursor-row-resize border-y'
@@ -585,30 +585,32 @@
         @pointerdown="startEditorDrag"
       ></div>
       <!-- preview -->
-      <div class="flex-1 overflow-hidden flex flex-col justify-between bg-white" ref="previewContainer">
+      <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
         <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
           <!-- Preview iframe -->
           <EditorPreview :html="htmlCode" :css="cssCode" :javascript="javascriptCode" :isAutoPreview="isAutoPreview"/>
         </div>
         <div v-show="isConsoleShow">
           <div
-            class="h-9 editor-bgc cursor-row-resize text-white flex justify-between items-center py-2 px-3"
+            class="h-9 bg-cc-editor-column-bg cursor-row-resize text-cc-1 flex justify-between items-center py-2 px-3"
             @pointerdown="startConsoleDrag"
           >
             <div>
-              <h2 class="text-base editor-block-title-color font-bold">
+              <h2 class="text-base text-cc-editor-column-title font-bold">
                 Console
               </h2>
             </div>
             <div class="flex gap-1">
-              <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClear">Clear</EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClose">
+              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
+                Clear
+              </EditorSmallButton>
+              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
                 <img :src="Close" alt="close button" class="w-2.5 h-2.5">
               </EditorSmallButton>
             </div>
           </div>
           <div
-            class="h-16 editor-bgc flex flex-col justify-between"
+            class="h-16 bg-cc-editor-column-bg flex flex-col justify-between"
             :style="{ height: `${consoleHeight}px` }"
           >
             <ConsolePreview ref="consoleRef"/>
@@ -618,7 +620,7 @@
       </div>
     </main>
 
-    <footer class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-[#2C303A] text-white">
+    <footer class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-cc-14 text-white">
         <div class="flex items-center h-full">
           <EditorSmallButton class="hover:bg-cc-12" @buttonClick="toggleConsole">Console</EditorSmallButton>
         </div>
