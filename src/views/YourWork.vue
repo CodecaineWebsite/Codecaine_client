@@ -24,7 +24,7 @@
             <span>New Collection</span> 
           </button>
           <button
-            v-else-if="activeTab === 'Pens' || activeTab === 'Deleted'"
+            v-else 
             class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
           >
             <PensIcon 
