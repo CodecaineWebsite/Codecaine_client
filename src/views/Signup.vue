@@ -100,7 +100,7 @@ import { useRouter } from "vue-router";
 //google登入的部分
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
-import api from "../stores/api"; // 假設有一個 api.js 檔案處理 API 請求
+import api from "../config/api"; // 假設有一個 api.js 檔案處理 API 請求
 
 const authStore = useAuthStore();
 const provider = new GoogleAuthProvider();
