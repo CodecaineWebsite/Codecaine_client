@@ -349,7 +349,6 @@
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
-
           <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
             :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
             @pointerdown="(e) => {
