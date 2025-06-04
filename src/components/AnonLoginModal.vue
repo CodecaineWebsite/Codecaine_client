@@ -25,11 +25,11 @@ const close = () => {
 
 // 切換登入/註冊
 const handleToLogIn = () => {
-  errors.value = []
+  error.value = ""
   router.push({ path: route.path, query: { ...route.query, modal: 'login' } })
 }
 const handleToSignUp = () => {
-  errors.value = []
+  error.value = ""
   router.push({ path: route.path, query: { ...route.query, modal: 'signup' } })
 }
 
@@ -45,7 +45,8 @@ const signUpEmail = ref('')
 const signUpPassword = ref('')
 
 // 錯誤訊息
-const errors = ref([{message: '錯誤訊息'}, {message: '錯誤訊息2'}])
+const error = ref("")
+
 </script>
 
 <template>
@@ -68,12 +69,8 @@ const errors = ref([{message: '錯誤訊息'}, {message: '錯誤訊息2'}])
         </p>
       </div>
 
-      <div v-show="errors.length">
-        <ul class="bg-red-500 text-white text-sm p-2 my-1">
-          <li v-for="(error, index) in errors" :key="index">
-            {{ error.message }}
-          </li>
-        </ul>
+      <div v-show="error">
+        <p class="bg-red-500 text-white text-sm p-2 my-1">{{ error }}</p>
       </div>
 
       <!-- 登入 -->
