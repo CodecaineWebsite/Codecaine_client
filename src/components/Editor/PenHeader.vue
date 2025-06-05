@@ -1,5 +1,5 @@
 <script setup>
-	import { provide, ref, watch, toRefs } from 'vue';
+	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
 
   import { storeToRefs } from 'pinia'
@@ -24,7 +24,7 @@
   const route = useRoute();
   const router = useRouter();
   const workStore = useWorkStore()
-  const { toggleAutoSave, handleCurrentIdChange  }= workStore; //放function
+  const { handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
@@ -49,8 +49,6 @@
   const userName = ref(currentWork.value.user_name);
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
-  const isConsoleShow = ref(false);
-  const consoleRef = ref(null)
   const title = computed({
     get: () => currentWork.value.title,
     set: (val) => currentWork.value.title = val,
@@ -83,8 +81,6 @@
   };
   const toggleLayout = () => {
     layoutOptionVisible.value = !layoutOptionVisible.value
-    console.log(currentWork.value.title);
-
   };
   const toggleSetting = () => {
     settingOptionVisible.value = !settingOptionVisible.value
@@ -106,7 +102,6 @@
     currentWork.value.view_mode = layout.id // 回寫 store
     layoutOptionVisible.value = false
   }
-
 
   const titleInput = ref(null);
 
@@ -168,7 +163,6 @@
             <img :src="Like" alt="likeBtn" class="w-4">
           </div>
         </button>
-
         <button v-if="viewMode === 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="handleChangeViewMode('pen')">
           <div class="h-7 flex">
             <span class="md:inline hidden">View Source Code</span>
@@ -176,7 +170,7 @@
           </div>
         </button>
 
-        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
+        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
           <div class="h-7 flex items-center gap-1">
             <img :src="Run" alt="runBtn" class="w-4">
             <span>Run</span>
@@ -187,7 +181,7 @@
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleSave">
             <div class="h-7 flex items-center gap-1">
               <img :src="Cloud" alt="saveBtn" class="w-4">
-              <span>Save</span>
+              <span class="text-15">Save</span>
             </div>
           </button>
           <div class="relative">
@@ -272,7 +266,7 @@
         <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex items-center gap-1">
             <img :src="Settings" alt="settingBtn" class="w-4">
-            <span>Settings</span>
+            <span class="text-15">Settings</span>
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
