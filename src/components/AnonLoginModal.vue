@@ -10,7 +10,6 @@ const router = useRouter()
 const modalType = computed(() => route.query.modal)
 const showModal = computed(() => modalType.value === 'login' || modalType.value === 'signup')
 
-// 忘記密碼區塊開關
 const isForgetPassword = ref(false)
 const toggleIsForgetPassword = () => {
   isForgetPassword.value = !isForgetPassword.value
@@ -33,7 +32,6 @@ const handleToSignUp = () => {
   router.push({ path: route.path, query: { ...route.query, modal: 'signup' } })
 }
 
-// 輸入框綁定
 const loginAccount = ref('')
 const loginPassword = ref('')
 
@@ -44,7 +42,6 @@ const signUpUserName = ref('')
 const signUpEmail = ref('')
 const signUpPassword = ref('')
 
-// 錯誤訊息
 const error = ref("")
 
 </script>
@@ -73,7 +70,6 @@ const error = ref("")
         <p class="bg-red-500 text-white text-sm p-2 my-1">{{ error }}</p>
       </div>
 
-      <!-- 登入 -->
       <main v-if="modalType === 'login'" class="flex-1">
         <form class="flex flex-col gap-4 text-zinc-900 text-sm">
           <div>
@@ -117,7 +113,6 @@ const error = ref("")
         </div>
       </main>
 
-      <!-- 註冊 -->
       <main v-else-if="modalType === 'signup'" class="flex-1 mb-4">
         <form class="flex flex-col gap-3 text-zinc-900 text-sm">
           <div>
@@ -161,7 +156,6 @@ const error = ref("")
         </form>
       </main>
 
-      <!-- 底部切換連結 -->
       <div class="relative w-full text-zinc-900 bg-white text-center p-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]">
         <a v-if="modalType === 'login'" href="#" @click.prevent="handleToSignUp">
           Need to create an account?
