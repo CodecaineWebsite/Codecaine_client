@@ -2,20 +2,19 @@
   <div class="group w-full bg-card-text text-white rounded-lg relative">
     <!-- 預覽 -->
     <div class="relativegroup">
-      <!-- 圖片預覽 -->
+      <!-- 圖片預覽 / iframe 預覽-->
       <img
         :src="imageUrl"
         alt="Card Preview"
         class="w-full aspect-video object-cover rounded-lg"
       />
-      <!-- iframe 預覽 -->
-      <!-- TODO -->
+
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
       <a
         :href="detailPageLink"
         class="detailPageLink absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
       >
-        <ExternalLinkIcon />
+        <ExternalLinkIcon class="w-4 fill-current" />
       </a>
     </div>
 
