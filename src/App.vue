@@ -4,12 +4,12 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterView />
+	<RouterView />
 </template>
 
 <style scoped>
 * {
-  background-color: #131417;
-  color: white;
+	background-color: #131417;
+	color: white;
 }
 </style>

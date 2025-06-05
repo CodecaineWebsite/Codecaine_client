@@ -4,7 +4,7 @@ Codecaine 是一個 CodePen-inspired 的線上程式碼編輯與分享平台，�
 
 此 repo 為專案的 client 側 repositry，下載 server 請至 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server)
 
-##  技術架構
+## 技術架構
 
 - **Frontend:** Vue 3 + TailwindCSS + Pinia + Vue Router + Monaco Editor
 - **Backend:** Node.js + Express + PostgreSQL
@@ -29,7 +29,7 @@ Codecaine 是一個 CodePen-inspired 的線上程式碼編輯與分享平台，�
 
 ## 下載專案
 
-1. 在自己電腦要存專案的位置 把專案Clone下來
+1. 在自己電腦要存專案的位置 把專案 Clone 下來
 
 ```bash
 git clone https://github.com/ViviSun0725/Codecaine_client.git
@@ -41,7 +41,6 @@ git clone https://github.com/ViviSun0725/Codecaine_client.git
 cd Codecaine_client
 ```
 
-
 ### 第一次下載後請安裝 npm 套件
 
 ```bash
@@ -49,6 +48,7 @@ npm install
 ```
 
 ### 設定環境變數
+
 請在根目錄建立 `.env`檔，並填入以下環境變數
 
 ```bash
@@ -65,22 +65,20 @@ VITE_FIREBASE_APP_ID=
 請開啟兩個 Terminal 分別運行 client 與 server
 
 1. 前端開發
-請開啟 Codecaine_client 專案，並執行：
+   請開啟 Codecaine_client 專案，並執行：
 
 ```bash
 npm run dev
 ```
 
 2. 後端開發
-請安裝 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server) 專案並安裝套件，建立測試資料庫與設定環境變數後，執行：
+   請安裝 [Codecaine_server](https://github.com/CodecaineWebsite/Codecaine_server) 專案並安裝套件，建立測試資料庫與設定環境變數後，執行：
 
 ```bash
 npm run dev
 ```
 
-
 ## 開分支步驟
-
 
 1. 切到 dev 分支
 
@@ -129,24 +127,21 @@ git push origin feat/your-task  # 將分支上傳至遠端
    git push origin feature/your-name-task
    # 解完 conflict 再 push，然後開 PR
    ```
+
 ### 命名規範
 
+| 類型                    | 規範                                                     | 範例                                                                              |
+| ----------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Vue 元件命名            | PascalCase（每個單字首字母大寫）                         | `UserProfile.vue`                                                                 |
+| CSS / Tailwind 類別命名 | kebab-case (烤肉串命名)                                  | `error-message`                                                                   |
+| JavaScript 變數與函式   | camelCase (小駝峰命名)                                   | ` userToken``handleLogin() `                                                      |
+| JavaScript 常數         | UPPER_SNAKE_CASE (大寫蛇式命名)                          | `PORT`                                                                            |
+| Pinia Store 命名        | snake_case (小寫蛇式命名)                                | `defineStore('user_store', { ... })`                                              |
+| API 路由命名            | 小寫 + 複數名詞                                          | ` GET /api/users``POST /api/projects``DELETE /api/messages/:id `                  |
+| Git 分支命名            | 使用結構：`type/feature-name`                            | `feat/login-page` `fix/api-timeout` `refactor/editor-toolbar` `issue/20`          |
+| Commit 訊息命名         | 參考 Conventional Commit 規範，格式：`[type]description` | `[feat] 新增註冊功能` `[fix] 修正登入 API 回傳錯誤` `[docs] 補上 README 命名規範` |
 
-
-| 類型                    | 規範                             | 範例                                                           |
-| ----------------------- | -------------------------------- | -------------------------------------------------------------- |
-| Vue 元件命名            | PascalCase（每個單字首字母大寫） | `UserProfile.vue`                                              |
-| CSS / Tailwind 類別命名 | kebab-case (烤肉串命名)          | `error-message`                                                |
-| JavaScript 變數與函式   | camelCase  (小駝峰命名)          | `userToken``handleLogin()`                                     |
-| JavaScript 常數         | UPPER_SNAKE_CASE (大寫蛇式命名)  | `PORT`                                                         |
-| Pinia Store 命名        | snake_case (小寫蛇式命名)        | `defineStore('user_store', { ... })`                           |
-| API 路由命名            | 小寫 + 複數名詞                  | `GET /api/users``POST /api/projects``DELETE /api/messages/:id` |
-| Git 分支命名            | 使用結構：`type/feature-name`    | `feat/login-page` `fix/api-timeout` `refactor/editor-toolbar`  `issue/20`  |
-| Commit 訊息命名    |  參考 Conventional Commit 規範，格式：`[type]description`    | `[feat] 新增註冊功能` `[fix] 修正登入 API 回傳錯誤` `[docs] 補上 README 命名規範`    |
-
-
-
-### 分支/commit類型 範例
+### 分支/commit 類型 範例
 
 [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)
 
