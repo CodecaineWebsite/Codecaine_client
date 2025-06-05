@@ -152,10 +152,9 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  if (!authStore.isAuthReady) return next();
   if (to.meta.requiresGuest && authStore.idToken) {
     // 已登入就導回首頁
-    return next("/trending");
+    return next("/");
   }
   next();
 }); //進入signup後 codepne是500頁面 可以再做調整
