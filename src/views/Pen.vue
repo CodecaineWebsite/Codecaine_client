@@ -19,7 +19,7 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, handleCurrentIdChange }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
@@ -267,11 +267,17 @@
   const updateCode = (language, newCode) => {
     updateCurrentCode(language, newCode);
   }
+
+  const previewRef = ref(null)
+
+  const handleRunPreview = () => {
+    previewRef.value?.runPreview()
+  }
 </script>
 
 <template>
   <div class="flex flex-col h-dvh">
-    <PenHeader/>
+    <PenHeader @run-preview="handleRunPreview"/>
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
       <div
@@ -283,7 +289,7 @@
         :class="selectedLayout.id === 'center' ? 'flex-row' : 'flex-col'"
       >
         <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
         <div :style="selectedLayout.id === 'center'
@@ -309,7 +315,7 @@
         </div>
 
         <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
@@ -343,7 +349,7 @@
         </div>
 
         <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
           :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
           @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
@@ -378,6 +384,7 @@
         </div>
 
       </div>
+
       <div
       :class="[
         'bg-cc-editor-column-bg',
@@ -389,11 +396,12 @@
       ]"
         @pointerdown="startEditorDrag"
       ></div>
+
       <!-- preview -->
       <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
         <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
           <!-- Preview iframe -->
-          <EditorPreview :html="htmlCode" :css="cssCode" :javascript="javascriptCode" :isAutoPreview="isAutoPreview"/>
+          <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
         </div>
         <div v-show="isConsoleShow">
           <div
