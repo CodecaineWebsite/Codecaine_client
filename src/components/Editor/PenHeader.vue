@@ -121,9 +121,16 @@
     isEditing.value = false
   };
 
+
   const segments = route.path.split('/');
   const section = segments[2];
   const viewMode = ref(section)
+
+  const emit = defineEmits(['run-preview'])
+
+  function runPreview() {
+    emit('run-preview')
+  }
 
   const handleChangeViewMode = (mode) => {
     viewMode.value = mode;
@@ -169,7 +176,7 @@
           </div>
         </button>
 
-        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
+        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
           <div class="h-7 flex items-center gap-1">
             <img :src="Run" alt="runBtn" class="w-4">
             <span>Run</span>
