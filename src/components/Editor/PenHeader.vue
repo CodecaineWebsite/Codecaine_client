@@ -82,8 +82,10 @@
   const selectedLayout = ref(layoutOptions[1]);
   const selectLayout = (layout) => {
     selectedLayout.value = layout
+    currentWork.value.view_mode = layout.id // 回寫 store
     layoutOptionVisible.value = false
-  };
+  }
+
 
   const titleInput = ref(null);
 

@@ -63,13 +63,15 @@
     { id: 'center', rotation: 0, display: 'flex-col'},
     { id: 'right', rotation: 90, display: 'flex-row-reverse'}
   ];
+  
+  const selectedLayout = ref(layoutOptions.find(
+    option => option.id === currentWork.value?.view_mode
+  ) || layoutOptions[1])
 
-
-  const selectedLayout = ref(layoutOptions[1]);
-  const selectLayout = (layout) => {
-    selectedLayout.value = layout
-    layoutOptionVisible.value = false
-  };
+  watch(() => currentWork.value?.view_mode, (newMode) => {
+    const match = layoutOptions.find(option => option.id === newMode)
+    if (match) selectedLayout.value = match
+  }, { immediate: true })
 
 
   // 拖拉改欄位大小 計算變更高度或寬度
