@@ -4,6 +4,8 @@ import { ref, computed, watch, watchEffect, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
+import ProjectsIcon from "@/components/icons/ProjectsIcon.vue";
+import CollectionIcon from "@/components/icons/CollectionIcon.vue";
 import LeftArrowIcon from "@/components/icons/LeftArrowIcon.vue";
 import RightArrowIcon from "@/components/icons/RightArrowIcon.vue";
 
@@ -18,6 +20,7 @@ const isLoading = ref(false);
 const inputKeyword = ref("");
 // 搜尋參數
 const searchKeyword = ref("");
+const itemsPerPage = 6;
 const currentPage = ref(1);
 
 const activeTab = computed(() => route.params.category || "pens");
@@ -86,7 +89,7 @@ const onSearchSubmit = () => {
 };
 
 // 計算總頁數
-const { totalPages } = res.data;
+const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage));
 
 // 有無搜尋結果
 const isContent = computed(() => searchResults.value.length > 0);
@@ -173,6 +176,26 @@ function updateRouteQuery() {
                 />
                 Pens
               </a>
+              <!-- <a
+                href="/search/projects?q="
+                class="px-3 py-1 rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
+              >
+                <ProjectsIcon
+                  class="fill-current w-3 mr-1.5"
+                  :class="{ 'text-[#FFDD40]': activeTab === 'projects' }"
+                />
+                Projects
+              </a>
+              <a
+                href="/search/collections?q="
+                class="px-3 py-1 rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
+              >
+                <CollectionIcon
+                  class="fill-current w-3 mr-1.5"
+                  :class="{ 'text-[#AE63E4]': activeTab === 'collections' }"
+                />
+                Collections
+              </a> -->
             </div>
           </div>
         </div>
