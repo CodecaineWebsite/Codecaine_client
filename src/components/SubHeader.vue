@@ -64,13 +64,13 @@
       <template v-if="!authStore.idToken">
         <button
           class="bg-green-500 text-black px-4 py-2 rounded-md hover:bg-green-400 font-semibold"
-          @click="signUp"
+          @click="goToPath('/signup')"
         >
           Sign Up
         </button>
         <button
           class="bg-gray-700 px-4 py-2 rounded-md hover:bg-gray-600 font-semibold"
-          @click="login"
+          @click="goToPath('/login')"
         >
           Log In
         </button>
@@ -121,7 +121,7 @@
 
               <li
                 class="flex items-center px-4 py-2 hover:bg-gray-700 cursor-pointer"
-                @click="settings"
+                @click="goToPath('/settings')"
               >
                 <i class="fas fa-cog mr-2 w-4 text-gray-400"></i>
                 <span>Settings</span>
@@ -184,15 +184,6 @@ const goToPath = (path) => {
   router.push(path);
 };
 
-const signUp = () => {
-  router.push("/signup");
-};
-const login = () => {
-  router.push("/login");
-};
-const settings = () => {
-  router.push("/settings");
-};
 const handleLogout = async () => {
   await signOut(auth);
   authStore.clearToken();
