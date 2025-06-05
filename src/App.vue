@@ -48,5 +48,7 @@ onIdTokenChanged(auth, async (firebaseUser) => {
 * {
 	background-color: #131417;
 	color: white;
+	background-color: #131417;
+	color: white;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
-	<div class="flex justify-center items-start min-h-screen bg-black py-24 px-4">
+	<div class="flex justify-center items-start min-h-screen bg py-24 px-4">
 		<div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
 			<!-- Google 登入 -->
 			<form class="mb-4">
 				<input type="hidden" name="authenticity_token" value="..." />
 				<button
 					type="button"
-					@click="signInWithGoogle"
+					@click="() => socialSignIn(new GoogleAuthProvider())"
 					class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200"
 				>
 					<img
@@ -14,6 +14,17 @@
 						alt="Google logo"
 					/>
 					<span>Sign Up with Google</span>
+				</button>
+				<button
+					type="button"
+					@click="() => socialSignIn(new GithubAuthProvider())"
+					class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200 mt-3"
+				>
+					<img
+						src="https://img.icons8.com/ios-glyphs/24/ffffff/github.png"
+						alt="GitHub logo"
+					/>
+					<span>Sign Up with GitHub</span>
 				</button>
 			</form>
 
@@ -50,6 +61,7 @@
 								type="email"
 								id="email"
 								required
+								autocomplete="email"
 								maxlength="20"
 								class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
 							/>
@@ -65,6 +77,7 @@
 								v-model="password"
 								id="password"
 								type="password"
+								autocomplete="new-password"
 								required
 								class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
 							/>
@@ -95,15 +108,18 @@
 <script setup>
 import { ref } from "vue";
 import { auth } from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "vue-router";
 //google登入的部分
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+	GithubAuthProvider,
+	GoogleAuthProvider,
+	signInWithPopup,
+	createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "../config/api"; // 假設有一個 api.js 檔案處理 API 請求
 
 const authStore = useAuthStore();
-const provider = new GoogleAuthProvider();
 const router = useRouter();
 
 const showEmailForm = ref(false);
@@ -112,7 +128,7 @@ const password = ref("");
 const error = ref("");
 const success = ref("");
 
-async function register() {
+const register = async () => {
 	error.value = "";
 	success.value = "";
 
@@ -143,25 +159,34 @@ async function register() {
 		}
 		alert(msg);
 	}
-}
+};
 
 // Google 登入函式
-async function signInWithGoogle() {
+const socialSignIn = async (provider) => {
 	try {
 		const result = await signInWithPopup(auth, provider);
 		const user = result.user;
 		const token = await user.getIdToken();
-		authStore.setToken(token); // 儲存 token 到 store
-		// 呼叫後端，送出 Firebase Token 做登入或註冊
+		authStore.setToken(token);
 		await api.get("/api/auth/me");
-
-		alert("Google 登入成功！");
-		router.push("/trending"); // 登入成功後導向你想的頁面
+		alert(
+			`${
+				provider.providerId.includes("google") ? "Google" : "GitHub"
+			} 登入成功！`
+		);
+		router.push("/trending");
 	} catch (error) {
-		console.error("Google 登入錯誤:", error);
-		alert("Google 登入失敗");
+		if (error.code === "auth/account-exists-with-different-credential") {
+			alert(
+				"This email is already registered with another sign-in method. Please use the original method to log in."
+			);
+		}
+		console.error(`${provider.providerId} 登入錯誤:`, error);
+		alert(
+			`${provider.providerId.includes("google") ? "Google" : "GitHub"} 登入失敗`
+		);
 	}
-}
+};
 
 // 顯示與動畫
 function beforeEnter(el) {
@@ -190,3 +215,9 @@ function leave(el, done) {
 	setTimeout(done, 300);
 }
 </script>
+
+<style scoped>
+.bg {
+	background-image: url("https://cpwebassets.codepen.io/assets/logos/codepen-logo-pattern-b477875ac66ffc21e4485a989358c220fac283caf17e602346a50d4250970254.png");
+}
+</style>

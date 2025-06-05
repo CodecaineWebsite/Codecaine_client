@@ -14,13 +14,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import SubHeader from "../components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "../components/MainSidebar.vue";
 
-const isSidebarOpen = ref(true); //預設值是true=打開
+const isSidebarOpen = ref(
+	localStorage.getItem("sidebarOpen") === "false" ? false : true
+);
+
 const layoutColumns = computed(() =>
 	isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
 );
@@ -29,6 +32,10 @@ function toggleSidebar() {
 	//切換true or false
 	isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+watch(isSidebarOpen, (val) => {
+	localStorage.setItem("sidebarOpen", val);
+});
 </script>
 
 <style scoped>
@@ -39,7 +46,8 @@ function toggleSidebar() {
 		"sidebar content"
 		"sidebar footer";
 	grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
-	/* height: 100vh; */
+	min-height: 100vh; /* 讓畫面高度至少是100vh */
+	overflow: hidden;
 }
 
 .sidebar {
@@ -53,9 +61,6 @@ function toggleSidebar() {
 .content {
 	grid-area: content;
 	overflow-y: auto;
-	min-height: calc(
-		100vh - 75px
-	); /* 75px -> .layout 裡寫死grid裡的第一行row的高度 Kaia把 header 上船之後請把這裡改掉*/
 }
 
 .footer {

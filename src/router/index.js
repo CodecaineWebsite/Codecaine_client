@@ -55,6 +55,9 @@ const router = createRouter({
 					path: "login",
 					name: "login",
 					component: () => import("../views/Login.vue"),
+					meta: {
+						requiresGuest: true,
+					},
 				},
 				{
 					path: "profile",
@@ -62,35 +65,35 @@ const router = createRouter({
 					children: [
 						{
 							path: "",
-							redirect: "/profile/cains",
+							redirect: "/profile/caines",
 						},
 						{
-							path: "cains",
-							name: "userscains",
-							component: () => import("../views/usersCains.vue"),
+							path: "caines",
+							name: "userscaines",
+							component: () => import("../views/usersCaines.vue"),
 							children: [
 								{
 									path: "",
-									redirect: "/profile/cains/showcase",
+									redirect: "/profile/caines/showcase",
 								},
 								{
 									path: "showcase",
-									name: "Cainsshowcase",
+									name: "cainesshowcase",
 									component: () => import("../views/Showcase.vue"),
 								},
 								{
 									path: "public",
-									name: "CainsPublic",
+									name: "cainesPublic",
 									component: () => import("../views/Public.vue"),
 								},
 								{
 									path: "private",
-									name: "Cainsprivate",
+									name: "cainesprivate",
 									component: () => import("../views/Private.vue"),
 								},
 								{
 									path: "loved",
-									name: "Cainsloved",
+									name: "cainesloved",
 									component: () => import("../views/Loved.vue"),
 								},
 							],
