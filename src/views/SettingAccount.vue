@@ -221,6 +221,10 @@ const handleChangeEmail = async () => {
 			emailMessageType.value = "error";
 			return;
 		}
+		//後端
+		const res = await api.put("/api/users/:id/email", {
+			email: email.value,
+		});
 		//前端
 		const credential = EmailAuthProvider.credential(
 			user.email,
@@ -230,10 +234,7 @@ const handleChangeEmail = async () => {
 		await updateEmail(user, email.value);
 		emailMessage.value = "Email updated successfully.";
 		emailMessageType.value = "success";
-		//後端
-		await api.post("/api/users/update-email", {
-			email: email.value,
-		});
+		console.log(res.data);
 	} catch (error) {
 		switch (error.code) {
 			case "auth/invalid-credential":
@@ -253,7 +254,17 @@ const handleChangeEmail = async () => {
 				emailMessage.value = "Current password is incorrect. Please try again.";
 				break;
 			default:
-				emailMessage.value = "Email update failed: " + error.message;
+				// 處理後端錯誤訊息
+				if (
+					error.response &&
+					error.response.data &&
+					error.response.data.error
+				) {
+					emailMessage.value =
+						"Email update failed: " + error.response.data.error;
+				} else {
+					emailMessage.value = "Email update failed: " + error.message;
+				}
 		}
 		emailMessageType.value = "error";
 	}
