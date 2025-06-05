@@ -4,8 +4,6 @@ import { ref, computed, watch, watchEffect, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
-import ProjectsIcon from "@/components/icons/ProjectsIcon.vue";
-import CollectionIcon from "@/components/icons/CollectionIcon.vue";
 import LeftArrowIcon from "@/components/icons/LeftArrowIcon.vue";
 import RightArrowIcon from "@/components/icons/RightArrowIcon.vue";
 
@@ -13,15 +11,17 @@ const route = useRoute();
 const router = useRouter();
 
 // 搜尋狀態管理
+const searchKeyword = ref("");
+const keyword = ref("");
 const searchResults = ref([]);
+const totalPages = ref(1);
+const currentPage = ref(1);
 const totalCount = ref(0);
 const isLoading = ref(false);
 
 const inputKeyword = ref("");
 // 搜尋參數
-const searchKeyword = ref("");
-const itemsPerPage = 6;
-const currentPage = ref(1);
+
 
 const activeTab = computed(() => route.params.category || "pens");
 
@@ -43,6 +43,7 @@ watch(
   async ([categoryParam, qRaw, page]) => {
     const category = categoryParam || "pens";
     const q = qRaw?.toString() || "";
+    const page = parseInt(pageRaw) || 1;
 
     inputKeyword.value = q;
     searchKeyword.value = q.toLowerCase();
@@ -64,7 +65,10 @@ watch(
       });
 
       console.log("送出搜尋", { category, q, page });
+
       searchResults.value = res.data.results || [];
+      totalPages.value = res.data.totalPages || 1;
+      currentPage.value = res.data.currentPage || 1;
       totalCount.value = res.data.total || 0;
     } catch (err) {
       console.error("搜尋失敗", err);
@@ -89,7 +93,7 @@ const onSearchSubmit = () => {
 };
 
 // 計算總頁數
-const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage));
+// const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage));
 
 // 有無搜尋結果
 const isContent = computed(() => searchResults.value.length > 0);
@@ -202,7 +206,10 @@ function updateRouteQuery() {
 
         <div class="SearchPage_content">
           <!-- 搜尋結果 -->
-          <div v-if="isContent" class="SearchPage_result_container">
+          <div
+            v-if="searchResults.length > 0"
+            class="SearchPage_result_container"
+          >
             <div
               class="SearchPage_result_grid grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
             >
