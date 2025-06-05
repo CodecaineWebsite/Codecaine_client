@@ -11,6 +11,7 @@
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
   import ConsolePreview from '../components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
+  import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
@@ -271,6 +272,7 @@
 
 <template>
   <div class="flex flex-col h-dvh">
+    <AnonLoginModal/>
     <PenHeader/>
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
