@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
+import { computed, ref, watch } from "vue";
 
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
@@ -32,45 +32,50 @@ import PenDetailModal from "@/components/PenDetailModal.vue";
 
 const modalStore = useModalStore()
 
-const isSidebarOpen = ref(true); //預設值是true=打開
+const isSidebarOpen = ref(
+	localStorage.getItem("sidebarOpen") === "false" ? false : true
+);
+
 const layoutColumns = computed(() =>
-  isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
+	isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
 );
 
 function toggleSidebar() {
-  //切換true or false
-  isSidebarOpen.value = !isSidebarOpen.value;
+	//切換true or false
+	isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+watch(isSidebarOpen, (val) => {
+	localStorage.setItem("sidebarOpen", val);
+});
 </script>
 
 <style scoped>
 .layout {
-  display: grid;
-  grid-template-areas:
-    "sidebar header"
-    "sidebar content"
-    "sidebar footer";
-  grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
-  /* height: 100vh; */
+	display: grid;
+	grid-template-areas:
+		"sidebar header"
+		"sidebar content"
+		"sidebar footer";
+	grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
+	min-height: 100vh; /* 讓畫面高度至少是100vh */
+	overflow: hidden;
 }
 
 .sidebar {
-  grid-area: sidebar;
+	grid-area: sidebar;
 }
 
 .header {
-  grid-area: header;
+	grid-area: header;
 }
 
 .content {
-  grid-area: content;
-  overflow-y: auto;
-  min-height: calc(
-    100vh - 75px
-  ); /* 75px -> .layout 裡寫死grid裡的第一行row的高度 Kaia把 header 上傳之後請把這裡改掉*/
+	grid-area: content;
+	overflow-y: auto;
 }
 
 .footer {
-  grid-area: footer;
+	grid-area: footer;
 }
 </style>

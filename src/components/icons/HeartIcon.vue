@@ -1,5 +1,3 @@
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318C5.11 5.526 6.223 5 7.5 5c1.54 0 3.04.81 3.75 2.09A4.992 4.992 0 0 1 15 5c1.277 0 2.39.526 3.182 1.318A4.492 4.492 0 0 1 21 9c0 2.485-1.79 4.548-4.5 6.364L12 21.35l-4.5-3.986C5.79 13.548 4 11.485 4 9c0-1.278.526-2.39 1.318-3.182z"/>
-  </svg>
+<svg viewBox="-2 0 105 92" xmlns="http://www.w3.org/2000/svg" class="LoveButtonIcon-module_root-3tVfn" data-love-level="0"><path d="M85.24 2.67C72.29-3.08 55.75 2.67 50 14.9 44.25 2 27-3.8 14.76 2.67 1.1 9.14-5.37 25 5.42 44.38 13.33 58 27 68.11 50 86.81 73.73 68.11 87.39 58 94.58 44.38c10.79-18.7 4.32-35.24-9.34-41.71Z"></path></svg>
 </template>
