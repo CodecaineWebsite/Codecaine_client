@@ -142,6 +142,12 @@ const router = createRouter({
 			name: "pen",
 			component: () => import("../views/Pen.vue"),
 		},
+		{
+      path: "/:username/details/:pen_id",
+      name: "pen-details",
+      component: () => import("../views/PenDetailPage.vue"),
+      meta: { canBeModal: true }
+    },
 	],
 });
 router.beforeEach((to, from, next) => {
