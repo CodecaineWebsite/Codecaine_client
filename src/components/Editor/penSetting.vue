@@ -39,14 +39,6 @@ const props = defineProps({
 const cdns = ref([...props.cdns])
 const links = ref([...props.links])
 
-
-// watch(() => props.cdns, (newVal) => {
-//   cdns.value = [...newVal]
-// })
-// watch(() => props.links, (newVal) => {
-//   links.value = [...newVal]
-// })
-
 watch(cdns, (newValue) => {
   emit('update:cdns', newValue)
 }, { deep: true, immediate: true })
