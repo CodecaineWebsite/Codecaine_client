@@ -182,7 +182,7 @@ import {
 	sendPasswordResetEmail,
 } from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
-import api from "../stores/api";
+import api from "../config/api";
 
 import GoogleIcon from "@/components/icons/GoogleIcon.vue";
 import GithubIcon from "@/components/icons/GithubIcon.vue";

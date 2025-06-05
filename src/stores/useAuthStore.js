@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
   const isAuthReady = ref(false);
-  const idToken = ref("");
+  const idToken = ref(null);
   const user = ref(null);
   function setToken(token) {
     idToken.value = token;
