@@ -1,24 +1,36 @@
 <template>
-	<div
-		class="layout transition-all duration-400 ease-in-out"
-		:style="{ gridTemplateColumns: layoutColumns }"
-	>
-		<MainSidebar class="sidebar" @toggle="toggleSidebar" />
-		<SubHeader class="header" />
-		<RouterView v-slot="{ Component }">
-			<component :is="Component" class="content" />
-		</RouterView>
-		<SubFooter class="footer" />
-	</div>
-	<!--routerview 內容一定要寫在div class="content"裡面!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
+  <div
+    class="layout transition-all duration-400 ease-in-out"
+    :style="{ gridTemplateColumns: layoutColumns }"
+  >
+    <MainSidebar class="sidebar" @toggle="toggleSidebar" />
+    <SubHeader class="header" />
+    <RouterView v-slot="{ Component }">
+      <component :is="Component" class="content" />
+    </RouterView>
+    <SubFooter class="footer" />
+
+    <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
+    <PenDetailModal
+      v-if="modalStore.showDetailModal"
+      :pen-id="modalStore.penId"
+      :from="modalStore.from"
+      @close="modalStore.closeModal"
+    />
+  </div>
+  <!--routerview 內容一定要寫在div class="content"裡面!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
 </template>
 
 <script setup>
+import { useModalStore } from "@/stores/useModalStore";
 import { computed, ref, watch } from "vue";
 
-import SubHeader from "../components/SubHeader.vue";
+import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
-import MainSidebar from "../components/MainSidebar.vue";
+import MainSidebar from "@/components/MainSidebar.vue";
+import PenDetailModal from "@/components/PenDetailModal.vue";
+
+const modalStore = useModalStore()
 
 const isSidebarOpen = ref(
 	localStorage.getItem("sidebarOpen") === "false" ? false : true
