@@ -232,7 +232,7 @@ const handleChangeEmail = async () => {
 		);
 		await reauthenticateWithCredential(user, credential);
 		await updateEmail(user, email.value);
-		emailMessage.value = "Email updated successfully.";
+		emailMessage.value = res.data.message;
 		emailMessageType.value = "success";
 		console.log(res.data);
 	} catch (error) {
