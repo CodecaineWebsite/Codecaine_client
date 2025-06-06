@@ -6,6 +6,7 @@ import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import LeftArrowIcon from "@/components/icons/LeftArrowIcon.vue";
 import RightArrowIcon from "@/components/icons/RightArrowIcon.vue";
+import PenCard from "@/components/penCard.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -21,7 +22,6 @@ const isLoading = ref(false);
 
 const inputKeyword = ref("");
 // 搜尋參數
-
 
 const activeTab = computed(() => route.params.category || "pens");
 
@@ -40,10 +40,11 @@ onMounted(() => {
 // 監聽網址變化發送 API 請求
 watch(
   () => [route.params.category, route.query.q, route.query.page],
-  async ([categoryParam, qRaw, page]) => {
+  async ([categoryParam, qRaw, pageRaw]) => {
     const category = categoryParam || "pens";
     const q = qRaw?.toString() || "";
     const page = parseInt(pageRaw) || 1;
+    const isPageRawInvalid = isNaN(parseInt(pageRaw, 10));
 
     inputKeyword.value = q;
     searchKeyword.value = q.toLowerCase();
@@ -68,8 +69,17 @@ watch(
 
       searchResults.value = res.data.results || [];
       totalPages.value = res.data.totalPages || 1;
-      currentPage.value = res.data.currentPage || 1;
       totalCount.value = res.data.total || 0;
+
+      if (isPageRawInvalid || res.data.currentPage !== page) {
+        router.replace({
+          path: `/search/${category}`,
+          query: {
+            q,
+            page: res.data.currentPage,
+          },
+        });
+      }
     } catch (err) {
       console.error("搜尋失敗", err);
       searchResults.value = [];
@@ -91,9 +101,6 @@ const onSearchSubmit = () => {
     query: { q: inputKeyword.value },
   });
 };
-
-// 計算總頁數
-// const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage));
 
 // 有無搜尋結果
 const isContent = computed(() => searchResults.value.length > 0);
@@ -180,26 +187,6 @@ function updateRouteQuery() {
                 />
                 Pens
               </a>
-              <!-- <a
-                href="/search/projects?q="
-                class="px-3 py-1 rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
-              >
-                <ProjectsIcon
-                  class="fill-current w-3 mr-1.5"
-                  :class="{ 'text-[#FFDD40]': activeTab === 'projects' }"
-                />
-                Projects
-              </a>
-              <a
-                href="/search/collections?q="
-                class="px-3 py-1 rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
-              >
-                <CollectionIcon
-                  class="fill-current w-3 mr-1.5"
-                  :class="{ 'text-[#AE63E4]': activeTab === 'collections' }"
-                />
-                Collections
-              </a> -->
             </div>
           </div>
         </div>
@@ -211,19 +198,25 @@ function updateRouteQuery() {
             class="SearchPage_result_container"
           >
             <div
-              class="SearchPage_result_grid grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
+              class="grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
             >
               <!-- 作品卡 -->
+              <PenCard />
               <div
                 v-for="card in searchResults"
                 :key="card.id"
                 class="card bg-cyan-500 aspect-[4/3]"
               >
+                <div>作品id：{{ card.id }}</div>
                 <div>作品標題：{{ card.title }}</div>
                 <div>作品描述：{{ card.description }}</div>
                 <div>作者： {{ card.username }}</div>
+                <div>收藏數： {{ card.favorites_count }}</div>
+                <div>留言數： {{ card.comments_count }}</div>
+                <div>瀏覽數： {{ card.views_count }}</div>
               </div>
             </div>
+            <!-- 翻頁按鈕 -->
             <nav class="flex justify-center align-center mt-20 mb-12 gap-3">
               <button
                 v-if="currentPage > 1"
