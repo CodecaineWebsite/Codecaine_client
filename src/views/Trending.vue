@@ -6,7 +6,7 @@
     <!-- 上排卡片輪播 -->
     <Swiper
       :modules="[Navigation]"
-      :slides-per-view="2"
+      :slides-per-view="3"
 	  :slides-per-group="2"
       :space-between="30"
       :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
@@ -20,7 +20,7 @@
     <!-- 下排卡片輪播 -->
     <Swiper
       :modules="[Navigation]"
-      :slides-per-view="2"
+      :slides-per-view="3"
 	  :slides-per-group="2"
       :space-between="30"
       :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
@@ -32,21 +32,47 @@
     </Swiper>
 
      <!-- 共用左右箭頭 -->
-<button
-      class="swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-20 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-black/30 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white z-10" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
+      <button
+  class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group"
+>
+  <!-- 箭頭按鈕 -->
+   <div
+    class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 
+           transition-colors flex items-center justify-center 
+           ring-0 group-hover:ring-2 group-hover:ring-white"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M15 19l-7-7 7-7" />
+    </svg>
+  </div>
 
-    <button
-      class="swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-20 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-l before:from-black/30 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white z-10" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
+  <!-- 遮罩 -->
+  <span
+    class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+  ></span>
+</button>
+
+
+<button
+  class="swiper-next absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group"
+>
+  <!-- 箭頭按鈕 -->
+   <div
+    class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 
+           transition-colors flex items-center justify-center 
+           ring-0 group-hover:ring-2 group-hover:ring-white"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
+  </div>
+
+  <!-- 遮罩 -->
+  <span
+    class="absolute inset-0 bg-gradient-to-l from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+  ></span>
+</button>
+
 
 
     <!-- 👥 Interesting People to Follow 區塊 -->
