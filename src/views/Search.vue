@@ -201,7 +201,7 @@ function updateRouteQuery() {
               class="grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
             >
               <!-- 作品卡 -->
-              <PenCard />
+              <!-- <PenCard v-for="card in searchResults" :key="card.id" /> -->
               <div
                 v-for="card in searchResults"
                 :key="card.id"
