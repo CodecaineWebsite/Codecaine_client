@@ -3,12 +3,7 @@
     <!-- 預覽 -->
     <div class="relativegroup">
       <!-- 圖片預覽 / iframe 預覽-->
-      <img
-        :src="imageUrl"
-        alt="Card Preview"
-        class="w-full aspect-video object-cover rounded-lg"
-      />
-
+      <iframe :src="previewIframeUrl" frameborder="0"></iframe>
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
       <a
         :href="detailPageLink"
@@ -179,14 +174,16 @@ const userProfileImage = props.userProfileImage;
 const isPro = props.isPro;
 // 作品預覽
 const previewImageUrl = props.imageUrl;
-const previewIframeUrl = `/${userName}/embed/${workId}`; // iframe 的 src 位址範例
+const previewIframeUrl = `http://localhost:5173/${userName}/full/${workId}?modal=onlyPreview`; // iframe 的 src 位址範例
+// const previewIframeUrl = 'http://localhost:5173/sssss/full/123123123123?mode=onlyPreview'; // 測試網址
+
 // 統計資料
 const likes = props.favorites_count ? props.favorites_count : 0;
 const comments = props.comments_count ? props.comments_count : 0;
 const views = props.views_count ? props.views_count : 0;
 
 // 連結
-const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
+const editorPageLink = `/${userName}/pen/123123123123?mode=onlyPreview`; //:username/pen/:id
 const userPageLink = `/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
 const detailPageLink = `/${userName}/details/${workId}`; //目前還沒設定，先參考官方route暫定 /:username/details/:id
 const fullPageLink = `/${userName}/full/${workId}`; // 設定了嗎
