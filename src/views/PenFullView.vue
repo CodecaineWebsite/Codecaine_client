@@ -10,9 +10,11 @@
   const route = useRoute();
   const workStore = useWorkStore();
   const isHeaderShow = ref(true)
+
   const viewModeType = computed(() => {
     return route.query.mode
   })
+  
   if(viewModeType.value === 'onlyPreview') {
     isHeaderShow.value = false
   }

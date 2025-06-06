@@ -116,20 +116,17 @@
     isEditing.value = false
   };
 
-
-  const segments = route.path.split('/');
-  const section = segments[2];
-  const viewMode = ref(section)
-
   const emit = defineEmits(['run-preview'])
 
   function runPreview() {
     emit('run-preview')
   }
+  const segments = route.path.split('/');
+  const section = segments[2];
+  const viewMode = ref(section)
 
   const handleChangeViewMode = (mode) => {
     viewMode.value = mode;
-    console.log(viewMode.value);
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
 </script>
@@ -163,6 +160,7 @@
             <img :src="Like" alt="likeBtn" class="w-4">
           </div>
         </button>
+
         <button v-if="viewMode === 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="handleChangeViewMode('pen')">
           <div class="h-7 flex">
             <span class="md:inline hidden">View Source Code</span>
