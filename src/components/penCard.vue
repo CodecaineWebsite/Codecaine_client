@@ -3,7 +3,7 @@
     <!-- 預覽 -->
     <div class="relativegroup">
       <!-- 圖片預覽 / iframe 預覽-->
-      <iframe :src="previewIframeUrl" frameborder="0"></iframe>
+      <iframe :src="previewIframeUrl" frameborder="0" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
       <a
         :href="detailPageLink"
