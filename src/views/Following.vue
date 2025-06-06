@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <<template>
   <section class="px-6 py-4 relative">
     <!-- Following 標題 -->
@@ -94,6 +95,15 @@
       </div>
     </div>
   </section>
+=======
+<template>
+	<div class="content">
+		<h1>Followers</h1>
+		<div>123</div>
+		lorem
+	</div>
+	<!--內容一定要寫在div class="content"裡面!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
+>>>>>>> 6308fa5ae93bce10793eda41ba4e96b8edc2c014
 </template>
 
 <script setup>

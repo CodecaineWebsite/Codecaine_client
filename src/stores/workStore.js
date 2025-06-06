@@ -9,7 +9,7 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     isAutoSave: true,
     isAutoPreview: true,
-    viewMode: "center",
+    view_mode: "center",
     createAt: new Date(),
     lastSavedTime: null,
     cdns: ['https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'], 
