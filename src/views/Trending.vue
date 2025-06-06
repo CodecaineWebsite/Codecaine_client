@@ -32,40 +32,22 @@
     </Swiper>
 
      <!-- 共用左右箭頭 -->
-      <button
-  class="swiper-prev absolute top-0 left-0 h-full w-[70px] z-[11] cursor-pointer appearance-none border-none bg-none flex items-center justify-start group transition-[opacity,transform] duration-500 ease-in-out"
->
-  <div
-    class="relative flex items-center justify-center w-20 h-20 ml-3 bg-[#2c2c2c] rounded z-10 transition-colors hover:bg-green-800"
-  >
-  <svg xmlns="http://www.w3.org/2000/svg"viewBox="0 0 24 24"width="24" height="24"fill="none"stroke="#fff"stroke-width="2"stroke-linecap="round"stroke-linejoin="round">
-  <polyline points="15 6 9 12 15 18" />
-</svg>
+<button
+      class="swiper-prev absolute top-1/2 left-2 -translate-y-1/2 z-20 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-black/30 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white z-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
 
+    <button
+      class="swiper-next absolute top-1/2 right-2 -translate-y-1/2 z-20 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-l before:from-black/30 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white z-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
 
-  </div>
-  <span
-    class="absolute top-0 left-0 bottom-0 w-[90px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-black/30 to-transparent"
-  ></span>
-</button>
-
-   <button
-  class="swiper-next absolute top-0 right-0 h-full w-[70px] z-[11] cursor-pointer appearance-none border-none bg-none flex items-center justify-end group transition-[opacity,transform] duration-500 ease-in-out"
->
-  <div
-    class="relative flex items-center justify-center w-20 h-20 mr-3 bg-[#2c2c2c] rounded z-10 transition-colors hover:bg-green-800"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <polyline points="9 6 15 12 9 18" />
-</svg>
-
-
-
-  </div>
-  <span
-    class="absolute top-0 left-0 bottom-0 w-[90px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-black/30 to-transparent"
-  ></span>
-</button>
 
     <!-- 👥 Interesting People to Follow 區塊 -->
     <div class="mt-16 max-w-[1200px] mx-auto">
