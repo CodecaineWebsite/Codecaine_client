@@ -10,11 +10,10 @@
   const route = useRoute();
   const workStore = useWorkStore();
   const isHeaderShow = ref(true)
-  console.log(route.query.modal);
-  const modalType = computed(() => {
-    return route.query.modal
+  const viewModeType = computed(() => {
+    return route.query.mode
   })
-  if(modalType.value === 'onlyPreview') {
+  if(viewModeType.value === 'onlyPreview') {
     isHeaderShow.value = false
   }
   const { handleCurrentIdChange }= workStore; //放function
