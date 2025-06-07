@@ -1,44 +1,52 @@
 <script setup>
-  import { ref, watch, onMounted } from 'vue';
-  import { useWorkStore } from '@/stores/workStore';
-  const workStore = useWorkStore();
-  const { currentWork, updatePreviewSrc }= workStore;
+import { ref, watch, onMounted, defineExpose } from 'vue'
 
-  // debounce
-  function debounce(func, wait = 1000) {
-    let timeout
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout)
-        func(...args)
-      }
-      clearTimeout(timeout)
-      timeout = setTimeout(later, wait)
+// 從 parent 傳入的 props
+const props = defineProps({
+  currentWork: Object,
+  updatePreviewSrc: Function
+})
+
+const previewFrame = ref(null)
+
+function debounce(fn, wait = 2000) {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => fn(...args), wait)
+  }
+}
+
+const updateIframe = debounce(() => {
+  if (!previewFrame.value) return
+  previewFrame.value.srcdoc = props.updatePreviewSrc()
+}, 2000)
+
+function runPreview() {
+  updateIframe()
+}
+defineExpose({ runPreview })
+
+onMounted(() => {
+  if (props.currentWork?.isAutoPreview) {
+    updateIframe()
+  }
+})
+
+watch(
+  () => [
+    props.currentWork?.html,
+    props.currentWork?.css,
+    props.currentWork?.javascript
+  ],
+  () => {
+    if (props.currentWork?.isAutoPreview) {
+      updateIframe()
     }
   }
-
-  const previewFrame = ref(null)
-
-  // 更新 iframe 內容（加防抖處理）
-  const updateIframe = debounce(() => {
-    if (!previewFrame.value) return
-    previewFrame.value.srcdoc = updatePreviewSrc()
-  }, 1000)
-
-  onMounted(() => {
-   updateIframe()
-  });
-
-  // 監聽是否啟用自動預覽
-  watch(
-    () => [currentWork.html, currentWork.css, currentWork.javascript],
-    () => {
-      if (currentWork.isAutoPreview) updateIframe()
-    }
-  )
-
+)
 </script>
+
 <template>
   <iframe ref="previewFrame" sandbox="allow-scripts" class="h-full w-full"></iframe>
 </template>
-
