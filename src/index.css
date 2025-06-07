@@ -4,6 +4,9 @@
   /* 字體 */
   --font-archivo: "Archivo Black", "sans-serif";
 
+  /* 字型大小 */
+  --text-15: 15px;
+
   /* 顏色樣式 */
   --color-cc-1: white;
   --color-cc-2: #f1f1f3;
