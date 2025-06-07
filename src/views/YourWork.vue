@@ -2,52 +2,36 @@
 	<div class="bg-gray-900 text-white min-h-screen flex flex-col relative">
 		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
 			<!-- Tabs Header -->
-			<div
-				class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]"
-			>
+			<div class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]">
 				<button
 					v-for="tab in tabs"
 					:key="tab"
 					@click="activeTab = tab"
 					:class="[
-						activeTab === tab
-							? 'text-white font-semibold'
-							: 'text-gray-400 hover:text-white',
+						activeTab === tab ? 'text-white font-semibold' : 'text-gray-400 hover:text-white'
 					]"
 				>
 					{{ tab }}
 				</button>
 
-        <div class="ml-auto">
-          <button
-            v-if="activeTab === 'Collections'"
-            class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
-          >
-            <CollectionIcon
-              class="fill-current w-3 h-3"
-              :class="{ 'text-white': activeTab === 'Collections', 'text-gray-400': activeTab !== 'Collections' }"
-            />
-            <span>New Collection</span> 
-          </button>
-          <button
-            v-else 
-            class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
-          >
-            <PensIcon 
-              class="fill-current w-4 h-4"
-              :class="{ 'text-white': activeTab === 'Pens' || activeTab === 'Deleted', 'text-gray-400': activeTab !== 'Pens' && activeTab !== 'Deleted' }"
-            />
-            <span>New Pen</span>
-          </button>
-        </div>
-      </div>
+				<!-- ✅ Always show New Pen in top right -->
+				<div class="ml-auto">
+					<button
+						class="bg-gray-700 px-3 py-1 text-sm hover:bg-gray-600 rounded-md flex items-center space-x-2"
+						@click="createPen"
+					>
+						<PensIcon
+							class="fill-current w-4 h-4"
+							:class="{ 'text-white': true }"
+						/>
+						<span>New Pen</span>
+					</button>
+				</div>
+			</div>
 
 			<!-- Search + Filter Bar -->
 			<div>
-				<div
-					v-if="activeTab === 'Deleted'"
-					class="border-t-2 border-danger mt-1 mb-4"
-				></div>
+				<div v-if="activeTab === 'Deleted'" class="border-t-2 border-danger mt-1 mb-4"></div>
 
 				<div
 					v-else
@@ -95,28 +79,6 @@
 										<option>Private</option>
 									</select>
 								</div>
-								<div class="mb-3">
-									<label class="block text-sm mb-1">Template</label>
-									<select
-										v-model="filters.template"
-										class="w-full px-2 py-1 bg-input text-white border border-default rounded-md"
-									>
-										<option>All</option>
-										<option>Template</option>
-										<option>Not Template</option>
-									</select>
-								</div>
-								<div>
-									<label class="block text-sm mb-1">Fork</label>
-									<select
-										v-model="filters.fork"
-										class="w-full px-2 py-1 bg-input text-white border border-default rounded-md"
-									>
-										<option>All</option>
-										<option>Forked</option>
-										<option>Not Forked</option>
-									</select>
-								</div>
 							</div>
 						</div>
 
@@ -133,15 +95,11 @@
 					<!-- Right Controls -->
 					<div class="flex items-center space-x-2">
 						<!-- View Mode Buttons -->
-						<div
-							class="inline-flex rounded-md overflow-hidden border border-default"
-						>
+						<div class="inline-flex rounded-md overflow-hidden border border-default">
 							<button
 								:class="[
 									'px-3 py-2',
-									viewMode === 'grid'
-										? 'bg-grid-active'
-										: 'bg-button bg-list-hover',
+									viewMode === 'grid' ? 'bg-grid-active' : 'bg-button bg-list-hover'
 								]"
 								@click="viewMode = 'grid'"
 							>
@@ -149,16 +107,14 @@
 									class="fill-current w-4 h-4"
 									:class="{
 										'text-white': viewMode === 'grid',
-										'text-gray-400': viewMode !== 'grid',
+										'text-gray-400': viewMode !== 'grid'
 									}"
 								/>
 							</button>
 							<button
 								:class="[
 									'px-3 py-2 border-l border-default',
-									viewMode === 'list'
-										? 'bg-grid-active'
-										: 'bg-button bg-list-hover',
+									viewMode === 'list' ? 'bg-grid-active' : 'bg-button bg-list-hover'
 								]"
 								@click="viewMode = 'list'"
 							>
@@ -166,7 +122,7 @@
 									class="fill-current w-4 h-4"
 									:class="{
 										'text-white': viewMode === 'list',
-										'text-gray-400': viewMode !== 'list',
+										'text-gray-400': viewMode !== 'list'
 									}"
 								/>
 							</button>
@@ -183,15 +139,11 @@
 						</select>
 
 						<!-- Sort Direction -->
-						<div
-							class="inline-flex rounded-md overflow-hidden border border-default"
-						>
+						<div class="inline-flex rounded-md overflow-hidden border border-default">
 							<button
 								:class="[
 									'px-3 py-2',
-									sortDirection === 'desc'
-										? 'bg-grid-active'
-										: 'bg-button bg-list-hover',
+									sortDirection === 'desc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
 								]"
 								@click="sortDirection = 'desc'"
 							>
@@ -199,16 +151,14 @@
 									class="fill-current w-4 h-4"
 									:class="{
 										'text-white': sortDirection === 'desc',
-										'text-gray-400': sortDirection !== 'desc',
+										'text-gray-400': sortDirection !== 'desc'
 									}"
 								/>
 							</button>
 							<button
 								:class="[
 									'px-3 py-2 border-l border-default',
-									sortDirection === 'asc'
-										? 'bg-grid-active'
-										: 'bg-button bg-list-hover',
+									sortDirection === 'asc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
 								]"
 								@click="sortDirection = 'asc'"
 							>
@@ -216,7 +166,7 @@
 									class="fill-current w-4 h-4"
 									:class="{
 										'text-white': sortDirection === 'asc',
-										'text-gray-400': sortDirection !== 'asc',
+										'text-gray-400': sortDirection !== 'asc'
 									}"
 								/>
 							</button>
@@ -240,9 +190,8 @@
 							— Southern Oracle, The Neverending Story
 						</p>
 					</div>
-					<div
-						class="w-64 bg-page text-white p-6 rounded-md flex flex-col items-start"
-					>
+
+					<div class="w-64 bg-page text-white p-6 rounded-md flex flex-col items-start">
 						<div class="flex items-center text-lg font-bold mb-2">
 							<span class="mr-2">🕒 3 Days</span>
 						</div>
@@ -281,18 +230,15 @@ import GridIcon from "@/components/icons/GridIcon.vue";
 import ListIcon from "@/components/icons/ListIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
-import CollectionIcon from "@/components/icons/CollectionIcon.vue";
 
 // Tabs
-const tabs = ["Pens", "Collections", "Deleted"];
+const tabs = ["Pens", "Deleted"];
 const activeTab = ref("Pens");
 
 // Filter state
 const showFilters = ref(false);
 const filters = ref({
-	privacy: "All",
-	template: "All",
-	fork: "All",
+	privacy: "All"
 });
 
 // View/sort state
@@ -314,8 +260,6 @@ const emptyStateMessage = computed(() => {
 	switch (activeTab.value) {
 		case "Pens":
 			return "No Pens.";
-		case "Collections":
-			return "No Collections.";
 		default:
 			return "Nothing here.";
 	}
