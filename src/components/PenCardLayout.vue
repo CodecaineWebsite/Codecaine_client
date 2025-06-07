@@ -6,6 +6,7 @@
     <penCard
       v-for = "card in pens"
       :pen = "card"
+      :key = "card.id"
     />
   </div>
 </template>

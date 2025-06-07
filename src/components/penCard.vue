@@ -4,7 +4,7 @@
     <div class="relativegroup">
       <!-- 圖片預覽 / iframe 預覽-->
       <img
-        :src="imageUrl"
+        :src="previewImageUrl"
         alt="Card Preview"
         class="w-full aspect-video object-cover rounded-lg"
       />
@@ -157,11 +157,11 @@ const title = props.pen.title || "Untitled";
 
 // 作者資訊
 const userName = props.pen.username;
-const userDisplayName = props.pen.userDisplayName;
-const userProfileImage = props.pen.userProfileImage;
+const userDisplayName = props.pen.user_display_name;
+const userProfileImage = props.pen.userProfileImage || "https://assets.codepen.io/t-1/user-default-avatar.jpg";
 const isPro = props.pen.isPro || false;
 // 作品預覽
-const previewImageUrl = props.pen.imageUrl;
+const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
 const previewIframeUrl = `/${userName}/embed/${workId}`; // iframe 的 src 位址範例
 // 統計資料
 const likes = props.pen.favorites_count;
