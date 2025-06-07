@@ -46,7 +46,7 @@
                 <span class="font-medium">{{ userDisplayName }}</span>
               </a>
               <a
-                v-if="!isPro"
+                v-if="isPro"
                 :href="proLink"
                 class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
               >
@@ -109,9 +109,9 @@
           </span>
           <span>{{ liked ? likes + 1 : likes }}</span>
         </button>
-
+        <!-- 改成開modal -->
         <button
-          @click="goToDetailPage"
+          @click="openCommentModal"
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
         >
           <ChatBubbleIcon class="w-4 fill-current" />
@@ -139,8 +139,11 @@ import CheckIcon from "@/components/icons/CheckIcon.vue";
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
+import { useModalStore } from "@/stores/useModalStore";
 
 const router = useRouter();
+const modalStore = useModalStore();
+
 // 1. 傳入 props
 const props = defineProps({
   // 作品資訊
@@ -187,7 +190,7 @@ const views = props.views_count ? props.views_count : 0;
 
 // 連結
 const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
-const userPageLink = `/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
+const userPageLink = `/profile/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
 const detailPageLink = `/${userName}/details/${workId}`; //目前還沒設定，先參考官方route暫定 /:username/details/:id
 const fullPageLink = `/${userName}/full/${workId}`; // 設定了嗎
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
@@ -198,12 +201,16 @@ const liked = ref(false);
 
 const goToDetailPage = () => {
   // router.push({ name: 'PenDetail', params: { username: userName, id: workId } });
-  wrouter.push(detailPageLink);
+  router.push(detailPageLink);
 };
 
 const goToFullPage = () => {
   // router.push({ name: 'PenFull', params: { username: userName, id: workId } });
-  wrouter.push(fullPageLink);
+  router.push(fullPageLink);
+};
+
+const openCommentModal = () => {
+  modalStore.openModal(props.id, "card");
 };
 
 /**
