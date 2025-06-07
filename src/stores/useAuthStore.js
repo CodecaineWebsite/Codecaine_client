@@ -5,6 +5,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthReady = ref(false);
   const idToken = ref(null);
   const user = ref(null);
+  const userProfile = ref(null);
   function setToken(token) {
     idToken.value = token;
     localStorage.setItem("idToken", token);
@@ -16,6 +17,9 @@ export const useAuthStore = defineStore("auth", () => {
   }
   function setUser(u) {
     user.value = u;
+  }
+  function setUserProfile(profile) {
+    userProfile.value = profile;
   }
   function setAuthReady(ready) {
     isAuthReady.value = ready;
@@ -36,10 +40,12 @@ export const useAuthStore = defineStore("auth", () => {
   return {
     idToken,
     user,
+    userProfile,
     setToken,
     clearToken,
     setUser,
     isAuthReady,
     setAuthReady,
+    setUserProfile,
   };
 });
