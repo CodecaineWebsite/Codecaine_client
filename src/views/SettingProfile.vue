@@ -88,6 +88,15 @@
             maxlength="50" />
         </div>
         <div class="flex flex-col gap-2">
+          <label class="text-white text-sm">Display Name</label>
+          <input
+            v-model="displayName"
+            placeholder="Optional"
+            type="text"
+            class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
+            maxlength="50" />
+        </div>
+        <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Location</label>
           <input
             v-model="location"
@@ -178,6 +187,7 @@ const fileInput = ref(null);
 const fileName = ref("");
 const profileLinks = ref(["", "", ""]);
 const userName = ref("");
+const displayName = ref("");
 const location = ref("");
 const bio = ref("");
 const message = ref(null);
@@ -226,6 +236,7 @@ const saveProfile = async (target = "profile") => {
     const userId = authStore.userProfile.id;
     const formData = new FormData();
     if (target === "profile") {
+      formData.append("display_name", displayName.value);
       formData.append("username", userName.value);
       formData.append("location", location.value);
       formData.append("bio", bio.value);
@@ -276,6 +287,7 @@ onMounted(() => {
     const {
       username,
       location: userLocation,
+      display_name: userDisplayName,
       bio: userBio,
       profile_link1,
       profile_link2,
@@ -284,6 +296,7 @@ onMounted(() => {
     } = authStore.userProfile;
     userName.value = username || "";
     location.value = userLocation || "";
+    displayName.value = userDisplayName || "";
     bio.value = userBio || "";
     profileLinks.value = [
       profile_link1 || "",
