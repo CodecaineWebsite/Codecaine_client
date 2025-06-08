@@ -89,10 +89,20 @@
             {{ bio.length }}/100 characters used.
           </div>
         </div>
+        <div
+          v-if="message && message.target === 'profile'"
+          class="px-4 py-2 rounded text-sm font-medium"
+          :class="
+            message.type === 'success'
+              ? 'bg-green-500 text-white'
+              : 'bg-red-500 text-white'
+          ">
+          {{ message.text }}
+        </div>
         <button
-          @click="saveProfile"
+          @click="saveProfile('profile')"
           class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
-          儲存個人資訊
+          Save Profile
         </button>
       </div>
     </section>
@@ -119,10 +129,20 @@
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="100" />
         </div>
+        <div
+          v-if="message && message.target === 'links'"
+          class="px-4 py-2 rounded text-sm font-medium"
+          :class="
+            message.type === 'success'
+              ? 'bg-green-500 text-white'
+              : 'bg-red-500 text-white'
+          ">
+          {{ message.text }}
+        </div>
         <button
-          @click="authToken"
+          @click="saveProfile('links')"
           class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
-          儲存連結
+          Save Links
         </button>
       </div>
     </section>
@@ -135,11 +155,6 @@ import api from "@/config/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const authStore = useAuthStore();
-const userId = authStore.user?.uid;
-const authToken = () => {
-  const result = authStore.userProfile;
-  console.log("User:", result);
-};
 
 const avatarUrl = ref("");
 const fileInput = ref(null);
@@ -148,6 +163,7 @@ const profileLinks = ref(["", "", ""]);
 const userName = ref("");
 const location = ref("");
 const bio = ref("");
+const message = ref(null);
 
 const onAvatarChange = (e) => {
   const file = e.target.files[0];
@@ -170,32 +186,73 @@ const clearFile = () => {
   if (fileInput.value) fileInput.value.value = "";
 };
 
-const saveProfile = async () => {
-  if (!userName.value.trim()) {
-    alert("請輸入使用者名稱（Username）");
+const saveProfile = async (target = "profile") => {
+  if (target === "profile" && !userName.value.trim()) {
+    message.value = {
+      type: "error",
+      text: "Username is required.",
+      target: "profile",
+    };
     return;
   }
   try {
-    const userId = authStore.user?.uid;
+    const userId = authStore.userProfile.id;
     const formData = new FormData();
-    formData.append("username", userName.value);
-    formData.append("location", location.value);
-    formData.append("bio", bio.value);
-    formData.append("profile_link1", profileLinks.value[0]);
-    formData.append("profile_link2", profileLinks.value[1]);
-    formData.append("profile_link3", profileLinks.value[2]);
-    if (fileInput.value && fileInput.value.files[0]) {
-      formData.append("profile_image", fileInput.value.files[0]);
+    if (target === "profile") {
+      formData.append("username", userName.value);
+      formData.append("location", location.value);
+      formData.append("bio", bio.value);
+      if (fileInput.value && fileInput.value.files[0]) {
+        formData.append("profile_image", fileInput.value.files[0]);
+      }
+    }
+    if (target === "links") {
+      formData.append("profile_link1", profileLinks.value[0]);
+      formData.append("profile_link2", profileLinks.value[1]);
+      formData.append("profile_link3", profileLinks.value[2]);
     }
     const res = await api.put(`/api/users/${userId}`, formData);
-    console.log("Profile updated:", res.data);
-    alert("儲存成功！");
+    message.value = {
+      text: res.data.message,
+      type: "success",
+      target,
+    };
     authStore.setUserProfile(res.data.user);
   } catch (err) {
-    alert("儲存失敗，請稍後再試。");
+    message.value = {
+      text:
+        target === "profile"
+          ? "Failed to save profile."
+          : "Failed to save links.",
+      type: "error",
+      target,
+    };
     console.error(err);
   }
 };
+
+onMounted(() => {
+  if (authStore.userProfile) {
+    const {
+      username,
+      location: userLocation,
+      bio: userBio,
+      profile_link1,
+      profile_link2,
+      profile_link3,
+      profile_image,
+    } = authStore.userProfile;
+    userName.value = username || "";
+    location.value = userLocation || "";
+    bio.value = userBio || "";
+    profileLinks.value = [
+      profile_link1 || "",
+      profile_link2 || "",
+      profile_link3 || "",
+    ];
+    avatarUrl.value = profile_image || "";
+  }
+});
 </script>
 
 <style scoped></style>
