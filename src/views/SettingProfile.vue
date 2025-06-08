@@ -90,7 +90,7 @@
           </div>
         </div>
         <button
-          @click="authToken"
+          @click="saveProfile"
           class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
           儲存個人資訊
         </button>
@@ -120,6 +120,7 @@
             maxlength="100" />
         </div>
         <button
+          @click="authToken"
           class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
           儲存連結
         </button>
@@ -129,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import api from "@/config/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -170,19 +171,30 @@ const clearFile = () => {
 };
 
 const saveProfile = async () => {
-  const userId = authStore.idToken;
-  const formData = new FormData();
-  formData.append("username", userName.value);
-  formData.append("location", location.value);
-  formData.append("bio", bio.value);
-  formData.append("profile_link1", profileLinks.value[0]);
-  formData.append("profile_link2", profileLinks.value[1]);
-  formData.append("profile_link3", profileLinks.value[2]);
-  // 如果有選擇新頭像
-  if (fileInput.value && fileInput.value.files[0]) {
-    formData.append("profile_image", fileInput.value.files[0]);
+  if (!userName.value.trim()) {
+    alert("請輸入使用者名稱（Username）");
+    return;
   }
-  await api.put(`/api/users/${userId}`, formData);
+  try {
+    const userId = authStore.user?.uid;
+    const formData = new FormData();
+    formData.append("username", userName.value);
+    formData.append("location", location.value);
+    formData.append("bio", bio.value);
+    formData.append("profile_link1", profileLinks.value[0]);
+    formData.append("profile_link2", profileLinks.value[1]);
+    formData.append("profile_link3", profileLinks.value[2]);
+    if (fileInput.value && fileInput.value.files[0]) {
+      formData.append("profile_image", fileInput.value.files[0]);
+    }
+    const res = await api.put(`/api/users/${userId}`, formData);
+    console.log("Profile updated:", res.data);
+    alert("儲存成功！");
+    authStore.setUserProfile(res.data.user);
+  } catch (err) {
+    alert("儲存失敗，請稍後再試。");
+    console.error(err);
+  }
 };
 </script>
 
