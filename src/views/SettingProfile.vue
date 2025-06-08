@@ -186,6 +186,16 @@ const clearFile = () => {
   if (fileInput.value) fileInput.value.value = "";
 };
 
+const isValidUrl = (url) => {
+  if (!url) return true;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const saveProfile = async (target = "profile") => {
   if (target === "profile" && !userName.value.trim()) {
     message.value = {
@@ -204,6 +214,19 @@ const saveProfile = async (target = "profile") => {
       formData.append("bio", bio.value);
       if (fileInput.value && fileInput.value.files[0]) {
         formData.append("profile_image", fileInput.value.files[0]);
+      }
+    }
+    if (target === "links") {
+      for (let i = 0; i < profileLinks.value.length; i++) {
+        const link = profileLinks.value[i];
+        if (link && !isValidUrl(link)) {
+          message.value = {
+            type: "error",
+            text: `Link #${i + 1} is not a valid URL.`,
+            target: "links",
+          };
+          return;
+        }
       }
     }
     if (target === "links") {
