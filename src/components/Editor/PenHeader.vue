@@ -19,7 +19,6 @@
   import Settings from '../../assets/settings.svg';
   import Layout from '../../assets/layout.svg';
   import { computed } from 'vue';
-  import router from '@/router';
 
   const route = useRoute();
   const router = useRouter();

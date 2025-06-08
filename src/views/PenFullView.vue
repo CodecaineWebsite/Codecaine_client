@@ -18,19 +18,16 @@
   if(viewModeType.value === 'onlyPreview') {
     isHeaderShow.value = false
   }
-  const { handleCurrentIdChange }= workStore; //放function
+  const { handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
-  const htmlCode = ref(currentWork.value.html);
-  const cssCode = ref(currentWork.value.css);
-  const javascriptCode = ref(currentWork.value.javascript);
-  const isAutoPreview = ref(currentWork.value.isAutoPreview);
+
 </script>
 <template>
   <div class="flex flex-col h-dvh">
     <PenHeader v-if="isHeaderShow"/>
     <div class="bg-cc-1 h-full">
-      <EditorPreview :html="htmlCode" :css="cssCode" :javascript="javascriptCode" :isAutoPreview="isAutoPreview"/>
+      <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork"/>
     </div>
   </div>
 </template>
