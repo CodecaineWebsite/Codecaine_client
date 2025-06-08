@@ -31,7 +31,6 @@ export const useAuthStore = defineStore("auth", () => {
     if (token) {
       idToken.value = token;
     }
-    isAuthReady.value = true;
   }
 
   // 呼叫初始化
