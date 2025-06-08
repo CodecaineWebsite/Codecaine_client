@@ -212,6 +212,8 @@ const saveProfile = async (target = "profile") => {
       formData.append("username", userName.value);
       formData.append("location", location.value);
       formData.append("bio", bio.value);
+    }
+    if (target == "avatar") {
       if (fileInput.value && fileInput.value.files[0]) {
         formData.append("profile_image", fileInput.value.files[0]);
       }
@@ -228,8 +230,6 @@ const saveProfile = async (target = "profile") => {
           return;
         }
       }
-    }
-    if (target === "links") {
       formData.append("profile_link1", profileLinks.value[0]);
       formData.append("profile_link2", profileLinks.value[1]);
       formData.append("profile_link3", profileLinks.value[2]);
