@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { onIdTokenChanged } from "firebase/auth";
-import { auth } from "../config/firebase"; //
 
 export const useAuthStore = defineStore("auth", () => {
-  const idToken = ref(localStorage.getItem("idToken") || "");
+  const isAuthReady = ref(false);
+  const idToken = ref(null);
   const user = ref(null);
   function setToken(token) {
     idToken.value = token;
@@ -15,6 +14,32 @@ export const useAuthStore = defineStore("auth", () => {
     idToken.value = "";
     localStorage.removeItem("idToken");
   }
+  function setUser(u) {
+    user.value = u;
+  }
+  function setAuthReady(ready) {
+    isAuthReady.value = ready;
+  }
 
-  return { idToken, user, setToken, clearToken };
+  // 初始化時讀取 localStorage
+  function initAuth() {
+    const token = localStorage.getItem("idToken");
+    if (token) {
+      idToken.value = token;
+    }
+    isAuthReady.value = true;
+  }
+
+  // 呼叫初始化
+  initAuth();
+
+  return {
+    idToken,
+    user,
+    setToken,
+    clearToken,
+    setUser,
+    isAuthReady,
+    setAuthReady,
+  };
 });

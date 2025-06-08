@@ -1,16 +1,18 @@
 <script setup>
-	import { ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
+	import { ref, onMounted, onUnmounted, watch } from 'vue';
   import Arrow from '../assets/arrow.vue';
   import Settings from '../assets/settings.vue';
   import Close from '../assets/close.vue';
   import HTMLIcon from '../assets/html.vue';
   import CSSIcon from '../assets/css.vue';
   import JSIcon from '../assets/js.vue';
+
   import EditorSmallButton from '../components/Editor/EditorSmallButton.vue';
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
   import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
+  import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
@@ -19,25 +21,21 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, handleCurrentIdChange  }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
-  const { html, css, javascript } = toRefs(currentWork.value)
   handleCurrentIdChange(route.params.id)
 
   const htmlCode = ref(currentWork.value.html);
   const cssCode = ref(currentWork.value.css);
   const javascriptCode = ref(currentWork.value.javascript);
   const isAutoPreview = ref(currentWork.value.isAutoPreview);
-
+  const cdns = ref(currentWork.value.cdns)
+  const links = ref(currentWork.value.links)
 	
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-
-
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
-
+  
   watch(cdns, (newCDNs) => {
     workStore.updateCDNs(newCDNs)
   }, { deep: true })
@@ -46,53 +44,9 @@
     workStore.updateLinks(newLinks)
   }, { deep: true })
 
-  const startConsoleDragging = () => {
-    isConsoleDragging.value = true
-    document.body.classList.add('select-none')
-  };
-
-  const stopConsoleDragging = () => {
-    if (isConsoleDragging.value) {
-      isConsoleDragging.value = false;
-      document.body.classList.remove('select-none');
-    }
-  };
-
-  const handleConsoleMouseMove = (e) => {
-    if (!isConsoleDragging.value || !previewContainer.value) return;
-
-    const containerHeight = previewContainer.value.clientHeight;
-    const rect = previewContainer.value.getBoundingClientRect();
-    const offsetY = e.clientY - rect.top;
-    const newHeight = containerHeight - offsetY;
-
-    const minHeight = 0;
-    const maxHeight = containerHeight;
-
-    if (newHeight >= minHeight && newHeight <= maxHeight) {
-      consoleHeight.value = newHeight;
-    } else if (newHeight < minHeight) {
-      consoleHeight.value = minHeight;
-    } else if (newHeight > maxHeight) {
-      consoleHeight.value = maxHeight;
-    }
-  };
-
-
-  onMounted(() => {
-    window.addEventListener('pointermove', handleConsoleMouseMove);
-    window.addEventListener('pointerup', stopConsoleDragging);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('pointermove', handleConsoleMouseMove);
-    window.removeEventListener('pointerup', stopConsoleDragging);
-  });
-
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)
-
 
   const handleConsoleClose = () => {
     isConsoleShow.value = false;
@@ -106,29 +60,27 @@
     isConsoleShow.value = !isConsoleShow.value
   };
 
-
   const layoutOptions = [
     { id: 'left', rotation: -90, display: 'flex-row'},
     { id: 'center', rotation: 0, display: 'flex-col'},
     { id: 'right', rotation: 90, display: 'flex-row-reverse'}
   ];
+  
+  const selectedLayout = ref(layoutOptions.find(
+    option => option.id === currentWork.value?.view_mode
+  ) || layoutOptions[1])
+
+  watch(() => currentWork.value?.view_mode, (newMode) => {
+    const match = layoutOptions.find(option => option.id === newMode)
+    if (match) selectedLayout.value = match
+  }, { immediate: true })
 
 
-  const selectedLayout = ref(layoutOptions[1]);
-  const selectLayout = (layout) => {
-    selectedLayout.value = layout
-    layoutOptionVisible.value = false
-  };
-
-
-  // 計算變更高度或寬度
+  // 拖拉改欄位大小 計算變更高度或寬度
   const isDraggingEditor = ref(false)
   const isDraggingConsole = ref(false)
   const isDraggingColumn = ref(false)
 
-  const editorWrapperSize = ref(300)
-
-  const sizes = ref([33.3, 33.3, 33.4])
   const currentColumnIndex = ref(null)
   const dragElement = ref(null)
   const mainRef = ref(null);
@@ -144,12 +96,15 @@
   }
 
   // Console 拖曳
-  function startConsoleDrag() {
+  function startConsoleDrag(e) {
+    e.preventDefault()
     isDraggingConsole.value = true
+    e.target.setPointerCapture?.(e.pointerId)
     enableNoSelect()
   }
-  function stopConsoleDrag() {
+  function stopConsoleDrag(e) {
     isDraggingConsole.value = false
+    e?.target?.releasePointerCapture?.(e.pointerId)
     disableNoSelect()
   }
   function handleConsoleDrag(e) {
@@ -164,16 +119,25 @@
     consoleHeight.value = Math.min(Math.max(newHeight, 0), containerHeight)
   }
 
-  // EditorWrapper拖曳
+  // Editor拖曳
+  const editorWrapperSize = ref(300)
   let startY = 0
   let initialHeight = 0
   const editorWrapperRef = ref(null)
   
   function startEditorDrag(e) {
+    e.preventDefault()
+    e.target.setPointerCapture?.(e.pointerId)
     isDraggingEditor.value = true
     startY = e.clientY
     initialHeight = editorWrapperSize.value
     enableNoSelect()
+  }
+
+  function stopEditorDrag(e) {
+    e?.target?.releasePointerCapture?.(e.pointerId)
+    isDraggingEditor.value = false
+    disableNoSelect()
   }
 
   function handleEditorDrag(e) {
@@ -209,24 +173,27 @@
     }
   }
 
-  function stopEditorDrag() {
-    isDraggingEditor.value = false
-    disableNoSelect()
-  }
+  const columnSizes = ref([33.3, 33.3, 33.4]);
+  const columnTitleRef = ref(null)
 
-  // EditorWrapper內 Editor比例拖曳
-  function startColumnDrag(index, el) {
+  function startColumnDrag(index, el, e) {
+    e.preventDefault()
+    e.target.setPointerCapture?.(e.pointerId)
     currentColumnIndex.value = index
     dragElement.value = el
     isDraggingColumn.value = true
     enableNoSelect()
   }
-  function stopColumnDrag() {
+  function stopColumnDrag(e) {
     isDraggingColumn.value = false
     currentColumnIndex.value = null
     dragElement.value = null
     disableNoSelect()
+    if (e?.target?.releasePointerCapture && e.pointerId != null) {
+      e.target.releasePointerCapture(e.pointerId)
+    }
   }
+
   function handleColumnDrag(e) {
     const index = currentColumnIndex.value
     const el = dragElement.value
@@ -235,22 +202,33 @@
     if (index === null || !el || !el.parentElement) return
 
     const parent = el.parentElement
-    const totalSize =
-      layoutId === 'center' ? parent.clientWidth : parent.clientHeight
+    const totalSize = layoutId === 'center' ? parent.clientWidth : parent.clientHeight
     const delta = layoutId === 'center' ? e.movementX : e.movementY
-    const a = sizes.value[index]
-    const b = sizes.value[index + 1]
+    const a = columnSizes.value[index]
+    const b = columnSizes.value[index + 1]
     const change = (delta / totalSize) * 100
 
-    const newA = a + change
-    const newB = b - change
+    let newA = a + change
+    let newB = b - change
 
-    if (newA >= 0 && newB >= MIN_SIZE) {
-      sizes.value[index] = newA
-      sizes.value[index + 1] = newB
+    if (layoutId !== 'center') {
+      // 僅在直向模式下限制最小高度
+      const titleHeight = columnTitleRef.value?.offsetHeight || 0
+      const minPercent = (titleHeight / totalSize) * 100
+
+      if (newA < minPercent) {
+        newA = minPercent
+        newB = a + b - minPercent
+      } else if (newB < minPercent) {
+        newB = minPercent
+        newA = a + b - minPercent
+      }
     }
+    columnSizes.value[index] = newA
+    columnSizes.value[index + 1] = newB
   }
 
+  // 如果有顯示console 且 顯示模式是center  maxEditorHeight保留(console拖曳欄高 + editor拖曳欄高)
   watch(isConsoleShow, (show) => {
     if (show && selectedLayout.value.id === 'center') {
       const mainHeight = mainRef.value?.getBoundingClientRect().height || window.innerHeight
@@ -272,10 +250,10 @@
     }
   }
 
-  function onPointerUp() {
-    stopConsoleDrag()
-    stopEditorDrag()
-    stopColumnDrag()
+  function onPointerUp(e) {
+    stopConsoleDrag(e)
+    stopEditorDrag(e)
+    stopColumnDrag(e)
   }
 
   onMounted(() => {
@@ -291,12 +269,18 @@
   const updateCode = (language, newCode) => {
     updateCurrentCode(language, newCode);
   }
+
+  const previewRef = ref(null)
+
+  const handleRunPreview = () => {
+    previewRef.value?.runPreview()
+  }
 </script>
 
 <template>
   <div class="flex flex-col h-dvh">
-    <PenHeader/>
-
+    <AnonLoginModal/>
+    <PenHeader @run-preview="handleRunPreview"/>
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
       <div
@@ -308,23 +292,26 @@
         :class="selectedLayout.id === 'center' ? 'flex-row' : 'flex-col'"
       >
         <div
-          class="resizer editor-resizer-border-color editor-bgc "
-          :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-4 border-y'"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+          :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
-        <div :style="{ flexBasis: sizes[0] + '%', minWidth: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <HTMLIcon class="w-[15px] h-[15px] text-[#FF3C41]"/>
+
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+              <HTMLIcon class="w-[15px] h-[15px] text-[#FF3C41]" alt="HTML"/>
               <div>
                 HTML
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Settings class="w-2.5 h-2.5"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Settings class="w-2.5 h-2.5" alt="setting button"/>
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Arrow class="w-2.5 h-2.5 fill-current"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Arrow class="w-2.5 h-2.5 text-white" alt="other button" />
               </EditorSmallButton>
             </div>
           </div>
@@ -332,26 +319,34 @@
         </div>
 
         <div
-          class="resizer editor-resizer-border-color editor-bgc"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(0, e.currentTarget)"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
+          @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: sizes[1] + '%', minWidth: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <CSSIcon class="w-[15px] h-[15px] text-[#0EBEFF]"/>
 
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc" 
+            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+            @pointerdown="(e) => {
+              if(selectedLayout.id !== 'center') {
+                startColumnDrag(0, editorWrapperRef, e)
+              }
+            }">
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+              <CSSIcon class="w-[15px] h-[15px] text-[#0EBEFF]" alt="CSS"/>
               <div>
                 CSS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Settings class="w-2.5 h-2.5"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Settings class="w-2.5 h-2.5" alt="setting button"/>
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Arrow class="w-2.5 h-2.5 fill-current"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Arrow class="w-2.5 h-2.5 fill-current" alt="other button"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -359,25 +354,34 @@
         </div>
 
         <div
-          class="resizer editor-resizer-border-color editor-bgc"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-4 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(1, e.currentTarget)"
+          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
+          @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
         ></div>
 
-        <div :style="{ flexBasis: sizes[2] + '%', minWidth: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
-            <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <JSIcon class="w-[15px] h-[15px] text-[#FCD000]"/>
+        <div :style="selectedLayout.id === 'center'
+          ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
+          : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
+          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
+            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+            @pointerdown="(e) => {
+              if(selectedLayout.id !== 'center') {
+                startColumnDrag(1, editorWrapperRef, e)
+              }
+            }"
+          >
+            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+              <JSIcon class="w-[15px] h-[15px] text-[#FCD000]" alt="JavaScript" />
               <div>
                 JS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Settings class="w-2.5 h-2.5"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Settings class="w-2.5 h-2.5" alt="setting button" />
               </EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <Arrow class="w-2.5 h-2.5 fill-current"/>
+              <EditorSmallButton class="hover:bg-cc-12">
+                <Arrow class="w-2.5 h-2.5 text-white" alt="other button"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -385,36 +389,47 @@
         </div>
 
       </div>
+
       <div
-        :class="selectedLayout.id === 'center' ? 'h-4 cursor-row-resize border-y': 'w-4 cursor-col-resize border-x'"
-        class="editor-bgc editor-resizer-border-color"
+      :class="[
+        'bg-cc-editor-column-bg',
+        'border-cc-editor-column-border',
+        'select-none', 
+        selectedLayout.id === 'center'
+          ? 'h-4 cursor-row-resize border-y'
+          : 'w-4 cursor-col-resize border-x'
+      ]"
         @pointerdown="startEditorDrag"
       ></div>
+
       <!-- preview -->
-      <div class="flex-1 overflow-hidden flex flex-col justify-between bg-white" ref="previewContainer">
+      <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
         <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
           <!-- Preview iframe -->
-          <EditorPreview :html="htmlCode" :css="cssCode" :javascript="javascriptCode" :isAutoPreview="isAutoPreview"/>
+          <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
         </div>
         <div v-show="isConsoleShow">
           <div
-            class="h-9 editor-bgc cursor-row-resize text-white flex justify-between items-center py-2 px-3"
+            class="h-9 bg-cc-editor-column-bg cursor-row-resize text-cc-1 flex justify-between items-center py-2 px-3"
             @pointerdown="startConsoleDrag"
           >
             <div>
-              <h2 class="text-base editor-block-title-color font-bold">
+              <h2 class="text-base text-cc-editor-column-title font-bold">
                 Console
               </h2>
             </div>
             <div class="flex gap-1">
-              <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClear">Clear</EditorSmallButton>
-              <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClose">
-                <Close class="w-2.5 h-2.5"/>
+
+              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
+                Clear
+              </EditorSmallButton>
+              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
+                <Close class="w-2.5 h-2.5" alt="close button"/>
               </EditorSmallButton>
             </div>
           </div>
           <div
-            class="h-16 editor-bgc flex flex-col justify-between"
+            class="h-16 bg-cc-editor-column-bg flex flex-col justify-between"
             :style="{ height: `${consoleHeight}px` }"
           >
             <ConsolePreview ref="consoleRef"/>
@@ -424,12 +439,12 @@
       </div>
     </main>
 
-    <footer class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-[#2C303A] text-white">
+    <footer class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-cc-14 text-white">
         <div class="flex items-center h-full">
-          <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="toggleConsole">Console</EditorSmallButton>
+          <EditorSmallButton class="hover:bg-cc-12" @buttonClick="toggleConsole">Console</EditorSmallButton>
         </div>
         <div class="flex items-center h-full">
-          <EditorSmallButton class="hover:bg-[#ff3c41]">Delete</EditorSmallButton>
+          <EditorSmallButton class="hover:bg-cc-red">Delete</EditorSmallButton>
         </div>
     </footer>
   </div>
