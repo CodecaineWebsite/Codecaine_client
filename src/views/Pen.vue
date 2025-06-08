@@ -1,15 +1,15 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, watch, toRefs } from 'vue';
   import Arrow from '../assets/arrow.vue';
-  import Settings from '../assets/settings.svg';
-  import Close from '../assets/close.svg';
-  import HTMLIcon from '../assets/html.svg';
-  import CSSIcon from '../assets/css.svg';
-  import JSIcon from '../assets/js.svg';
+  import Settings from '../assets/settings.vue';
+  import Close from '../assets/close.vue';
+  import HTMLIcon from '../assets/html.vue';
+  import CSSIcon from '../assets/css.vue';
+  import JSIcon from '../assets/js.vue';
   import EditorSmallButton from '../components/Editor/EditorSmallButton.vue';
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
-  import ConsolePreview from '../components/Editor/ConsolePreview.vue'
+  import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
 
   import { storeToRefs } from 'pinia'
@@ -314,14 +314,14 @@
         <div :style="{ flexBasis: sizes[0] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
+              <HTMLIcon class="w-[15px] h-[15px] text-[#FF3C41]"/>
               <div>
                 HTML
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5"/>
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
                 <Arrow class="w-2.5 h-2.5 fill-current"/>
@@ -340,14 +340,15 @@
         <div :style="{ flexBasis: sizes[1] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
+              <CSSIcon class="w-[15px] h-[15px] text-[#0EBEFF]"/>
+
               <div>
                 CSS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5"/>
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
                 <Arrow class="w-2.5 h-2.5 fill-current"/>
@@ -366,14 +367,14 @@
         <div :style="{ flexBasis: sizes[2] + '%', minWidth: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc">
             <h2 class="py-2 px-3 font-bold bg-[#1C1E22] text-[#ABAEBD] border-t-3 editor-resizer-border-color flex items-center gap-2">
-              <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
+              <JSIcon class="w-[15px] h-[15px] text-[#FCD000]"/>
               <div>
                 JS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="editorSmallButton-hover-bgc">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5"/>
               </EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc">
                 <Arrow class="w-2.5 h-2.5 fill-current"/>
@@ -408,7 +409,7 @@
             <div class="flex gap-1">
               <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClear">Clear</EditorSmallButton>
               <EditorSmallButton class="editorSmallButton-hover-bgc" @buttonClick="handleConsoleClose">
-                <img :src="Close" alt="close button" class="w-2.5 h-2.5">
+                <Close class="w-2.5 h-2.5"/>
               </EditorSmallButton>
             </div>
           </div>

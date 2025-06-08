@@ -8,13 +8,13 @@
   import PenSetting from './PenSetting.vue';
   
   import Icon from '../../assets/icon.svg';
-  import Edit from '../../assets/edit.svg';
-  import Like from '../../assets/like.svg';
-  import Run from '../../assets/run.svg';
-  import Cloud from '../../assets/cloud.svg';
+  import Edit from '../../assets/edit.vue';
+  import Like from '../../assets/like.vue';
+  import Run from '../../assets/run.vue';
+  import Cloud from '../../assets/cloud.vue';
   import Arrow from '@/assets/arrow.vue';
-  import Settings from '../../assets/settings.svg';
-  import Layout from '../../assets/layout.svg';
+  import Settings from '../../assets/settings.vue';
+  import Layout from '../../assets/layout.vue';
   import { computed } from 'vue';
 
   const route = useRoute();
@@ -114,7 +114,7 @@
             <span class="text-white font-black">{{ title.length? title : "Untitled" }}</span>
           </template>
           <button type="button" class="ml-1" @click="toggleEdit">
-            <img :src="Edit" alt="editBtn" class="w-[13px] h-[13px] hover:cursor-pointer" />
+            <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
           </button>
           <div>
             <a href="#" class="text-sm text-gray-400">{{ userName ? userName : "Captain Anonymous" }}</a>
@@ -125,20 +125,20 @@
       <div class="flex items-center gap-2 mr-3">
         <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
           <div class="h-7 flex">
-            <img :src="Like" alt="likeBtn" class="w-4">
+            <Like class="w-4 "/>
           </div>
         </button>
         <button v-if="!currentWork.isAutoPreview" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
           <div class="h-7 flex items-center gap-1">
-            <img :src="Run" alt="runBtn" class="w-4">
+            <Run class="w-4" />
             <span>Run</span>
           </div>
         </button>
         <div class="md:flex hidden">
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }">
-            <div class="h-7 flex items-center gap-1">
-              <img :src="Cloud" alt="saveBtn" class="w-4">
+            <div class="h-7 flex items-center gap-1 ">
+              <Cloud class="w-4 text-white" />
               <span>Save</span>
             </div>
           </button>
@@ -212,18 +212,18 @@
         </button>
         <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
           <button class="flex w-full px-2 py-1 hover:bg-gray-500">
-            <img :src="Cloud" alt="saveBtn" class="w-4">
+            <Cloud class="w-4 mx-1"/>
             <span>Save</span>
           </button>
           <button @click.prevent="toggleSetting" class="flex w-full px-2 py-1 hover:bg-gray-500">
-            <img :src="Settings" alt="settingBtn" class="w-4">
+            <Settings class="w-4 mx-1"/>
             <span>Settings</span>
           </button>
           <div class="w-full bg-gray-700 h-[1px] mb-4"></div>
         </div>
         <button @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex items-center gap-1">
-            <img :src="Settings" alt="settingBtn" class="w-4">
+            <Settings class="w-4"/>
             <span>Settings</span>
           </div>
         </button>
@@ -233,7 +233,7 @@
         <div class="relative md:flex hidden">
           <button type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
             <div class="h-7 flex items-center gap-1">
-              <img :src="Layout" alt="" class="w-[14px]" :style="{ transform: `rotate(${selectedLayout.rotation}deg)` }">
+              <Layout class="w-3.5" :style="{ transform: `rotate(${selectedLayout.rotation}deg)` }"/>
             </div>
           </button>
           <div v-if="layoutOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleLayout"></div>
@@ -247,7 +247,7 @@
                   v-for="option in layoutOptions" :key="option.id" class="border-2 border-[#444857] w-20 flex justify-center h-12 editorSmallButton-hover-bgc   hover:cursor-pointer" :class="{ 'rounded-l-sm': option.id === 'left', 'rounded-r-sm': option.id === 'right', 'bg-[#444857]': selectedLayout.id === option.id }"
                 >
                   <button @click="selectLayout(option) " class=" hover:cursor-pointer">
-                    <img :src="Layout" :style="{ transform: `rotate(${option.rotation}deg)` }" class="w-5 "  alt="">
+                    <Layout class="w-5" :style="{ transform: `rotate(${option.rotation}deg)` }"/>
                   </button>
                 </label>
               </div>
