@@ -1,79 +1,41 @@
 <template>
-  <section class="px-6 py-4 relative">
+  <section class="px-6 py-4 relative group">
     <!-- Trending 標題 -->
     <h2 class="text-orange-500 font-bold mb-4">Trending</h2>
 
-    <!-- 上排卡片輪播 -->
+    <!-- 卡片輪播 Swiper -->
     <Swiper
       :modules="[Navigation]"
-      :slides-per-view="3"
-	  :slides-per-group="2"
+      :slides-per-view="1"
       :space-between="30"
       :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
-      class="w-full"
+      class="w-full max-w-[1140px] mx-auto"
     >
-      <SwiperSlide v-for="i in 12" :key="'row1-' + i">
-        <PenCard />
+      <SwiperSlide v-for="(group, index) in chunkedCards" :key="'group-' + index">
+        <div class="grid grid-cols-2 gap-6">
+          <PenCard v-for="card in group" :key="card.id" :data="card" />
+        </div>
       </SwiperSlide>
     </Swiper>
 
-    <!-- 下排卡片輪播 -->
-    <Swiper
-      :modules="[Navigation]"
-      :slides-per-view="3"
-	  :slides-per-group="2"
-      :space-between="30"
-      :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
-      class="w-full mt-6"
-    >
-      <SwiperSlide v-for="i in 12" :key="'row2-' + i">
-        <PenCard />
-      </SwiperSlide>
-    </Swiper>
+    <!-- 左右箭頭 -->
+    <button class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group">
+      <div class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M15 19l-7-7 7-7" />
+        </svg>
+      </div>
+      <span class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
+    </button>
 
-     <!-- 共用左右箭頭 -->
-      <button
-  class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group"
->
-  <!-- 箭頭按鈕 -->
-   <div
-    class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 
-           transition-colors flex items-center justify-center 
-           ring-0 group-hover:ring-2 group-hover:ring-white"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M15 19l-7-7 7-7" />
-    </svg>
-  </div>
-
-  <!-- 遮罩 -->
-  <span
-    class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-  ></span>
-</button>
-
-
-<button
-  class="swiper-next absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group"
->
-  <!-- 箭頭按鈕 -->
-   <div
-    class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 
-           transition-colors flex items-center justify-center 
-           ring-0 group-hover:ring-2 group-hover:ring-white"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M9 5l7 7-7 7" />
-    </svg>
-  </div>
-
-  <!-- 遮罩 -->
-  <span
-    class="absolute inset-0 bg-gradient-to-l from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-  ></span>
-</button>
-
-
+    <button class="swiper-next absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group">
+      <div class="relative z-10 mr-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+      <span class="absolute inset-0 bg-gradient-to-l from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
+    </button>
 
     <!-- 👥 Interesting People to Follow 區塊 -->
     <div class="mt-16 max-w-[1200px] mx-auto">
@@ -116,13 +78,38 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import PenCard from '@/components/PenCard.vue'
 
-// Follow 資料清單
+const isTop = ref(false)
+
+const topPenCards = ref(Array.from({ length: 12 }, (_, i) => ({
+  id: `top-${i}`,
+  author: `TopUser ${i}`,
+  avatar: 'https://assets.codepen.io/1280209/internal/avatars/users/default.png',
+  image: 'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp'
+})))
+
+const recentCards = ref(Array.from({ length: 12 }, (_, i) => ({
+  id: `recent-${i}`,
+  author: `RecentUser ${i}`,
+  avatar: 'https://assets.codepen.io/1280209/internal/avatars/users/default.png',
+  image: 'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp'
+})))
+
+const chunkedCards = computed(() => {
+  const cards = isTop.value ? topPenCards.value : recentCards.value
+  const result = []
+  for (let i = 0; i < cards.length; i += 4) {
+    result.push(cards.slice(i, i + 4))
+  }
+  return result
+})
+
 const people = [
   {
     name: 'Natalia Davydova',
