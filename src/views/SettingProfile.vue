@@ -49,6 +49,23 @@
               >
             </div>
           </div>
+          <div
+            v-if="message && message.target === 'avatar'"
+            class="px-4 py-2 rounded text-sm font-medium"
+            :class="
+              message.type === 'success'
+                ? 'bg-green-500 text-white'
+                : 'bg-red-500 text-white'
+            ">
+            {{ message.text }}
+          </div>
+          <button
+            v-if="fileName"
+            @click="saveProfile('avatar')"
+            type="button"
+            class="rounded bg-[#05DF72] text-black px-4 py-2 font-bold hover:bg-[#04c862] transition self-end cursor-pointer mt-2">
+            儲存大頭貼
+          </button>
         </div>
       </div>
     </section>
@@ -263,7 +280,7 @@ onMounted(() => {
       profile_link1,
       profile_link2,
       profile_link3,
-      profile_image,
+      profile_image_url,
     } = authStore.userProfile;
     userName.value = username || "";
     location.value = userLocation || "";
@@ -273,7 +290,7 @@ onMounted(() => {
       profile_link2 || "",
       profile_link3 || "",
     ];
-    avatarUrl.value = profile_image || "";
+    avatarUrl.value = profile_image_url || "";
   }
 });
 </script>
