@@ -65,8 +65,6 @@ watch(
         },
       });
 
-      console.log("送出搜尋", { category, q, page });
-
       searchResults.value = res.data.results || [];
       totalPages.value = res.data.totalPages || 1;
       totalCount.value = res.data.total || 0;
@@ -92,7 +90,6 @@ watch(
 );
 
 const onSearchSubmit = () => {
-  console.log(inputKeyword.value);
   currentPage.value = 1;
   searchKeyword.value = inputKeyword.value.toLowerCase();
 
@@ -135,12 +132,12 @@ function updateRouteQuery() {
 }
 </script>
 <template>
-  <main class="bg-[#131417]">
-    <div class="w-full max-w-[75rem] mx-auto px-8 pt-6 relative text-white">
+  <main class="bg-cc-17">
+    <div class="w-full max-w-[75rem] mx-auto px-8 pt-6 relative text-cc-1">
       <div class="px-3 pb-6">
         <div class="mb-6">
           <div
-            class="flex flex-wrap items-stretch justify-between ps-2 pt-2.5 border-t-4 bg-[#1E1F26] border-t-[#0EBEFF]"
+            class="flex flex-wrap items-stretch justify-between ps-2 pt-2.5 border-t-4 bg-cc-16 border-t-cc-pens"
             :style="{
               borderTopColor: tabColors[activeTab],
             }"
@@ -148,7 +145,7 @@ function updateRouteQuery() {
             <div class="w-[300px] h-full mb-2">
               <form
                 action=""
-                class="bg-[#444857] focus-within:bg-[#5A5F73] rounded-md"
+                class="bg-cc-13 focus-within:bg-cc-gray-mid rounded-md"
                 @submit.prevent="onSearchSubmit"
               >
                 <label for="#" class="relative group">
@@ -172,14 +169,14 @@ function updateRouteQuery() {
               <!-- 靜態按鈕 -->
               <a
                 href="/your-work"
-                class="px-3 py-1 h-full rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
+                class="px-3 py-1 h-full rounded bg-cc-gray-mid text-white text-sm hover:bg-cc-gray-mid transition transform active:translate-y-0.5 flex items-center"
               >
                 <YourWorkIcon class="fill-current w-3 mr-1.5" />
                 Your Work
               </a>
               <a
                 href="/search/pens?q="
-                class="px-3 py-1 rounded bg-[#4F5465] text-white text-sm hover:bg-[#5A5F73] transition transform active:translate-y-0.5 flex items-center"
+                class="px-3 py-1 rounded bg-cc-gray-mid text-white text-sm hover:bg-cc-gray-mid transition transform active:translate-y-0.5 flex items-center"
               >
                 <PensIcon
                   class="fill-current w-3 mr-1.5"
@@ -205,7 +202,7 @@ function updateRouteQuery() {
               <div
                 v-for="card in searchResults"
                 :key="card.id"
-                class="card bg-cyan-500 aspect-[4/3]"
+                class="card bg-cc-pens aspect-[4/3]"
               >
                 <div>作品id：{{ card.id }}</div>
                 <div>作品標題：{{ card.title }}</div>
@@ -221,7 +218,7 @@ function updateRouteQuery() {
               <button
                 v-if="currentPage > 1"
                 @click="prevPage"
-                class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1"
+                class="px-4 py-3 bg-cc-13 hover:bg-cc-12 rounded-sm flex gap-1"
               >
                 <LeftArrowIcon class="fill-current w-2" />
                 Prev
@@ -229,7 +226,7 @@ function updateRouteQuery() {
               <button
                 v-if="currentPage < totalPages"
                 @click="nextPage"
-                class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1"
+                class="px-4 py-3 bg-cc-13 hover:bg-cc-12 rounded-sm flex gap-1"
               >
                 Next
                 <RightArrowIcon class="fill-current w-2" />
@@ -239,7 +236,7 @@ function updateRouteQuery() {
           <!-- 搜尋前提示 -->
           <div
             v-else-if="searchKeyword === ''"
-            class="max-w-xl p-8 mb-5 mx-auto bg-[#2C303A] text-center rounded"
+            class="max-w-xl p-8 mb-5 mx-auto bg-cc-14 text-center rounded"
           >
             <h1 class="mb-2 leading-[1.1] font-archivo text-4xl">Search</h1>
             <p>
@@ -249,7 +246,7 @@ function updateRouteQuery() {
           <!-- 搜尋結果為空的提示 -->
           <div
             v-else-if="isEmptySearchResult"
-            class="max-w-xl p-8 mb-5 mx-auto bg-[#2C303A] text-center rounded"
+            class="max-w-xl p-8 mb-5 mx-auto bg-cc-14 text-center rounded"
           >
             <h1 class="mb-2 leading-[1.1] font-archivo text-4xl">No Results</h1>
             <p>
@@ -266,8 +263,7 @@ function updateRouteQuery() {
 <style scoped></style>
 
 <!-- TODO: 準備載入中畫面 -->
-<!-- TODO: 測試搜尋結果超過 6 筆的狀況-->
-<!-- TODO: tailwind css refactor -->
+
 <!-- TODO: 把切換 tab 的方式與顯示結果頁面的方式改成 RouterLink 跟 RouterView -->
-<!-- TODO: 研究怎麼把分頁邏輯抽出 -->
+
 <!-- TODO: 導入作品卡 -->
