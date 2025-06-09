@@ -5,6 +5,8 @@
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
   
+  import PenIcon from '../icons/PenIcon.vue';
+
   import PenSetting from './PenSetting.vue';
   
   import Icon from '../../assets/icon.svg';
@@ -28,7 +30,6 @@
 	
 	const isLoggedIn = ref(false);
   const navListVisible = ref(false);
-
 
   const cdns = ref(currentWork.value.cdns)
   const links = ref(currentWork.value.links)
@@ -119,7 +120,14 @@
   function runPreview() {
     emit('run-preview')
   }
+  const segments = route.path.split('/');
+  const section = segments[2];
+  const viewMode = ref(section)
 
+  const handleChangeViewMode = (mode) => {
+    viewMode.value = mode;
+    router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
+  }
 </script>
 
 <template>
@@ -151,13 +159,21 @@
             <img :src="Like" alt="likeBtn" class="w-4">
           </div>
         </button>
-        <button v-if="!currentWork.isAutoPreview" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
+
+        <button v-if="viewMode === 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="handleChangeViewMode('pen')">
+          <div class="h-7 flex">
+            <span class="md:inline hidden">View Source Code</span>
+            <PenIcon class="w-4 block sm:hidden"/>
+          </div>
+        </button>
+
+        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
           <div class="h-7 flex items-center gap-1">
             <img :src="Run" alt="runBtn" class="w-4">
             <span>Run</span>
           </div>
         </button>
-        <div class="md:flex hidden">
+        <div class="md:flex hidden" v-if="viewMode !== 'full'">
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleSave">
             <div class="h-7 flex items-center gap-1">
@@ -165,7 +181,7 @@
               <span class="text-15">Save</span>
             </div>
           </button>
-          <div class="relative ">
+          <div class="relative">
             <div v-if="saveOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleSave"></div>
             <button v-if="isLoggedIn" @click.prevent="toggleSave" type="button"
               class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-5 editorSmallButton-hover-bgc  hover:cursor-pointer">
@@ -227,7 +243,7 @@
           </div>
         </div>
         <div v-if="navListVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleList"></div>
-        <button @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <button v-if="viewMode !== 'full'"  @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex justify-between w-6 items-center">
             <div class="transition-transform h-0.5 bg-gray-200 relative before:content-[''] before:w-1.5 before:h-0.5 before:bg-gray-200 before:absolute before:-top-1.5 before:left-0 after:content-[''] after:w-3.5 after:h-0.5 after:bg-gray-200 after:absolute after:-bottom-1.5 after:left-0" :class="navListVisible ? 'before:w-2 w-1.5' : 'before:w-1.5 w-2.5'"></div>
             <img :src="ArrowWhite" alt="arrowWhite" class=" transition-transform	w-3 self-start mt-1.5 " :class=" {'scale-y-[-1]':navListVisible}">
@@ -244,7 +260,7 @@
           </button>
           <div class="w-full bg-gray-700 h-[1px] mb-4"></div>
         </div>
-        <button @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex items-center gap-1">
             <img :src="Settings" alt="settingBtn" class="w-4">
             <span class="text-15">Settings</span>
@@ -253,8 +269,8 @@
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
         <penSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
 
-        <div class="relative md:flex hidden">
-          <button type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
+        <div class="relative md:flex hidden" >
+          <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
             <div class="h-7 flex items-center gap-1">
               <img :src="Layout" alt="" class="w-[14px]" :style="{ transform: `rotate(${selectedLayout.rotation}deg)` }">
             </div>
@@ -275,13 +291,34 @@
                 </label>
               </div>
             </div>
-            <ul class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65  justify-between ">
-              <div class="flex py-1 px-5 justify-between">
-                <a href="#" class="flex justify-between w-full" target="_blank">
-                  <div>Full Page View</div>
-                  <div>full/</div>
+            <ul
+              class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65 justify-between text-sm p-1"
+              v-if="userName"
+            >
+              <li
+                class="flex py-1 px-5 justify-between transition duration-300"
+                :class="viewMode === 'pen'
+                  ? 'bg-[#404654] text-cc-1'
+                  : 'text-[#AEB3BD] hover:bg-[#404654] hover:text-cc-1'"
+                @click.prevent="handleChangeViewMode('pen')"
+              >
+                <a href="#" class="flex justify-between w-full">
+                  <div>Editor View</div>
+                  <div>/pen/</div>
                 </a>
-              </div>
+              </li>
+              <li
+                class="flex py-1 px-5 justify-between transition duration-300"
+                :class="viewMode === 'full'
+                  ? 'bg-[#404654] text-cc-1'
+                  : 'text-[#AEB3BD] hover:bg-[#404654] hover:text-cc-1'"
+                @click.prevent="handleChangeViewMode('full')"
+              >
+                <a href="#" class="flex justify-between w-full">
+                  <div>Full Page View</div>
+                  <div>/full/</div>
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -299,7 +336,7 @@
         <div v-if="isLoggedIn" class="w-9 h-9 md:w-11 md:h-11 overflow-hidden mx-1 rounded hover:cursor-pointer">
           <img src="https://fakeimg.pl/300x200/500" class="w-full h-full object-cover" />
         </div>
-      </div>
+     </div>
     </nav>
 
 </template>
