@@ -24,3 +24,14 @@ export const getLoginErrorMessage = (code) => {
       return "Login failed. Please try again.";
   }
 };
+
+export const getResetErrorMessage = (code) => {
+  switch (code) {
+    case "auth/user-not-found":
+      return "No account found with this email.";
+    case "auth/invalid-email":
+      return "Invalid email format.";
+    default:
+      return "Failed to send reset email. Please try again.";
+  }
+};
