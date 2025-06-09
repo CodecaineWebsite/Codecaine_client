@@ -6,7 +6,6 @@
   import { useWorkStore } from '@/stores/workStore';
   
   import PenIcon from '../icons/PenIcon.vue';
-
   import PenSetting from './PenSetting.vue';
   
   import Icon from '../../assets/icon.svg';
@@ -19,40 +18,41 @@
   import Settings from '../../assets/settings.svg';
   import Layout from '../../assets/layout.svg';
   import { computed } from 'vue';
-
+  
   const route = useRoute();
   const router = useRouter();
   const workStore = useWorkStore()
   const { handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
-
-	
+  
+	const isAutoPreview = ref(true);
 	const isLoggedIn = ref(false);
   const navListVisible = ref(false);
+  // console.log(isAutoPreview);
 
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
-
-  watch(cdns, (newCDNs) => {
-    workStore.updateCDNs(newCDNs)
-  }, { deep: true })
-
-  watch(links, (newLinks) => {
-    workStore.updateLinks(newLinks)
+  watch( currentWork ,(newValue) => {
+    isAutoPreview.value = newValue.is_autopreview
+    
   }, { deep: true })
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
   const bookmarkVisible = ref(false);
-  const userName = ref(currentWork.value.user_name);
+  // 之後改成userTable中資料形式
+  const userName = ref(123);
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
-  const title = computed({
-    get: () => currentWork.value.title,
-    set: (val) => currentWork.value.title = val,
+  // const title = computed({
+  //   get: () => currentWork.value.title,
+  //   set: (val) => currentWork.value.title = val,
+  // })
+  const title = ref("")
+  watch(currentWork, (newWork) => {
+    if(newWork) {
+      title.value = newWork.title;
+    }
   })
-
   provide('title', title)
 
   const isLoginModalShow = ref(false)
@@ -167,7 +167,7 @@
           </div>
         </button>
 
-        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
+        <button v-if="!isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
           <div class="h-7 flex items-center gap-1">
             <img :src="Run" alt="runBtn" class="w-4">
             <span>Run</span>
@@ -267,7 +267,7 @@
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
-        <penSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
+        <penSetting v-if="settingOptionVisible" @close="toggleSetting" class="z-50" />
 
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">

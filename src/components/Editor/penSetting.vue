@@ -5,7 +5,6 @@ import { useWorkStore } from '@/stores/workStore';
 import { storeToRefs } from 'pinia'
 
 const title = inject('title')
-const emit = defineEmits(['close', 'update:cdns', 'update:links'])
 const tabs = [
   { label: 'HTML', key: 'html' },
   { label: 'CSS', key: 'css' },
@@ -19,32 +18,29 @@ const tabs = [
 ]
 const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
-const { toggleAutoSave, toggleAutoPreview } = workStore;
-console.log(currentWork.value.isAutoSave);
+const { updateCDNs, updateLinks } = workStore;
 const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
-const props = defineProps({
-  cdns: {
-    type: Array,
-    default: () => []
-  },
-  links: {
-    type: Array,
-    default: () => []  
-  },
+// const props = defineProps({
+//   cdns: {
+//     type: Array,
+//     default: () => []
+//   },
+//   links: {
+//     type: Array,
+//     default: () => []  
+//   },
+// });
+const cdns = ref(currentWork.value.resource_js)
+const links = ref(currentWork.value.resource_css)
 
-
-});
-const cdns = ref([...props.cdns])
-const links = ref([...props.links])
-
-watch(cdns, (newValue) => {
-  emit('update:cdns', newValue)
-}, { deep: true, immediate: true })
-watch(links, (newValue) => {
-  emit('update:links', newValue)
-}, { deep: true, immediate: true })
+// watch(cdns, (newValue) => {
+//   emit('update:cdns', newValue)
+// }, { deep: true, immediate: true })
+// watch(links, (newValue) => {
+//   emit('update:links', newValue)
+// }, { deep: true, immediate: true })
 
 const srcDoc = ref('')
 
@@ -59,10 +55,13 @@ const addCDN = () => {
     return;
   }
   cdns.value.push(url);
+  updateCDNs(url);
   cdnInput.value = '';
+  
 }
 const removeCDN = (index) => {
   cdns.value.splice(index, 1)
+  updateCDNs(url);
 }
 const addLink = () => {
   const url = linkInput.value.trim();
@@ -74,10 +73,12 @@ const addLink = () => {
     return;
   }
   links.value.push(url);
+  updateLinks(url);
   linkInput.value = '';
 }
 const removeLink = (index) => {
   links.value.splice(index, 1)
+  updateLinks(url);
 }
 
 </script>
@@ -313,13 +314,13 @@ const removeLink = (index) => {
               </div>
               <label class="py-2 hover:cursor-pointer">
                 <div class="relative inline-block w-13 h-7 ">
-                  <input type="checkbox" class="opacity-0 w-0 h-0 peer" v-model="currentWork.isAutoPreview"/>
+                  <input type="checkbox" class="opacity-0 w-0 h-0 peer" v-model="currentWork.is_autopreview"/>
                   <span
                     class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"
                     ></span>
                 </div>
               </label>
-              <span class="ml-2">{{ currentWork.isAutoPreview ? 'on' : 'off' }}</span>              
+              <span class="ml-2">{{ currentWork.is_autopreview ? 'on' : 'off' }}</span>              
             </div>
           </div>
         </div>

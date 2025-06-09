@@ -23,26 +23,31 @@
   const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
+  // console.log(currentWork.value);
+  
+  const htmlCode = ref("");
+  const cssCode = ref("");
+  const javascriptCode = ref("");
+  const isAutoPreview = ref(true);
 
-  const htmlCode = ref(currentWork.value.html);
-  const cssCode = ref(currentWork.value.css);
-  const javascriptCode = ref(currentWork.value.javascript);
-  const isAutoPreview = ref(currentWork.value.isAutoPreview);
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
 	
   const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
   
-  watch(cdns, (newCDNs) => {
-    workStore.updateCDNs(newCDNs)
-  }, { deep: true })
+  watch(currentWork, (newWork) => {
+    // console.log(newWork.html_code);
+    
+    if (newWork) {
+      htmlCode.value = newWork.html_code || '';
+      cssCode.value = newWork.css_code || '';
+      javascriptCode.value = newWork.js_code || '';
+      isAutoPreview.value = newWork.is_autopreview || true;
+      console.log(htmlCode.value);
+    }
+  }, { deep: true });
 
-  watch(links, (newLinks) => {
-    workStore.updateLinks(newLinks)
-  }, { deep: true })
-
+ 
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)

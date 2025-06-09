@@ -19,7 +19,7 @@
   const theme = ref('vs-dark');
 
   const code = ref(props.code)
-
+  
   const editorOptions = ref({
     automaticLayout: true,
     scrollbar: {

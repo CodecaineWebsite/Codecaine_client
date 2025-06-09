@@ -35,9 +35,9 @@ onMounted(() => {
 
 watch(
   () => [
-    props.currentWork?.html,
-    props.currentWork?.css,
-    props.currentWork?.javascript
+    props.currentWork?.html_code,
+    props.currentWork?.css_code,
+    props.currentWork?.js_code,
   ],
   () => {
     if (props.currentWork?.isAutoPreview) {
