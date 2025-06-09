@@ -10,3 +10,17 @@ export const getRegisterErrorMessage = (code) => {
       return "Registration failed. Please try again later.";
   }
 };
+
+export const getLoginErrorMessage = (code) => {
+  switch (code) {
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+      return "Incorrect email or password.";
+    case "auth/user-not-found":
+      return "Account not found.";
+    case "auth/invalid-email":
+      return "Invalid email format.";
+    default:
+      return "Login failed. Please try again.";
+  }
+};

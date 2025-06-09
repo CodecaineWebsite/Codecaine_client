@@ -107,11 +107,11 @@
 import { ref } from "vue";
 import { auth } from "../config/firebase";
 import { useRouter } from "vue-router";
-//google登入的部分
-import { registerWithEmail } from "@/utils/authCore";
+import { registerWithEmail, loginWithProvider } from "@/utils/authCore";
 import { getRegisterErrorMessage } from "@/utils/errorHandlers";
+import { syncUser } from "@/utils/user.js";
+import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { useAuthStore } from "../stores/useAuthStore";
-import api from "../config/api"; // 假設有一個 api.js 檔案處理 API 請求
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -142,26 +142,26 @@ const register = async () => {
 // Google 登入函式
 const socialSignIn = async (provider) => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    const token = await user.getIdToken();
+    const { token } = await loginWithProvider(auth, provider);
     authStore.setToken(token);
-    await api.get("/api/auth/me");
+    await syncUser();
     alert(
       `${
         provider.providerId.includes("google") ? "Google" : "GitHub"
-      } 登入成功！`
+      } sign in successful!`
     );
     router.push("/trending");
   } catch (error) {
     if (error.code === "auth/account-exists-with-different-credential") {
       alert(
-        "This email is already registered with another sign-in method. Please use the original method to log in."
+        "This email is already registered with another provider. Please use the original sign-in method."
       );
     }
-    console.error(`${provider.providerId} 登入錯誤:`, error);
+    console.error(error);
     alert(
-      `${provider.providerId.includes("google") ? "Google" : "GitHub"} 登入失敗`
+      `${
+        provider.providerId.includes("google") ? "Google" : "GitHub"
+      } sign in failed`
     );
   }
 };

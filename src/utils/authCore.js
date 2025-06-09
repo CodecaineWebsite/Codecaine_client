@@ -13,6 +13,13 @@ export const registerWithEmail = async (auth, email, password) => {
     password
   );
   const token = await userCredential.user.getIdToken();
-  await signOut(auth); // 註冊完立刻登出
+  await signOut(auth);
+  return { user: userCredential.user, token };
+};
+
+export const loginWithProvider = async (auth, provider) => {
+  const userCredential = await signInWithPopup(auth, provider);
+
+  const token = await userCredential.user.getIdToken();
   return { user: userCredential.user, token };
 };
