@@ -232,18 +232,9 @@ const socialSignIn = async (provider) => {
       } sign in successful!`
     );
     router.push("/trending");
-  } catch (error) {
-    if (error.code === "auth/account-exists-with-different-credential") {
-      alert(
-        "This email is already registered with another provider. Please use the original sign-in method."
-      );
-    }
-    console.error(error);
-    alert(
-      `${
-        provider.providerId.includes("google") ? "Google" : "GitHub"
-      } sign in failed`
-    );
+  } catch (e) {
+    alert(getSocialSignInErrorMessage(e.code, provider.providerId));
+    console.error(e);
   }
 };
 

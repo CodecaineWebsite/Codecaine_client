@@ -35,3 +35,14 @@ export const getResetErrorMessage = (code) => {
       return "Failed to send reset email. Please try again.";
   }
 };
+
+export const getSocialSignInErrorMessage = (code, providerId) => {
+  switch (code) {
+    case "auth/account-exists-with-different-credential":
+      return "This email is already registered with another provider. Please use the original sign-in method.";
+    default:
+      return `${
+        providerId && providerId.includes("google") ? "Google" : "GitHub"
+      } sign in failed`;
+  }
+};
