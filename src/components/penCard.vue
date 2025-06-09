@@ -3,11 +3,7 @@
     <!-- 預覽 -->
     <div class="relativegroup">
       <!-- 圖片預覽 / iframe 預覽-->
-      <img
-        :src="previewImageUrl"
-        alt="Card Preview"
-        class="w-full aspect-video object-cover rounded-lg"
-      />
+      <iframe :src="previewIframeUrl" width="100%" loading="lazy"></iframe>
 
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
       <button
@@ -162,7 +158,8 @@ const userProfileImage = props.pen.userProfileImage || "https://assets.codepen.i
 const isPro = props.pen.isPro || false;
 // 作品預覽
 const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
-const previewIframeUrl = `/${userName}/embed/${workId}`; // iframe 的 src 位址範例
+const previewIframeUrl = `${import.meta.env.URL_BASE}/${userName}/full/${workId}?mode=onlyPreview}`; // iframe 的 src 位址範例
+
 // 統計資料
 const likes = props.pen.favorites_count;
 const comments = props.pen.comments_count;
