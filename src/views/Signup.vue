@@ -108,13 +108,8 @@ import { ref } from "vue";
 import { auth } from "../config/firebase";
 import { useRouter } from "vue-router";
 //google登入的部分
-import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
-  createUserWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+import { registerWithEmail } from "@/utils/authCore";
+import { getRegisterErrorMessage } from "@/utils/errorHandlers";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "../config/api"; // 假設有一個 api.js 檔案處理 API 請求
 
@@ -132,32 +127,15 @@ const register = async () => {
   success.value = "";
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
+    await registerWithEmail(auth, email.value, password.value);
     success.value = "註冊成功！";
-    alert(success.value); //alert最後可以再調整美觀的樣式
-    await signOut(auth);
+    alert(success.value);
     router.push("/login");
-    return;
   } catch (e) {
-    let msg = "";
-    switch (e.code) {
-      case "auth/email-already-in-use":
-        msg = "這個 Email 已經被註冊了";
-        break;
-      case "auth/invalid-email":
-        msg = "Email 格式不正確";
-        break;
-      case "auth/password-does-not-meet-requirements":
-        msg = "密碼太弱，請使用至少 8 個字元";
-        break;
-      default:
-        msg = "註冊失敗：" + e.message;
-    }
+    const msg = getRegisterErrorMessage(e.code);
     alert(msg);
+    error.value = msg;
+    console.error("註冊失敗:", e);
   }
 };
 
