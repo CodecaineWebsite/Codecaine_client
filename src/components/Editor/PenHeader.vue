@@ -4,6 +4,8 @@
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
+  import { useAuthStore } from '@/stores/useAuthStore';
+  import UserMenu from '../UserMenu.vue';
   
   import PenIcon from '../icons/PenIcon.vue';
 
@@ -21,7 +23,8 @@
 
   const route = useRoute();
   const router = useRouter();
-  const workStore = useWorkStore()
+  const workStore = useWorkStore();
+  const authStore = useAuthStore();
   const { currentWork } = storeToRefs(workStore); //放資料
   const isAutoPreview = ref(true);
 
@@ -32,7 +35,7 @@
     }
   }, { deep: true });
 	
-	const isLoggedIn = ref(false);
+	const isLoggedIn = !!authStore.idToken;
   const navListVisible = ref(false);
   
   const saveOptionVisible = ref(false);
@@ -326,8 +329,8 @@
             <span>Log In</span>
           </div>
         </button>
-        <div v-if="isLoggedIn" class="w-9 h-9 md:w-11 md:h-11 overflow-hidden mx-1 rounded hover:cursor-pointer">
-          <img src="https://fakeimg.pl/300x200/500" class="w-full h-full object-cover" />
+        <div v-if="isLoggedIn" class="mx-1 rounded hover:cursor-pointer">
+          <UserMenu />
         </div>
      </div>
     </nav>

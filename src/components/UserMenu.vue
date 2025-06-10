@@ -44,11 +44,11 @@ console.log(authStore.userProfile)
 </script>
 
 <template>
-  <div class="relative" ref="menuRef">
+  <div class="relative w-9 h-9 md:w-11 md:h-11 " ref="menuRef">
     <img
       :src="authStore.userProfile?.profile_image_url || `https://assets.codepen.io/t-1/user-default-avatar.jpg`"
       alt="user avatar"
-      class="w-12 h-12 rounded-md cursor-pointer object-cover"
+      class="w-full h-full rounded cursor-pointer object-cover"
       @click="toggleMenu"
     />
     <div

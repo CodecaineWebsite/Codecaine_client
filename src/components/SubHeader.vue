@@ -4,12 +4,12 @@
   >
     <!-- 左側 Tabs -->
     <div class="flex items-center" v-if="authStore.idToken">
-      <div class="flex ml-2 space-x-px">
+      <div class="flex items-center ml-2 space-x-px">
         <button
           v-for="tab in tabs"
           :key="tab"
           @click="setActiveTab(tab)"
-          class="relative px-5 py-3 text-lg bg-cc-14 text-cc-1 hover:text-cc-1 focus:outline-none first:rounded-l-md last:rounded-r-md"
+          class=" relative h-9 md:h-11 px-5 text-smmd:text-base bg-cc-14 text-cc-1 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r whitespace-nowrap"
         >
           {{ tab }}
           <span
@@ -28,7 +28,7 @@
         authStore.idToken ? 'justify-center' : 'justify-start',
       ]"
     >
-      <div class="relative w-60">
+      <div class="relative max-w-60 h-9 md:h-11">
         <i
           class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-cc-10"
         ></i>
@@ -36,7 +36,7 @@
           <input
             type="text"
             placeholder="Search Codecaine..."
-            class="bg-cc-14 text-cc-1 pl-10 pr-4 py-2 rounded-md w-full placeholder-cc-10 focus:outline-none transition-all duration-300"
+            class="bg-cc-14 text-cc-1 pl-10 pr-4 py-2 rounded w-full h-9 md:h-11 placeholder-cc-10 focus:outline-none transition-all duration-300"
             v-model="searchKeyword"
             @focus="searchFocused = true"
             @blur="searchFocused = false"
@@ -74,13 +74,13 @@
       <!-- 未登入 -->
       <template v-if="!authStore.idToken">
         <button
-          class="bg-green-500 text-cc-20 px-4 py-2 rounded-md hover:bg-green-400 font-semibold"
+          class="bg-green-500 text-cc-20 px-4 py-2 rounded hover:bg-green-400 font-semibold"
           @click="goToPath('/signup')"
         >
           Sign Up
         </button>
         <button
-          class="bg-cc-13 px-4 py-2 rounded-md hover:bg-cc-12 font-semibold"
+          class="bg-cc-13 px-4 py-2 rounded hover:bg-cc-12 font-semibold"
           @click="goToPath('/login')"
         >
           Log In
@@ -99,8 +99,6 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/useAuthStore";
-import { signOut } from "firebase/auth";
-import { auth } from "../config/firebase";
 
 import UserMenu from "./UserMenu.vue";
 
@@ -112,7 +110,6 @@ const route = useRoute();
 const router = useRouter();
 
 const showMenu = ref(false);
-const menuRef = ref(null);
 const searchFocused = ref(false);
 const searchTab = ref("pens");
 const tabs = ["Your Work", "Following", "Trending"];
