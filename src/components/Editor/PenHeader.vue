@@ -7,7 +7,7 @@
   
   import PenIcon from '../icons/PenIcon.vue';
 
-  import PenSetting from './PenSetting.vue';
+  import PenSettingModal from './PenSettingModal.vue';
   
   import Icon from '../../assets/icon.svg';
   import Edit from '../../assets/edit.vue';
@@ -265,7 +265,7 @@
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
-        <penSetting v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
+        <PenSettingModal v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
 
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
