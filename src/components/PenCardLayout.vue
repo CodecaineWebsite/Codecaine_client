@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import PenCardRow from "./PenCardRow.vue";
-import penCard from "./penCard.vue";
+import penCard from "./PenCard.vue";
 
 const menuOpen = ref(false);
 const openedDropdownId = ref(null);
