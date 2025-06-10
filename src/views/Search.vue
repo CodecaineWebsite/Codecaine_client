@@ -6,7 +6,8 @@ import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import LeftArrowIcon from "@/components/icons/LeftArrowIcon.vue";
 import RightArrowIcon from "@/components/icons/RightArrowIcon.vue";
-import PenCard from "@/components/penCard.vue";
+import PenCardLayout from "@/components/PenCardLayout.vue";
+import PaginationNav from "@/components/PaginationNav.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -194,44 +195,14 @@ function updateRouteQuery() {
             v-if="searchResults.length > 0"
             class="SearchPage_result_container"
           >
-            <div
-              class="grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
-            >
-              <!-- 作品卡 -->
-              <!-- <PenCard v-for="card in searchResults" :key="card.id" /> -->
-              <div
-                v-for="card in searchResults"
-                :key="card.id"
-                class="card bg-cc-pens aspect-[4/3]"
-              >
-                <div>作品id：{{ card.id }}</div>
-                <div>作品標題：{{ card.title }}</div>
-                <div>作品描述：{{ card.description }}</div>
-                <div>作者： {{ card.username }}</div>
-                <div>收藏數： {{ card.favorites_count }}</div>
-                <div>留言數： {{ card.comments_count }}</div>
-                <div>瀏覽數： {{ card.views_count }}</div>
-              </div>
-            </div>
+            <PenCardLayout :pens="searchResults" :mode="grid" />
             <!-- 翻頁按鈕 -->
-            <nav class="flex justify-center align-center mt-20 mb-12 gap-3">
-              <button
-                v-if="currentPage > 1"
-                @click="prevPage"
-                class="px-4 py-3 bg-cc-13 hover:bg-cc-12 rounded-sm flex gap-1"
-              >
-                <LeftArrowIcon class="fill-current w-2" />
-                Prev
-              </button>
-              <button
-                v-if="currentPage < totalPages"
-                @click="nextPage"
-                class="px-4 py-3 bg-cc-13 hover:bg-cc-12 rounded-sm flex gap-1"
-              >
-                Next
-                <RightArrowIcon class="fill-current w-2" />
-              </button>
-            </nav>
+            <PaginationNav
+              :currentPage="currentPage"
+              :totalPages="totalPages"
+              @prev="prevPage"
+              @next="nextPage"
+            />
           </div>
           <!-- 搜尋前提示 -->
           <div
