@@ -1,8 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import api from '../config/api'
-import axios from 'axios'
-const URL = "http://localhost:3000"
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
     title: "",
@@ -179,7 +177,7 @@ export const useWorkStore = defineStore('work', () => {
 
   const fetchWorks = async () => {
     try {
-      const res = await axios.get(`${URL}/api/pens`);
+      const res = await api.get(`/api/pens`);
       works.value = res.data;
       
     } catch (err) {
