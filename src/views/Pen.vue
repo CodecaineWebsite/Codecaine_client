@@ -24,24 +24,25 @@
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
-  const htmlCode = ref(currentWork.value.html);
-  const cssCode = ref(currentWork.value.css);
-  const javascriptCode = ref(currentWork.value.javascript);
-  const isAutoPreview = ref(currentWork.value.isAutoPreview);
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
+  const htmlCode = ref('');
+  const cssCode = ref('');
+  const javascriptCode = ref('');
+  const cdns = ref([]);
+  const links = ref([]);
+
+  watch(currentWork, (newWork) => {
+    console.log(newWork);
+    if (newWork) {
+      htmlCode.value = newWork.html || '';
+      cssCode.value = newWork.css || '';
+      javascriptCode.value = newWork.javascript || '';
+      cdns.value = newWork.cdns || [];
+      links.value = newWork.links || [];
+    }
+  }, { deep: true });
 	
-  const isConsoleDragging = ref(false);
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-  
-  watch(cdns, (newCDNs) => {
-    workStore.updateCDNs(newCDNs)
-  }, { deep: true })
-
-  watch(links, (newLinks) => {
-    workStore.updateLinks(newLinks)
-  }, { deep: true })
 
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
@@ -279,7 +280,7 @@
 <template>
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
-    <PenHeader @run-preview="handleRunPreview"/>
+    <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" />
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
       <!-- editor -->
       <div
@@ -362,7 +363,7 @@
           <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
             :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
             @pointerdown="(e) => {
-              if(selectedLayout.id !== 'center') {
+              if(selectedLayout.id !== 'center') { 
                 startColumnDrag(1, editorWrapperRef, e)
               }
             }"

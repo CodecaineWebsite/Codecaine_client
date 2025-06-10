@@ -1,71 +1,52 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-
+import api from '../config/api'
+import axios from 'axios'
+const URL = "http://localhost:3000"
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
     title: "",
+    description: "",
     html: "",
     css: "",
     javascript: "",
-    isAutoSave: true,
-    isAutoPreview: true,
+    links:[],
+    cdns: [], 
     view_mode: "center",
-    createAt: new Date(),
-    lastSavedTime: null,
-    cdns: ['https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'], 
-    links: [], 
+    isAutosave: true,
+    isAutopreview: true,
+    is_private: false,
+    tags:[],
   }
   const currentId = ref('');
-  const works = ref([
-    {
-      id: "123123123123",
-      title: "這是測試檔案1",
-      html: "<h1>456</h1>",
-      css: "h1 {color: blue}",
-      javascript: "console.log(456)",
-      isAutoSave: true,
-      isAutoPreview: true,
-      viewMode: "center",
-      createAt: new Date(),
-      lastSavedTime: null,
-      user_id: "0098837589",
-      user_name: "sssss",
-      cdns: [], 
-      links: [], 
-    },
-    {
-      id: "12312398i06o83",
-      title: "這是測試檔案2",
-      html:"<h1>123</h1>",
-      css: "h1 {color: red}",
-      javascript:"console.log(123)",
-      isAutoSave: true,
-      isAutoPreview: true,
-      viewMode: "center",
-      createAt: new Date(),
-      lastSavedTime: null,
-      user_id: "0098837589",
-      user_name: "sssss",
-      cdns: [], 
-      links: [], 
-    }
-  ])
+  const works = ref([])
 
   const updateCDNs = (newCDNs) => {
-    currentWork.value.cdns = newCDNs
+    currentWork.value.resources_js = newCDNs
   }
-    const updateLinks = (newLinks) => {
-    currentWork.value.links = newLinks
+  const updateLinks = (newLinks) => {
+  currentWork.value.resources_css = newLinks
   }
 
 
-  const currentWork = ref(null)
+  const currentWork = ref(workTemplate)
 
   // 改變currentId function
-  const handleCurrentIdChange = (id) => {
+  const handleCurrentIdChange = async(id) => {
     if(id) {
       currentId.value = id
-      currentWork.value = works.value.find(work => work.id === id)
+      const data = await fetchWorkFromId(id)
+      currentWork.value = {
+        ...data,
+        html: data.html_code,
+        css: data.css_code,
+        javascript: data.js_code,
+        isAutoSave: data.is_autosave,
+        isAutoPreview: data.is_autopreview,
+        cdns: data.resources_js,
+        links: data.resources_css
+      }
+      
     } else {
       currentId.value = ""
       currentWork.value = workTemplate
@@ -75,9 +56,24 @@ export const useWorkStore = defineStore('work', () => {
   
   // 更新CurrentCode 
   // todo: 改v-model綁定
+  const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
-    currentWork.value[language] = newCode
-  }
+    if (!currentWork.value) return;
+
+    currentWork.value[language] = newCode;
+
+    if (currentWork.value.isAutoSave) {
+      // 清掉前一個 debounce
+      if (autoSaveTimeout.value) {
+        clearTimeout(autoSaveTimeout.value);
+      }
+
+      // 設定新的 debounce
+      // autoSaveTimeout.value = setTimeout(() => {
+      //   saveCurrentWork();
+      // }, 1000); // 自動儲存延遲 1 秒，可調整
+    }
+  };
 
   // 開關自動存檔狀態
   const toggleAutoSave = () => {
@@ -98,8 +94,7 @@ export const useWorkStore = defineStore('work', () => {
     const htmlCode = currentWork.value.html;
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"><\/script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}"><\/link>`).join('\n')
-  
-    return `
+    const previewData = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -179,10 +174,31 @@ export const useWorkStore = defineStore('work', () => {
     </body>
     </html>
     `;
+    return previewData
   };
 
+  const fetchWorks = async () => {
+    try {
+      const res = await axios.get(`${URL}/api/pens`);
+      works.value = res.data;
+      
+    } catch (err) {
+      console.error('取得作品失敗', err);
+    }
+  };
+
+  const fetchWorkFromId = async (id) => {
+    try {
+      const res = await api.get(`/api/pens/${id}`);
+      return res.data;
+      // currentWork.value = res.data;
+    } catch (err) {
+      console.error('取得作品失敗', err);
+    }
+  };
 
   return { 
+    works,
     currentWork,
     currentId,
     handleCurrentIdChange,
@@ -191,7 +207,13 @@ export const useWorkStore = defineStore('work', () => {
     toggleAutoPreview,
     updatePreviewSrc,
     updateCDNs,
-    updateLinks
+    updateLinks,
+
+    fetchWorks,
+    fetchWorkFromId,
+    // saveCurrentWork,
+    // deleteWork,
+    // createNewWork,
   }
 })
   
@@ -201,4 +223,55 @@ export const useWorkStore = defineStore('work', () => {
   // 儲存作品function
   // 執行作品function
   // 刪除作品function
+
+  // 更新作品Preview function
+
+
+
+
  
+
+  // const fetchWorkFromId = async (id) => {
+  //   try {
+  //     const res = await api.get(`/api/pens/${id}`);
+  //     return res.data;
+  //     // currentWork.value = res.data;
+  //   } catch (err) {
+  //     console.error('取得作品失敗', err);
+  //   }
+  // };
+
+  // const createNewWork = async (newWorkData) => {
+  //   try {
+  //     const res = await api.post('/api/pens', newWorkData);
+  //     works.value.push(res.data);
+  //     currentId.value = res.data.id;
+  //     currentWork.value = res.data;
+  //     console.log('作品建立成功');
+  //   } catch (err) {
+  //     console.error('作品建立失敗', err);
+  //   }
+  // };
+
+  // const saveCurrentWork = async () => {
+  //   try {
+  //     const res = await api.put(`/api/pens/${currentId.value}`, currentWork.value);
+  //     currentWork.value.lastSavedTime = new Date();
+  //     console.log('儲存成功');
+  //   } catch (err) {
+  //     console.error('儲存失敗', err);
+  //   }
+  // };
+
+  // const deleteWork = async (id) => {
+  //   try {
+  //     await api.delete(`/api/pens/${id}`);
+  //     works.value = works.value.filter(work => work.id !== id);
+  //     if (currentId.value === id) {
+  //       handleCurrentIdChange(null);
+  //     }
+  //     console.log('刪除成功');
+  //   } catch (err) {
+  //     console.error('刪除失敗', err);
+  //   }
+  // };
