@@ -48,7 +48,7 @@
           v-if="searchFocused"
           class="absolute left-0 mt-2 bg-cc-18 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 flex space-x-0.5 px-2 py-2"
         >
-          <button
+          <button v-if="authStore.idToken"
             @mousedown="selectSearchTab('your-work')"
             class="px-2.5 py-1.5 rounded bg-cc-14 text-cc-1 text-xs hover:bg-cc-13 transition transform active:translate-y-0.5 flex items-center"
           >
