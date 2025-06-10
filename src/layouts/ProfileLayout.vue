@@ -52,7 +52,7 @@
           <a :href="`/${route.params.username}/following`">following</a>
           <a :href="`/${route.params.username}/followers`">followers</a>
           <button
-            v-if="userInfo.username == authStore.userProfile.username"
+            v-if="userInfo.username !== authStore.userProfile.username"
             class="text-black text-xs bg-green-500 px-1 py-1 cursor-pointer hover:text-white hover:bg-green-800 rounded">
             + Follow
           </button>
