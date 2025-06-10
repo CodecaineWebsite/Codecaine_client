@@ -176,15 +176,18 @@
 import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { auth } from "../config/firebase";
+import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+  loginWithEmail,
+  loginWithProvider,
+  resetPassword,
+} from "@/utils/authCore";
+import { syncUser } from "@/utils/user";
+import {
+  getLoginErrorMessage,
+  getResetErrorMessage,
+} from "@/utils/errorHandlers";
 import { useAuthStore } from "../stores/useAuthStore";
-import api from "../config/api";
 
 import GoogleIcon from "@/components/icons/GoogleIcon.vue";
 import GithubIcon from "@/components/icons/GithubIcon.vue";
@@ -207,74 +210,31 @@ const resetSuccess = ref("");
 
 const login = async () => {
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-
-    const user = userCredential.user;
-    const token = await user.getIdToken(); // 拿到 JWT
+    const { token } = await loginWithEmail(auth, email.value, password.value);
     authStore.setToken(token);
-    console.log("登入成功，JWT:", token);
-    alert("登入成功！"); // alert最後可以再調整美觀的樣式
     await syncUser();
-    email.value = "";
-    password.value = "";
+    alert("登入成功！");
     router.push("/trending");
   } catch (e) {
-    if (
-      e.code === "auth/invalid-credential" ||
-      e.code === "auth/wrong-password"
-    ) {
-      error.value = "Incorrect email or password. Please try again.";
-    } else if (e.code === "auth/user-not-found") {
-      error.value = "Account not found. Please sign up or check your input.";
-    } else if (e.code === "auth/invalid-email") {
-      error.value = "Invalid email format. Please enter a valid email.";
-    } else {
-      error.value = `Login failed: ${e.message}`;
-    }
+    error.value = getLoginErrorMessage(e.code);
     console.error(e);
-  }
-};
-
-const syncUser = async () => {
-  try {
-    const res = await api.get(
-      "/api/auth/me" // 原為 POST http://localhost:3000/api/addusers , 改為 GET http://localhost:3000/api/auth/me
-    );
-
-    console.log("身份驗證成功：", res.data);
-    authStore.setUserProfile(res.data.user);
-  } catch (err) {
-    console.error("身份驗證失敗：", err.response?.data || err.message);
   }
 };
 
 const socialSignIn = async (provider) => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    const token = await user.getIdToken();
+    const { token } = await loginWithProvider(auth, provider);
     authStore.setToken(token);
-    await api.get("/api/auth/me");
+    await syncUser();
     alert(
       `${
         provider.providerId.includes("google") ? "Google" : "GitHub"
-      } 登入成功！`
+      } sign in successful!`
     );
     router.push("/trending");
-  } catch (error) {
-    if (error.code === "auth/account-exists-with-different-credential") {
-      alert(
-        "This email is already registered with another sign-in method. Please use the original method to log in."
-      );
-    }
-    console.error(`${provider.providerId} 登入錯誤:`, error);
-    alert(
-      `${provider.providerId.includes("google") ? "Google" : "GitHub"} 登入失敗`
-    );
+  } catch (e) {
+    alert(getSocialSignInErrorMessage(e.code, provider.providerId));
+    console.error(e);
   }
 };
 
@@ -286,17 +246,11 @@ const handleResetPassword = async () => {
     return;
   }
   try {
-    await sendPasswordResetEmail(auth, resetEmail.value);
-    resetSuccess.value = "Password reset email sent! Please check your inbox.";
+    await resetPassword(auth, resetEmail.value);
+    resetSuccess.value = "Password reset email sent!";
     resetEmail.value = "";
   } catch (e) {
-    if (e.code === "auth/user-not-found") {
-      resetError.value = "No account found with this email.";
-    } else if (e.code === "auth/invalid-email") {
-      resetError.value = "Invalid email format.";
-    } else {
-      resetError.value = "Failed to send reset email. Please try again.";
-    }
+    resetError.value = getResetErrorMessage(e.code);
   }
 };
 
