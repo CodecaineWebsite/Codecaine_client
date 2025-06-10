@@ -83,7 +83,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
-import PenCard from '@/components/penCard.vue'
+import PenCard from '@/components/PenCardTemp.vue'
 
 const isTop = ref(false)
 
