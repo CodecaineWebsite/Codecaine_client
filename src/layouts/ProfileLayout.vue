@@ -1,31 +1,62 @@
 <template>
-  <!--路徑的名字profile/caines/shwocase-->
-  <!--profile未來會帶入使用者的名字 類似:id/caines/shwocase -->
   <div>
-    <div class="pt-4">
+    <div
+      class="pt-4"
+      v-if="userInfo">
       <header class="profile-header">
-        <div class="pt-[110px] pb-[75px] text-center">這裡是名字</div>
+        <div class="pt-[110px] pb-[75px]">
+          <div class="text-center text-4xl pb-3">
+            {{ userInfo.display_name }}
+            {{ userInfo.is_pro ? " (Pro)" : "" }}
+          </div>
+          <div class="text-center pb-2 text-gray-400">
+            @{{ userInfo.username }}
+          </div>
+        </div>
       </header>
       <div
         class="min-h-14 bg-black relative flex items-center justify-between p-4">
-        <div class="grid grid-cols-3 gap-4">
-          <a href="">連結1</a><a href="">連結2</a><a href="">連結3</a>
+        <div class="grid grid-cols-3 gap-4 text-gray-400">
+          <a
+            class="hover:text-white"
+            v-if="userInfo.profile_link1"
+            :href="userInfo.profile_link1"
+            target="_blank"
+            >{{ userInfo.profile_link1.split("/")[2] }}</a
+          ><a
+            class="hover:text-white"
+            v-if="userInfo.profile_link2"
+            :href="userInfo.profile_link2"
+            target="_blank"
+            >{{ userInfo.profile_link2.split("/")[2] }}</a
+          ><a
+            class="hover:text-white"
+            v-if="userInfo.profile_link3"
+            :href="userInfo.profile_link3"
+            target="_blank"
+            >{{ userInfo.profile_link3.split("/")[2] }}</a
+          >
         </div>
         <div
           class="absolute left-1/2 -translate-x-1/2 bottom-0 w-[124px] h-[124px]">
           <img
-            src="#"
+            :src="userInfo.profile_image_url || '/default-avatar.png'"
             alt="大頭貼"
-            class="bg-white h-full w-full" />
+            class="bg-black h-full w-full border-gray-700 border-6" />
         </div>
         <div class="flex justify-center items-center gap-4">
           <a :href="`/${route.params.username}/following`">following</a>
           <a :href="`/${route.params.username}/followers`">followers</a>
+          <button
+            v-if="userInfo.username == authStore.userProfile.username"
+            class="text-black text-xs bg-green-500 px-1 py-1 cursor-pointer hover:text-white hover:bg-green-800 rounded">
+            + Follow
+          </button>
         </div>
       </div>
       <div class="text-center py-4">
-        <div>location</div>
-        <div class="mt-2">bio簡短介紹自己</div>
+        <div>{{ userInfo.location }}</div>
+        <div class="mt-2">{{ userInfo.bio }}</div>
       </div>
       <div class="mx-auto max-w-7xl">
         <div class="text-gray-400 border-b-6">
@@ -69,10 +100,16 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "../stores/useAuthStore";
+import api from "@/config/api";
 const router = useRouter();
 const route = useRoute();
+const userInfo = ref(null);
+const authStore = useAuthStore();
+
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -82,6 +119,35 @@ const Following = () => {
 const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
+
+onMounted(async () => {
+  const res = await api.get(`/api/users/${route.params.username}`);
+  if (res) {
+    console.log(res.data);
+    const {
+      display_name,
+      username,
+      bio,
+      is_pro,
+      location,
+      profile_image_url,
+      profile_link1,
+      profile_link2,
+      profile_link3,
+    } = res.data;
+    userInfo.value = {
+      display_name,
+      username,
+      bio,
+      is_pro,
+      location,
+      profile_image_url,
+      profile_link1,
+      profile_link2,
+      profile_link3,
+    };
+  }
+});
 </script>
 
 <style scoped>
