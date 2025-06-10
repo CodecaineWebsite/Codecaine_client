@@ -89,60 +89,7 @@
 
       <!-- 已登入 -->
       <template v-if="authStore.idToken">
-        <div class="relative" ref="menuRef">
-          <img
-            src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
-            alt="user avatar"
-            class="w-12 h-12 rounded-md cursor-pointer object-cover"
-            @click="toggleMenu"
-          />
-          <div
-            v-if="showMenu"
-            class="absolute right-0 mt-2 w-56 bg-cc-17 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 overflow-hidden"
-          >
-            <ul class="flex flex-col text-sm">
-              <li>
-                <button
-                  class="px-4 py-2 text-left hover:bg-cc-13 w-full"
-                  @click="goToPath('/your-work')"
-                >
-                  Your Work
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-4 py-2 text-left hover:bg-cc-13 w-full"
-                  @click="goToPath(`/user/${authStore.userId || 'me'}`)"
-                >
-                  Profile
-                </button>
-              </li>
-              <hr class="border-cc-13 my-1 mx-4" />
-              <li
-                class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
-                @click="goToPath('/pen')"
-              >
-                <i class="fas fa-pen mr-2 w-4 text-cc-10"></i>
-                <span>New Caine</span>
-              </li>
-              <hr class="border-cc-13 my-1 mx-4" />
-              <li
-                class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
-                @click="goToPath('/settings')"
-              >
-                <i class="fas fa-cog mr-2 w-4 text-cc-10"></i>
-                <span>Settings</span>
-              </li>
-              <li
-                class="flex items-center px-4 py-2 hover:bg-cc-red-dark text-cc-red cursor-pointer"
-                @click="handleLogout"
-              >
-                <i class="fas fa-sign-out-alt mr-2 w-4"></i>
-                <span>Log Out</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <UserMenu />
       </template>
     </div>
   </header>
@@ -155,10 +102,10 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
 
+import UserMenu from "./UserMenu.vue";
+
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
-import ProjectsIcon from "@/components/icons/ProjectsIcon.vue";
-import CollectionsIcon from "@/components/icons/CollectionIcon.vue";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -180,10 +127,6 @@ const handleSearchSubmit = () => {
     path: "/search/pens",
     query: { q: trimmed },
   });
-};
-
-const toggleMenu = () => {
-  showMenu.value = !showMenu.value;
 };
 
 // 支援物件與字串導向
@@ -213,31 +156,10 @@ const setActiveTab = (tab) => {
 // 搜尋選項點擊
 const selectSearchTab = (tab) => {
   searchTab.value = tab;
-  console.log("search tab 被點了: Tab 是 ", tab);
   if (tab === "your-work") goToPath("/your-work");
   else if (tab === "pens") goToPath({ path: "/search/pens", query: { q: "" } });
   else if (tab === "collections")
     goToPath({ path: "/search/collections", query: { q: "" } });
 };
 
-// 登出
-const handleLogout = async () => {
-  await signOut(auth);
-  authStore.clearToken();
-  goToPath("/");
-};
-
-// 點擊外部時關閉使用者選單
-const handleClickOutside = (event) => {
-  if (menuRef.value && !menuRef.value.contains(event.target)) {
-    showMenu.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 </script>
