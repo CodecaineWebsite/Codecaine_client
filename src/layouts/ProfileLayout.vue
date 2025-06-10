@@ -7,7 +7,11 @@
         <div class="pt-[110px] pb-[75px]">
           <div class="text-center text-4xl pb-3">
             {{ userInfo.display_name }}
-            {{ userInfo.is_pro ? " (Pro)" : "" }}
+            <span
+              v-if="userInfo.is_pro"
+              class="bg-yellow-300 text-black text-xl font-bold px-1 py-[1px] rounded"
+              >PRO</span
+            >
           </div>
           <div class="text-center pb-2 text-gray-400">
             @{{ userInfo.username }}
@@ -16,7 +20,7 @@
       </header>
       <div
         class="min-h-14 bg-black relative flex items-center justify-between p-4">
-        <div class="grid grid-cols-3 gap-4 text-gray-400">
+        <div class="flex gap-4 text-gray-400">
           <a
             class="hover:text-white"
             v-if="userInfo.profile_link1"
@@ -100,7 +104,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -120,34 +124,46 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
-onMounted(async () => {
-  const res = await api.get(`/api/users/${route.params.username}`);
-  if (res) {
-    console.log(res.data);
-    const {
-      display_name,
-      username,
-      bio,
-      is_pro,
-      location,
-      profile_image_url,
-      profile_link1,
-      profile_link2,
-      profile_link3,
-    } = res.data;
-    userInfo.value = {
-      display_name,
-      username,
-      bio,
-      is_pro,
-      location,
-      profile_image_url,
-      profile_link1,
-      profile_link2,
-      profile_link3,
-    };
+const fetchUserInfo = async () => {
+  try {
+    const res = await api.get(`/api/users/${route.params.username}`);
+    if (res) {
+      const {
+        display_name,
+        username,
+        bio,
+        is_pro,
+        location,
+        profile_image_url,
+        profile_link1,
+        profile_link2,
+        profile_link3,
+      } = res.data;
+      userInfo.value = {
+        display_name,
+        username,
+        bio,
+        is_pro,
+        location,
+        profile_image_url,
+        profile_link1,
+        profile_link2,
+        profile_link3,
+      };
+    }
+  } catch (e) {
+    userInfo.value = null;
   }
-});
+};
+
+onMounted(fetchUserInfo);
+
+watch(
+  () => route.params.username,
+  () => {
+    fetchUserInfo();
+  }
+);
 </script>
 
 <style scoped>
