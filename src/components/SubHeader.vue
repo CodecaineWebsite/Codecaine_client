@@ -8,8 +8,8 @@
         <button
           v-for="tab in tabs"
           :key="tab"
-          @click="setActiveTab(tab)"
-          class=" relative h-9 md:h-11 px-5 text-smmd:text-base bg-cc-14 text-cc-1 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r whitespace-nowrap"
+          @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
+          class="relative h-9 md:h-11 px-5 text-smmd:text-base bg-cc-14 text-cc-1 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r whitespace-nowrap"
         >
           {{ tab }}
           <span
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/useAuthStore";
 
@@ -113,7 +113,15 @@ const showMenu = ref(false);
 const searchFocused = ref(false);
 const searchTab = ref("pens");
 const tabs = ["Your Work", "Following", "Trending"];
-const activeTab = ref("Your Work");
+
+// 依路徑改變 activeTtab
+const activeTab = computed(() => {
+  const path = route.path;
+  if (path.startsWith("/your-work")) return "Your Work";
+  if (path.startsWith("/following")) return "Following";
+  if (path.startsWith("/trending")) return "Trending";
+  return ""; // 其他頁不亮任何 tab
+});
 
 const searchKeyword = ref("");
 
@@ -143,12 +151,7 @@ const goToPath = (pathOrLocation) => {
   router.push(pathOrLocation);
 };
 
-// 主選單 tab 點擊
-const setActiveTab = (tab) => {
-  if (tab === "Your Work") goToPath("/your-work");
-  else if (tab === "Following") goToPath("/following");
-  else if (tab === "Trending") goToPath("/trending");
-};
+
 
 // 搜尋選項點擊
 const selectSearchTab = (tab) => {
@@ -158,5 +161,4 @@ const selectSearchTab = (tab) => {
   else if (tab === "collections")
     goToPath({ path: "/search/collections", query: { q: "" } });
 };
-
 </script>
