@@ -1,15 +1,16 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, watch } from 'vue';
-  import ArrowWhite from '../assets/arrow-white.svg';
-  import Settings from '../assets/settings.svg';
-  import Close from '../assets/close.svg';
-  import HTMLIcon from '../assets/html.svg';
-  import CSSIcon from '../assets/css.svg';
-  import JSIcon from '../assets/js.svg';
+  import Arrow from '../assets/arrow.vue';
+  import Settings from '../assets/settings.vue';
+  import Close from '../assets/close.vue';
+  import HTMLIcon from '../assets/html.vue';
+  import CSSIcon from '../assets/css.vue';
+  import JSIcon from '../assets/js.vue';
+
   import EditorSmallButton from '../components/Editor/EditorSmallButton.vue';
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
-  import ConsolePreview from '../components/Editor/ConsolePreview.vue'
+  import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
@@ -295,22 +296,23 @@
           class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
           :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
         ></div>
+
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
           <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
+              <HTMLIcon class="w-[15px] h-[15px] text-[#FF3C41]" alt="HTML"/>
               <div>
                 HTML
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5" alt="setting button"/>
               </EditorSmallButton>
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 text-white" alt="other button" />
               </EditorSmallButton>
             </div>
           </div>
@@ -323,6 +325,7 @@
           @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
         ></div>
 
+
         <div :style="selectedLayout.id === 'center'
           ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
           : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
@@ -334,17 +337,17 @@
               }
             }">
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
+              <CSSIcon class="w-[15px] h-[15px] text-[#0EBEFF]" alt="CSS"/>
               <div>
                 CSS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5" alt="setting button"/>
               </EditorSmallButton>
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 fill-current" alt="other button"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -369,17 +372,17 @@
             }"
           >
             <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
+              <JSIcon class="w-[15px] h-[15px] text-[#FCD000]" alt="JavaScript" />
               <div>
                 JS
               </div>
             </h2>
             <div class="h-full flex items-center gap-2 px-3">
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
+                <Settings class="w-2.5 h-2.5" alt="setting button" />
               </EditorSmallButton>
               <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
+                <Arrow class="w-2.5 h-2.5 text-white" alt="other button"/>
               </EditorSmallButton>
             </div>
           </div>
@@ -417,11 +420,12 @@
               </h2>
             </div>
             <div class="flex gap-1">
+
               <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
                 Clear
               </EditorSmallButton>
               <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
-                <img :src="Close" alt="close button" class="w-2.5 h-2.5">
+                <Close class="w-2.5 h-2.5" alt="close button"/>
               </EditorSmallButton>
             </div>
           </div>
