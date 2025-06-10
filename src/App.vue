@@ -7,24 +7,12 @@ import {
 } from "firebase/auth";
 import { auth } from "./config/firebase";
 import { useAuthStore } from "./stores/useAuthStore";
-import api from "./config/api";
+import { syncUser } from "./utils/user.js";
 const authStore = useAuthStore();
 // 初始化 user 狀態與 token（首次載入或切換帳號時）
 //近期使用時發現bug 一小時後的 token 會失效，導致無法正常使用 儲存在pinia的就會有bug
 // 這裡會在使用者登入或登出時自動更新狀態 目前還在測試階段 如果回去開發使用有碰到任何問題再提出來!!
 //先從login複製放在這裡 等login拆成utils再做修改
-const syncUser = async () => {
-  try {
-    const res = await api.get(
-      "/api/auth/me" // 原為 POST http://localhost:3000/api/addusers , 改為 GET http://localhost:3000/api/auth/me
-    );
-
-    console.log("身份驗證成功：", res.data);
-    authStore.setUserProfile(res.data.user);
-  } catch (err) {
-    console.error("身份驗證失敗：", err.response?.data || err.message);
-  }
-};
 
 onAuthStateChanged(auth, async (firebaseUser) => {
   try {
@@ -33,8 +21,8 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 
       authStore.setUser(firebaseUser);
       authStore.setToken(token);
-
-      await syncUser();
+      const res = await syncUser();
+      authStore.setUserProfile(res.user);
     } else {
       authStore.setUser(null);
       authStore.setUserProfile(null);
