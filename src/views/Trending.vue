@@ -1,9 +1,9 @@
 <template>
   <section class="px-6 py-4 relative group">
-    <!-- Trending 標題 -->
-    <h2 class="text-orange-500 font-bold mb-4">Trending</h2>
 
-    <!-- 卡片輪播 Swiper -->
+    <!-- <h2 class="text-orange-500 font-bold mb-4">Trending</h2>
+
+
     <Swiper
       :modules="[Navigation]"
       :slides-per-view="1"
@@ -18,7 +18,7 @@
       </SwiperSlide>
     </Swiper>
 
-    <!-- 左右箭頭 -->
+
     <button class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group">
       <div class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
       <span class="absolute inset-0 bg-gradient-to-l from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
     </button>
 
-    <!-- 👥 Interesting People to Follow 區塊 -->
+
     <div class="mt-16 max-w-[1200px] mx-auto">
       <h3 class="text-blue-500 font-bold text-sm uppercase border-t border-gray-700 pt-6 mb-4 tracking-wide">
         Interesting People to Follow
@@ -73,7 +73,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>
 
