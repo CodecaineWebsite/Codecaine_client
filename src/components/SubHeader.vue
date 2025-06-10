@@ -74,13 +74,13 @@
       <!-- 未登入 -->
       <template v-if="!authStore.idToken">
         <button
-          class="bg-green-500 text-cc-20 px-4 py-2 rounded hover:bg-green-400 font-semibold"
+          class="bg-green-500 text-cc-20 h-9 md:h-11 px-4 rounded hover:bg-green-400 font-semibold whitespace-nowrap"
           @click="goToPath('/signup')"
         >
           Sign Up
         </button>
         <button
-          class="bg-cc-13 px-4 py-2 rounded hover:bg-cc-12 font-semibold"
+          class="bg-cc-13 h-9 md:h-11 px-4 rounded hover:bg-cc-12 font-semibold whitespace-nowrap"
           @click="goToPath('/login')"
         >
           Log In
