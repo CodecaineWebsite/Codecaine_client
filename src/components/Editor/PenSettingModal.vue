@@ -21,6 +21,18 @@ const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
 const { toggleAutoSave, toggleAutoPreview } = workStore;
 console.log(currentWork.value.isAutoSave);
+
+const cdns = ref(currentWork.value.cdns)
+const links = ref(currentWork.value.links)
+
+watch(cdns, (newCDNs) => {
+  workStore.updateCDNs(newCDNs)
+}, { deep: true })
+
+watch(links, (newLinks) => {
+  workStore.updateLinks(newLinks)
+}, { deep: true })
+
 const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
@@ -36,15 +48,15 @@ const props = defineProps({
 
 
 });
-const cdns = ref([...props.cdns])
-const links = ref([...props.links])
+// const cdns = ref([...props.cdns])
+// const links = ref([...props.links])
 
-watch(cdns, (newValue) => {
-  emit('update:cdns', newValue)
-}, { deep: true, immediate: true })
-watch(links, (newValue) => {
-  emit('update:links', newValue)
-}, { deep: true, immediate: true })
+// watch(cdns, (newValue) => {
+//   emit('update:cdns', newValue)
+// }, { deep: true, immediate: true })
+// watch(links, (newValue) => {
+//   emit('update:links', newValue)
+// }, { deep: true, immediate: true })
 
 const srcDoc = ref('')
 

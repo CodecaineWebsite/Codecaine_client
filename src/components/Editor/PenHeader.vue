@@ -22,24 +22,18 @@
   const route = useRoute();
   const router = useRouter();
   const workStore = useWorkStore()
-  const { handleCurrentIdChange  }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
-  handleCurrentIdChange(route.params.id)
+  const isAutoPreview = ref(true);
 
+  watch(currentWork, (newWork) => {
+    console.log(newWork);
+    if (newWork) {
+      isAutoPreview.value = newWork.isAutoPreview ?? true;
+    }
+  }, { deep: true });
 	
 	const isLoggedIn = ref(false);
   const navListVisible = ref(false);
-
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
-
-  watch(cdns, (newCDNs) => {
-    workStore.updateCDNs(newCDNs)
-  }, { deep: true })
-
-  watch(links, (newLinks) => {
-    workStore.updateLinks(newLinks)
-  }, { deep: true })
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
@@ -265,7 +259,8 @@
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
-        <PenSettingModal v-if="settingOptionVisible" v-model:cdns="cdns" v-model:links="links" @close="toggleSetting" class="z-50" />
+
+        <PenSettingModal v-if="settingOptionVisible" @close="toggleSetting" class="z-50" />
 
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">

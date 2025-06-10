@@ -32,19 +32,16 @@ onMounted(() => {
     updateIframe()
   }
 })
-
 watch(
-  () => [
-    props.currentWork?.html,
-    props.currentWork?.css,
-    props.currentWork?.javascript
-  ],
-  () => {
-    if (props.currentWork?.isAutoPreview) {
+  () => props.currentWork,
+  (newVal) => {
+    if (newVal?.isAutoPreview) {
       updateIframe()
     }
-  }
+  },
+  { deep: true }
 )
+
 </script>
 
 <template>

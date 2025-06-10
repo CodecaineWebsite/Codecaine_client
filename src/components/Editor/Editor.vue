@@ -19,6 +19,9 @@
   const theme = ref('vs-dark');
 
   const code = ref(props.code)
+  watch(() => props.code, (newVal) => {
+    code.value = newVal;
+  }, { immediate: true });
 
   const editorOptions = ref({
     automaticLayout: true,
