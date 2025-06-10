@@ -18,6 +18,7 @@
     "lodash.debounce": "^4.0.8",
     "monaco-editor": "^0.44.0",
     "pinia": "^3.0.1",
+    "swiper": "^11.2.8",
     "vite-plugin-monaco-editor": "^1.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
