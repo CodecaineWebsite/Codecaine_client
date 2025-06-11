@@ -4,6 +4,9 @@
   /* 字體 */
   --font-archivo: "Archivo Black", "sans-serif";
 
+  /* 字型大小 */
+  --text-15: 15px;
+
   /* 顏色樣式 */
   --color-cc-1: white;
   --color-cc-2: #f1f1f3;
@@ -49,6 +52,9 @@
   --color-cc-posts: #47cf73;
   --color-cc-collections: #ae63e4;
   --color-cc-projects: #ffdd40;
+
+  /* search bar theme */
+  --color-cc-gray-mid: #5A5F73;
 
   /* editor theme */
   --color-cc-editor-column-bg: #1c1c1c;

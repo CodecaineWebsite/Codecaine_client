@@ -13,7 +13,7 @@
     >
       <SwiperSlide v-for="(group, index) in chunkedCards" :key="'group-' + index">
         <div class="grid grid-cols-2 gap-6">
-          <PenCard v-for="card in group" :key="card.id" :data="card" />
+          <PenCard v-for="card in group" :key="card.id" :pen="card" />
         </div>
       </SwiperSlide>
     </Swiper>
@@ -84,8 +84,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
-import PenCard from '@/components/PenCard.vue'
-import { useSavedStore } from '../stores/savedStore'
+import PenCard from '@/components/PenCardTemp.vue'
 
 const isTop = ref(false)
 
@@ -101,7 +100,7 @@ const saveNextSlideCards = () => {
   const nextGroup = chunkedCards.value[nextIndex]
   if (nextGroup) {
     nextGroup.forEach(pen => savedStore.savePen(pen))
-    console.log(`🧠 預存第 ${nextIndex + 1} 頁卡片`, nextGroup)
+    console.log(` 預存第 ${nextIndex + 1} 頁卡片`, nextGroup)
   }
 }
 

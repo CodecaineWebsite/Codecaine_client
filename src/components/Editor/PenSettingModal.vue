@@ -1,6 +1,6 @@
 <script setup>
 import { inject, ref, watch } from 'vue';
-import Arrow from '../../assets/arrow.svg';
+import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/workStore';
 import { storeToRefs } from 'pinia'
 
@@ -21,6 +21,18 @@ const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
 const { toggleAutoSave, toggleAutoPreview } = workStore;
 console.log(currentWork.value.isAutoSave);
+
+const cdns = ref(currentWork.value.cdns)
+const links = ref(currentWork.value.links)
+
+watch(cdns, (newCDNs) => {
+  workStore.updateCDNs(newCDNs)
+}, { deep: true })
+
+watch(links, (newLinks) => {
+  workStore.updateLinks(newLinks)
+}, { deep: true })
+
 const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
@@ -36,15 +48,15 @@ const props = defineProps({
 
 
 });
-const cdns = ref([...props.cdns])
-const links = ref([...props.links])
+// const cdns = ref([...props.cdns])
+// const links = ref([...props.links])
 
-watch(cdns, (newValue) => {
-  emit('update:cdns', newValue)
-}, { deep: true, immediate: true })
-watch(links, (newValue) => {
-  emit('update:links', newValue)
-}, { deep: true, immediate: true })
+// watch(cdns, (newValue) => {
+//   emit('update:cdns', newValue)
+// }, { deep: true, immediate: true })
+// watch(links, (newValue) => {
+//   emit('update:links', newValue)
+// }, { deep: true, immediate: true })
 
 const srcDoc = ref('')
 
@@ -121,8 +133,8 @@ const removeLink = (index) => {
                   <option value="Pug">Pug</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
-                  <img :src="Arrow" class="w-3 rotate-180" alt="">
-                  <img :src="Arrow" class="w-3" alt="">
+                  <Arrow class="w-3 h-3 fill-current rotate-180"/>
+                  <Arrow class="w-3 h-3 fill-current"/>
                 </div>
               </div>
             </div>

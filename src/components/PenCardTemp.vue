@@ -3,19 +3,15 @@
     <!-- 預覽 -->
     <div class="relativegroup">
       <!-- 圖片預覽 / iframe 預覽-->
-      <img
-        :src="imageUrl"
-        alt="Card Preview"
-        class="w-full aspect-video object-cover rounded-lg"
-      />
+      <iframe :src="previewIframeUrl" width="100%" loading="lazy"></iframe>
 
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
-      <a
-        :href="detailPageLink"
+      <button
+        @click="openDetailModal"
         class="detailPageLink absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
       >
         <ExternalLinkIcon class="w-4 fill-current" />
-      </a>
+      </button>
     </div>
 
     <!-- 卡片內容 -->
@@ -46,7 +42,7 @@
                 <span class="font-medium">{{ userDisplayName }}</span>
               </a>
               <a
-                v-if="!isPro"
+                v-if="isPro"
                 :href="proLink"
                 class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
               >
@@ -109,9 +105,9 @@
           </span>
           <span>{{ liked ? likes + 1 : likes }}</span>
         </button>
-
+        <!-- 改成開modal -->
         <button
-          @click="goToDetailPage"
+          @click="openDetailModal"
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
         >
           <ChatBubbleIcon class="w-4 fill-current" />
@@ -139,57 +135,41 @@ import CheckIcon from "@/components/icons/CheckIcon.vue";
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
+import { useModalStore } from "@/stores/useModalStore";
 
 const router = useRouter();
-// 1. 傳入 props
-const props = defineProps({
-  // 作品資訊
-  id: Number,
-  title: String,
-  imageUrl: {
-    // 預覽圖
-    type: String,
-    default: "https://picsum.photos/600/400", // 無法取得作品預覽圖時的備用圖,這個不需要傳props,寫死就好
-  },
+const modalStore = useModalStore();
 
-  // 作者資訊
-  userName: String,
-  userDisplayName: String,
-  userProfileImage: {
-    type: String,
-    default: "https://picsum.photos/600/400", // 無法取得使用者頭像的備用圖, 但後端應該會給使用者預設頭像
+const props = defineProps({
+  pen: {
+    type: Object,
+    required: true,
   },
-  isPro: Boolean,
-  // 統計資料
-  favorites_count: Number,
-  comments_count: Number,
-  views_count: Number,
 });
 
 // 作品資訊
-const workId = props.id;
-const title = props.title ? props.title : "Untitled";
+const workId = props.pen.id;
+const title = props.pen.title || "Untitled";
 
 // 作者資訊
-const userName = props.userName;
-const userDisplayName = props.userDisplayName
-  ? props.userDisplayName
-  : "User Name";
-const userProfileImage = props.userProfileImage;
-const isPro = props.isPro;
+const userName = props.pen.username;
+const userDisplayName = props.pen.user_display_name;
+const userProfileImage = props.pen.userProfileImage || "https://assets.codepen.io/t-1/user-default-avatar.jpg";
+const isPro = props.pen.isPro || false;
 // 作品預覽
-const previewImageUrl = props.imageUrl;
-const previewIframeUrl = `/${userName}/embed/${workId}`; // iframe 的 src 位址範例
+const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
+const previewIframeUrl = `${import.meta.env.VITE_URL_BASE}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
+
 // 統計資料
-const likes = props.favorites_count ? props.favorites_count : 0;
-const comments = props.comments_count ? props.comments_count : 0;
-const views = props.views_count ? props.views_count : 0;
+const likes = props.pen.favorites_count;
+const comments = props.pen.comments_count;
+const views = props.pen.views_count;
 
 // 連結
 const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
-const userPageLink = `/${userName}`; //目前還沒設定，先參考官方route暫定 /:username
-const detailPageLink = `/${userName}/details/${workId}`; //目前還沒設定，先參考官方route暫定 /:username/details/:id
-const fullPageLink = `/${userName}/full/${workId}`; // 設定了嗎
+const userPageLink = `/profile/${userName}`;
+const detailPageLink = `/${userName}/details/${workId}`;
+const fullPageLink = `/${userName}/full/${workId}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
 // 元件狀態
@@ -198,12 +178,16 @@ const liked = ref(false);
 
 const goToDetailPage = () => {
   // router.push({ name: 'PenDetail', params: { username: userName, id: workId } });
-  wrouter.push(detailPageLink);
+  router.push(detailPageLink);
 };
 
 const goToFullPage = () => {
   // router.push({ name: 'PenFull', params: { username: userName, id: workId } });
-  wrouter.push(fullPageLink);
+  router.push(fullPageLink);
+};
+
+const openDetailModal = () => {
+  modalStore.openModal(props.pen.id, "card");
 };
 
 /**
@@ -211,5 +195,9 @@ const goToFullPage = () => {
  * 1.檢查 PenDetail,與 PenFull 頁面建立起來了沒 (detail還沒)
  * 2.設定imageUrl 的 fallback image
  * 3.iframe 預覽的 src 用 /full/:pen_id
+ * 
+ * API:
+ * 按喜歡紐將作品加入收藏
+ * 按追蹤將作者加入追蹤清單
  */
 </script>

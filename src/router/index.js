@@ -143,6 +143,11 @@ const router = createRouter({
       component: () => import("../views/Pen.vue"),
     },
     {
+      path: "/:username/full/:id",
+      name: "full-page",
+      component: () => import("../views/PenFullView.vue"),
+    },
+    {
       path: "/:username/details/:pen_id",
       name: "pen-details",
       component: () => import("../views/PenDetailPage.vue"),

@@ -1,15 +1,16 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, watch } from 'vue';
-  import ArrowWhite from '../assets/arrow-white.svg';
-  import Settings from '../assets/settings.svg';
-  import Close from '../assets/close.svg';
-  import HTMLIcon from '../assets/html.svg';
-  import CSSIcon from '../assets/css.svg';
-  import JSIcon from '../assets/js.svg';
+  import Arrow from '../assets/arrow.vue';
+  import Settings from '../assets/settings.vue';
+  import Close from '../assets/close.vue';
+  import HTMLIcon from '../assets/html.vue';
+  import CSSIcon from '../assets/css.vue';
+  import JSIcon from '../assets/js.vue';
+
   import EditorSmallButton from '../components/Editor/EditorSmallButton.vue';
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
-  import ConsolePreview from '../components/Editor/ConsolePreview.vue'
+  import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
@@ -20,28 +21,49 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, handleCurrentIdChange }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
-  const htmlCode = ref(currentWork.value.html);
-  const cssCode = ref(currentWork.value.css);
-  const javascriptCode = ref(currentWork.value.javascript);
-  const isAutoPreview = ref(currentWork.value.isAutoPreview);
-  const cdns = ref(currentWork.value.cdns)
-  const links = ref(currentWork.value.links)
-	
-  const isConsoleDragging = ref(false);
+  const htmlCode = ref('');
+  const cssCode = ref('');
+  const javascriptCode = ref('');
+  const cdns = ref([]);
+  const links = ref([]);
+
+  // RWD
+  const tabs = [
+    { id: 'html', label: 'HTML' },
+    { id: 'css', label: 'CSS' },
+    { id: 'js', label: 'JS' }
+  ]
+
+const selectedTab = ref('html')
+  const isMobile = ref(false)
+  const checkMobile = () => {
+    isMobile.value = window.innerWidth < 640
+  }
+  onMounted(() => {
+    window.addEventListener('resize', checkMobile)
+    checkMobile()
+  })
+  onUnmounted(() => {
+    window.removeEventListener('resize', checkMobile)
+  })
+
+  watch(currentWork, (newWork) => {
+    console.log(newWork);
+    if (newWork) {
+      htmlCode.value = newWork.html || '';
+      cssCode.value = newWork.css || '';
+      javascriptCode.value = newWork.javascript || '';
+      cdns.value = newWork.cdns || [];
+      links.value = newWork.links || [];
+    }
+  }, { deep: true });
+	// 
   const consoleHeight = ref(200);  // 預設高度 px
   const previewContainer = ref(null);
-  
-  watch(cdns, (newCDNs) => {
-    workStore.updateCDNs(newCDNs)
-  }, { deep: true })
-
-  watch(links, (newLinks) => {
-    workStore.updateLinks(newLinks)
-  }, { deep: true })
 
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
@@ -268,134 +290,194 @@
   const updateCode = (language, newCode) => {
     updateCurrentCode(language, newCode);
   }
+
+  const previewRef = ref(null)
+
+  const handleRunPreview = () => {
+    previewRef.value?.runPreview()
+  }
 </script>
 
 <template>
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
-    <PenHeader/>
+    <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" />
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
-      <!-- editor -->
-      <div
-        ref="editorWrapperRef"
-        class="flex overflow-hidden"
-        :style="selectedLayout.id === 'center'
-          ? { height: editorWrapperSize + 'px' }
-          : { width: editorWrapperSize + 'px' }"
-        :class="selectedLayout.id === 'center' ? 'flex-row' : 'flex-col'"
-      >
-        <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
-        ></div>
-        <div :style="selectedLayout.id === 'center'
-          ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
-          : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
-            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="HTMLIcon" alt="HTML" class="w-[15px] h-[15px]">
-              <div>
-                HTML
-              </div>
-            </h2>
-            <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-            </div>
-          </div>
-          <Editor :language="'html'" :code="htmlCode" @update:code="newCode => updateCode('html', newCode)"/>
-        </div>
-
-        <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
-        ></div>
-
-        <div :style="selectedLayout.id === 'center'
-          ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
-          : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc" 
-            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
-            @pointerdown="(e) => {
-              if(selectedLayout.id !== 'center') {
-                startColumnDrag(0, editorWrapperRef, e)
-              }
-            }">
-            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="CSSIcon" alt="CSS" class="w-[15px] h-[15px]">
-              <div>
-                CSS
-              </div>
-            </h2>
-            <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-            </div>
-          </div>
-          <Editor :language="'css'" :code="cssCode" @update:code="newCode => updateCode('css', newCode)"/>
-        </div>
-
-        <div
-          class="resizer border-cc-editor-column-border bg-cc-editor-column-bg"
-          :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
-          @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
-        ></div>
-
-        <div :style="selectedLayout.id === 'center'
-          ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
-          : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
-          <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
-            :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
-            @pointerdown="(e) => {
-              if(selectedLayout.id !== 'center') {
-                startColumnDrag(1, editorWrapperRef, e)
-              }
-            }"
+      <!--  -->
+      <div>
+        <!-- 手機 Tabs -->
+        <div v-if="isMobile" class="flex border-b border-gray-600 mb-1">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="selectedTab = tab.id"
+            :class="[
+              'flex-1 py-2 text-center font-semibold',
+              selectedTab === tab.id ? 'border-b-2 border-gray-300' : 'text-gray-600'
+            ]"
           >
-            <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
-              <img :src="JSIcon" alt="JavaScript" class="w-[15px] h-[15px]">
-              <div>
-                JS
-              </div>
-            </h2>
-            <div class="h-full flex items-center gap-2 px-3">
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="Settings" alt="setting button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-              <EditorSmallButton class="hover:bg-cc-12">
-                <img :src="ArrowWhite" alt="other button" class="w-2.5 h-2.5">
-              </EditorSmallButton>
-            </div>
-          </div>
-          <Editor :language="'javascript'" :code="javascriptCode" @update:code="newCode => updateCode('javascript', newCode)"/>
+            {{ tab.label }}
+          </button>
         </div>
 
+        <!-- 編輯器容器 -->
+        <div
+          ref="editorWrapperRef"
+          class="flex overflow-hidden"
+          :style="isMobile
+            ? { height: editorWrapperSize + 'px' }
+            : selectedLayout.id === 'center'
+              ? { height: editorWrapperSize + 'px' }
+              : { width: editorWrapperSize + 'px' }"
+          :class="isMobile
+            ? 'flex-col'
+            : selectedLayout.id === 'center'
+              ? 'flex-row'
+              : 'flex-col'"
+        >
+          <template v-if="!isMobile">
+            <div
+              class="flex overflow-hidden"
+              :style="selectedLayout.id === 'center'
+                ? { height: editorWrapperSize + 'px', width: '100%' }
+                : { width: editorWrapperSize + 'px', height: '100%' }"
+              :class="selectedLayout.id === 'center' ? 'flex-row' : 'flex-col'"
+            >
+              <div
+                class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+                :class="selectedLayout.id === 'center' ? 'w-4 border-x' : 'h-0 border-y'"
+              ></div>
+
+              <div :style="selectedLayout.id === 'center'
+                ? { flexBasis: columnSizes[0] + '%', minWidth: '0px' }
+                : { flexBasis: columnSizes[0] + '%', minHeight: '0px' }" class="relative">
+                <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg" ref="columnTitleRef">
+                  <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+                    <HTMLIcon class="w-[15px] h-[15px] text-[#FF3C41]" alt="HTML"/>
+                    <div>
+                      HTML
+                    </div>
+                  </h2>
+                  <div class="h-full flex items-center gap-2 px-3">
+                    <EditorSmallButton class="hover:bg-cc-12">
+                      <Settings class="w-2.5 h-2.5" alt="setting button"/>
+                    </EditorSmallButton>
+                  </div>
+                </div>
+                <Editor :language="'html'" :code="htmlCode" @update:code="newCode => updateCode('html', newCode)"/>
+              </div>
+
+              <div
+                class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+                :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
+                @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
+              ></div>
+
+
+              <div :style="selectedLayout.id === 'center'
+                ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
+                : { flexBasis: columnSizes[1] + '%', minHeight: '0px' }" class="relative">
+                <div class="flex justify-between items-center min-w-3xs overflow-hidden editor-bgc" 
+                  :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+                  @pointerdown="(e) => {
+                    if(selectedLayout.id !== 'center') {
+                      startColumnDrag(0, editorWrapperRef, e)
+                    }
+                  }">
+                  <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+                    <CSSIcon class="w-[15px] h-[15px] text-[#0EBEFF]" alt="CSS"/>
+                    <div>
+                      CSS
+                    </div>
+                  </h2>
+                  <div class="h-full flex items-center gap-2 px-3">
+                    <EditorSmallButton class="hover:bg-cc-12">
+                      <Settings class="w-2.5 h-2.5" alt="setting button"/>
+                    </EditorSmallButton>
+                  </div>
+                </div>
+                <Editor :language="'css'" :code="cssCode" @update:code="newCode => updateCode('css', newCode)"/>
+              </div>
+
+              <div
+                class="resizer border-cc-editor-column-border bg-cc-editor-column-bg z-10"
+                :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
+                @pointerdown="(e) => startColumnDrag(1, e.currentTarget, e)"
+              ></div>
+
+              <div :style="selectedLayout.id === 'center'
+                ? { flexBasis: columnSizes[2] + '%', minWidth: '0px' }
+                : { flexBasis: columnSizes[2] + '%', minHeight: '0px' }" class="relative">
+                <div class="flex justify-between items-center min-w-3xs overflow-hidden bg-cc-editor-column-bg"
+                  :class="selectedLayout.id !== 'center' ? 'cursor-row-resize' : ''"
+                  @pointerdown="(e) => {
+                    if(selectedLayout.id !== 'center') { 
+                      startColumnDrag(1, editorWrapperRef, e)
+                    }
+                  }"
+                >
+                  <h2 class="py-2 px-3 font-bold bg-cc-editor-column-tab-bg text-cc-editor-column-tab-text border-t-3 border-cc-editor-column-border flex items-center gap-2">
+                    <JSIcon class="w-[15px] h-[15px] text-[#FCD000]" alt="JavaScript" />
+                    <div>
+                      JS
+                    </div>
+                  </h2>
+                  <div class="h-full flex items-center gap-2 px-3">
+                    <EditorSmallButton class="hover:bg-cc-12">
+                      <Settings class="w-2.5 h-2.5" alt="setting button" />
+                    </EditorSmallButton>
+                  </div>
+                </div>
+                <Editor :language="'javascript'" :code="javascriptCode" @update:code="newCode => updateCode('javascript', newCode)"/>
+              </div>
+
+            </div>
+          </template>
+
+          <!-- 手機只顯示選中Tab的編輯器 -->
+          <template v-else>
+            <div class="relative flex-grow min-w-0">
+              <Editor
+                v-if="selectedTab === 'html'"
+                :language="'html'"
+                :code="htmlCode"
+                @update:code="newCode => updateCode('html', newCode)"
+              />
+              <Editor
+                v-if="selectedTab === 'css'"
+                :language="'css'"
+                :code="cssCode"
+                @update:code="newCode => updateCode('css', newCode)"
+              />
+              <Editor
+                v-if="selectedTab === 'js'"
+                :language="'javascript'"
+                :code="javascriptCode"
+                @update:code="newCode => updateCode('javascript', newCode)"
+              />
+            </div>
+          </template>
+        </div>
       </div>
+
       <div
-      :class="[
-        'bg-cc-editor-column-bg',
-        'border-cc-editor-column-border',
-        'select-none', 
-        selectedLayout.id === 'center'
-          ? 'h-4 cursor-row-resize border-y'
-          : 'w-4 cursor-col-resize border-x'
-      ]"
+        :class="[
+          'bg-cc-editor-column-bg',
+          'border-cc-editor-column-border',
+          'select-none', 
+          selectedLayout.id === 'center'
+            ? 'h-4 cursor-row-resize border-y'
+            : 'w-4 cursor-col-resize border-x'
+        ]"
+        v-if="!isMobile"
         @pointerdown="startEditorDrag"
       ></div>
+
       <!-- preview -->
       <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
         <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
           <!-- Preview iframe -->
-          <EditorPreview :html="htmlCode" :css="cssCode" :javascript="javascriptCode" :isAutoPreview="isAutoPreview"/>
+          <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
         </div>
         <div v-show="isConsoleShow">
           <div
@@ -408,11 +490,12 @@
               </h2>
             </div>
             <div class="flex gap-1">
+
               <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
                 Clear
               </EditorSmallButton>
               <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
-                <img :src="Close" alt="close button" class="w-2.5 h-2.5">
+                <Close class="w-2.5 h-2.5" alt="close button"/>
               </EditorSmallButton>
             </div>
           </div>
