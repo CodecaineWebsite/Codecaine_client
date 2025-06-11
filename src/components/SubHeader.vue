@@ -14,8 +14,7 @@
           {{ tab }}
           <span
             class="absolute bottom-0 left-0 h-1 bg-cc-green transition-all duration-300"
-            :class="activeTab === tab ? 'w-full' : 'w-0'"
-          ></span>
+            :class="activeTab === tab ? 'w-full' : 'w-0'"></span>
         </button>
       </div>
     </div>
@@ -61,8 +60,7 @@
           >
             <PensIcon
               class="fill-current w-3 mr-1"
-              :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-1'"
-            />
+              :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-1'" />
             Pens
           </button>
         </div>
