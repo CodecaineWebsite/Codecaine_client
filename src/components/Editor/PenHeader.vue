@@ -129,26 +129,28 @@
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
         <a href="/" class="flex text-0 ">
-          <img :src="Icon" alt="icon" class=" w-9 mb-2 ml-1 mr-2 ">
+          <img :src="Icon" alt="icon" class=" w-9 mr-2">
         </a>
-        <div>
-          <template v-if="isEditing">
-            <input ref="titleInput" v-model="title" @blur="stopEdit" @keyup.enter="stopEdit"
-              class="bg-transparent border-b border-white text-white outline-none" />
-          </template>
-          <template v-else>
-            <span class="text-white font-black">{{ title.length? title : "Untitled" }}</span>
-          </template>
-          <button type="button" class="ml-1" @click="toggleEdit">
-            <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
-          </button>
+        <div class="flex flex-col gap-1">
           <div>
-            <a href="#" class="text-sm text-gray-400">{{ userName ? userName : "Captain Anonymous" }}</a>
+            <template v-if="isEditing">
+              <input ref="titleInput" v-model="title" @blur="stopEdit" @keyup.enter="stopEdit"
+                class="bg-transparent text-white outline-none" />
+            </template>
+            <template v-else>
+              <span class="text-white font-black text-sm md:text-lg">{{ title.length? title : "Untitled" }}</span>
+            </template>
+            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing">
+              <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
+            </button>
           </div>
+          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none">
+            {{ userName ? userName : "Captain Anonymous" }}
+          </a>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 mr-3">
+      <div class="flex items-center gap-1 md:gap-2 mr-2 md:mr-3 ">
         <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
           <div class="h-7 flex">
             <Like class="w-4 "/>
@@ -162,8 +164,8 @@
           </div>
         </button>
 
-        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded px-1 py-1 md:px-4 md:py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
+          <div class="h-7 flex items-center gap-1 text-xs md:text-15">
             <Run class="w-4" />
             <span>Run</span>
           </div>
@@ -319,13 +321,13 @@
           </div>
         </div>
 
-        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-2 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-1 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer">
+          <div class="h-7 flex items-center gap-1 whitespace-nowrap text-xs md:text-15">
             <span>Sign Up</span>
           </div>
         </button>
-        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-1 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
+          <div class="h-7 flex items-center gap-1 whitespace-nowrap text-xs md:text-15">
             <span>Log In</span>
           </div>
         </button>
