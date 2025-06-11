@@ -1,15 +1,15 @@
 <template>
   <section class="px-6 py-4 relative group">
-    <!-- Trending 標題 -->
     <h2 class="text-orange-500 font-bold mb-4">Trending</h2>
 
-    <!-- 卡片輪播 Swiper -->
     <Swiper
       :modules="[Navigation]"
       :slides-per-view="1"
       :space-between="30"
       :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
-      class="w-full max-w-[1140px] mx-auto" @slideChange="saveNextSlideCards" ref="swiperRef"
+      class="w-full max-w-[1140px] mx-auto"
+      @slideChange="handleSlideChange"
+      ref="swiperRef"
     >
       <SwiperSlide v-for="(group, index) in chunkedCards" :key="'group-' + index">
         <div class="grid grid-cols-2 gap-6">
@@ -18,147 +18,84 @@
       </SwiperSlide>
     </Swiper>
 
-    <!-- 左右箭頭 -->
+    <!-- Prev Button -->
     <button class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group">
       <div class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
           <path d="M15 19l-7-7 7-7" />
         </svg>
       </div>
-      <span class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
     </button>
 
+    <!-- Next Button -->
     <button class="swiper-next absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group">
       <div class="relative z-10 mr-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
           <path d="M9 5l7 7-7 7" />
         </svg>
       </div>
-      <span class="absolute inset-0 bg-gradient-to-l from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
     </button>
-
-    <!-- 👥 Interesting People to Follow 區塊 -->
-    <div class="mt-16 max-w-[1200px] mx-auto">
-      <h3 class="text-blue-500 font-bold text-sm uppercase border-t border-gray-700 pt-6 mb-4 tracking-wide">
-        Interesting People to Follow
-      </h3>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div
-          v-for="person in people"
-          :key="person.name"
-          class="bg-[#1e1f26] rounded overflow-hidden"
-        >
-          <div class="flex items-center justify-between px-4 pt-4">
-            <div class="flex items-center">
-              <img :src="person.avatar" class="w-8 h-8 rounded-full mr-2" />
-              <div>
-                <p class="text-white text-sm font-bold flex items-center gap-1">
-                  {{ person.name }}
-                  <span class="bg-yellow-400 text-black text-[10px] font-bold px-1 rounded">PRO</span>
-                </p>
-                <p class="text-xs text-gray-400">{{ person.pens }} Pens</p>
-              </div>
-            </div>
-            <button class="text-green-500 text-xs font-bold hover:underline">+ Follow</button>
-          </div>
-          <div class="grid grid-cols-2 gap-2 p-4">
-            <img
-              v-for="(thumb, idx) in person.thumbnails"
-              :key="idx"
-              :src="thumb"
-              class="rounded w-full aspect-[4/3] object-cover bg-[#111]"
-              alt="pen"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
   </section>
 </template>
 
 <script setup>
-import axios from 'axios'
-import { ref, computed, onMounted} from 'vue'
+import { nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
+import api from '@/config/api'
 import PenCard from '@/components/PenCardTemp.vue'
+import { useSavedStore } from '@/stores/savedStore'
 
-const isTop = ref(false)
+const swiperRef = ref(null)
+const pages = ref([])
+const loadedPages = ref(new Set()) // 防止重複載入
+const savedStore = useSavedStore()
 
-const topPenCards = ref([])
-const recentCards = ref([])
+// 載入特定頁數資料
+const loadPage = async (pageNum) => {
+  if (loadedPages.value.has(pageNum)) return
+  try {
+    const res = await api.get(`/api/trending/pens?page=${pageNum}&limit=4`)
+    const newCards = res.data.results || []
+    pages.value[pageNum - 1] = newCards
+    loadedPages.value.add(pageNum)
+    console.log(`📦 已載入第 ${pageNum} 頁`, newCards)
 
-const swiperRef = ref(null) 
-const savedStore = useSavedStore() 
-
-const saveNextSlideCards = () => {
-  const swiper = swiperRef.value?.swiper
-  const nextIndex = swiper?.activeIndex + 1
-  const nextGroup = chunkedCards.value[nextIndex]
-  if (nextGroup) {
-    nextGroup.forEach(pen => savedStore.savePen(pen))
-    console.log(` 預存第 ${nextIndex + 1} 頁卡片`, nextGroup)
+    
+    // ✅ 加上這行強制更新 Swiper
+    nextTick(() => {
+      swiperRef.value?.swiper?.update()
+    })
+  } catch (err) {
+    console.error(`❌ 無法取得第 ${pageNum} 頁資料`, err)
   }
 }
 
+// 當滑動頁面時觸發：自動載入下一頁
+const handleSlideChange = async () => {
+  const swiper = swiperRef.value?.swiper
+  if (!swiper) return
+
+  const currentIndex = swiper.activeIndex ?? 0
+  const totalLoaded = pages.value.length
+
+  // ✅ 如果滑到最後一頁，就載入下一頁
+  if (currentIndex === totalLoaded - 1) {
+    const nextPage = totalLoaded + 1
+    await loadPage(nextPage)
+  }
+}
+
+// Swiper 卡片來源：pages 是 reactive，所以 computed 可直接回傳
+const chunkedCards = computed(() => pages.value)
+
+// 預載入前兩頁
 onMounted(async () => {
-  try {
-    const [topRes, recentRes] = await Promise.all([
-      axios.get('/api/pens/trending'),
-      axios.get('/api/pens/recent')
-    ])
-
-    console.log(' 後端 trending 資料:', topRes.data)
-    console.log(' 後端 recent 資料:', recentRes.data)
-
-    topPenCards.value = topRes.data
-    recentCards.value = recentRes.data
-
-    setTimeout(saveNextSlideCards, 300)
-  } catch (err) {
-    console.error('❌ 串接後端失敗', err)
-  }
+  await loadPage(1)
+  await loadPage(2)
 })
-
-const chunkedCards = computed(() => {
-  const cards = isTop.value ? topPenCards.value : recentCards.value
-  const result = []
-  for (let i = 0; i < cards.length; i += 4) {
-    result.push(cards.slice(i, i + 4))
-  }
-  return result
-})
-
-const people = [
-  {
-    name: 'Natalia Davydova',
-    pens: 210,
-    avatar: 'https://assets.codepen.io/1280209/internal/avatars/users/default.png?fit=crop&format=auto&height=40&version=1682323234&width=40',
-    thumbnails: [
-      'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp?version=1682323234',
-      'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp?version=1682323234',
-    ],
-  },
-  {
-    name: 'Miriam Suzanne',
-    pens: 661,
-    avatar: 'https://assets.codepen.io/3/internal/avatars/users/default.png?fit=crop&format=auto&height=40&version=1682323234&width=40',
-    thumbnails: [
-      'https://shots.codepen.io/3/pen/MWwzQyp-512.webp?version=1682323234',
-      'https://shots.codepen.io/3/pen/MWwzQyp-512.webp?version=1682323234',
-    ],
-  },
-  {
-    name: 'Will Boyd',
-    pens: 539,
-    avatar: 'https://assets.codepen.io/200/internal/avatars/users/default.png?fit=crop&format=auto&height=40&version=1682323234&width=40',
-    thumbnails: [
-      'https://shots.codepen.io/200/pen/MWwzQyp-512.webp?version=1682323234',
-      'https://shots.codepen.io/200/pen/MWwzQyp-512.webp?version=1682323234',
-    ],
-  },
-]
 </script>
+
