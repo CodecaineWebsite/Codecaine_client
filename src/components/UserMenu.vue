@@ -38,45 +38,55 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
-
-console.log(authStore.userProfile)
-console.log(authStore.userProfile)
 </script>
 
 <template>
-  <div class="relative w-9 h-9 md:w-11 md:h-11 " ref="menuRef">
+  <div
+    class="relative w-9 h-9 md:w-11 md:h-11"
+    ref="menuRef">
     <img
-      :src="authStore.userProfile?.profile_image_url || `https://assets.codepen.io/t-1/user-default-avatar.jpg`"
+      :src="
+        authStore.userProfile?.profile_image_url ||
+        `https://assets.codepen.io/t-1/user-default-avatar.jpg`
+      "
       alt="user avatar"
       class="w-full h-full rounded cursor-pointer object-cover"
-      @click="toggleMenu"
-    />
+      @click="toggleMenu" />
     <div
       v-if="showMenu"
-      class="absolute right-0 mt-2 w-56 bg-cc-17 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 overflow-hidden"
-    >
+      class="absolute right-0 mt-2 w-56 bg-cc-17 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 overflow-hidden">
       <ul class="flex flex-col text-sm">
         <li>
-          <button class="px-4 py-2 text-left hover:bg-cc-13 w-full" @click="goToPath('/your-work')">
+          <button
+            class="px-4 py-2 text-left hover:bg-cc-13 w-full"
+            @click="goToPath('/your-work')">
             Your Work
           </button>
         </li>
         <li>
-          <button class="px-4 py-2 text-left hover:bg-cc-13 w-full" @click="goToPath(`/user/${authStore.userProfile.username || 'me'}`)">
+          <button
+            class="px-4 py-2 text-left hover:bg-cc-13 w-full"
+            @click="goToPath(`/${authStore.userProfile.username || 'me'}`)">
             Profile
           </button>
         </li>
         <hr class="border-cc-13 my-1 mx-4" />
-        <li class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer" @click="goToPath('/pen')">
+        <li
+          class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
+          @click="goToPath('/pen')">
           <i class="fas fa-pen mr-2 w-4 text-cc-10"></i>
           <span>New Caine</span>
         </li>
         <hr class="border-cc-13 my-1 mx-4" />
-        <li class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer" @click="goToPath('/settings')">
+        <li
+          class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
+          @click="goToPath('/settings')">
           <i class="fas fa-cog mr-2 w-4 text-cc-10"></i>
           <span>Settings</span>
         </li>
-        <li class="flex items-center px-4 py-2 hover:bg-cc-red-dark text-cc-red cursor-pointer" @click="handleLogout">
+        <li
+          class="flex items-center px-4 py-2 hover:bg-cc-red-dark text-cc-red cursor-pointer"
+          @click="handleLogout">
           <i class="fas fa-sign-out-alt mr-2 w-4"></i>
           <span>Log Out</span>
         </li>
