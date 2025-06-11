@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import api from '../config/api'
+
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
     title: "",
@@ -41,8 +42,8 @@ export const useWorkStore = defineStore('work', () => {
         javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
-        cdns: data.resources_js,
-        links: data.resources_css
+        cdns: data.resources_js || [],
+        links: data.resources_css || []
       }
       
     } else {
@@ -195,6 +196,32 @@ export const useWorkStore = defineStore('work', () => {
     }
   };
 
+  const createNewWork = async (newWorkData) => {
+    try {
+    const payload = {
+      title: newWorkData.title || '',
+      description: newWorkData.description || '',
+      html_code: newWorkData.html || '',
+      css_code: newWorkData.css || '',
+      js_code: newWorkData.javascript || '',
+      view_mode: newWorkData.view_mode,
+      is_autosave: newWorkData.isAutoSave ?? false,
+      is_autopreview: newWorkData.isAutoPreview ?? true,
+      resources_css: newWorkData.links || [],
+      resources_js: newWorkData.cdns || [],
+      tags: newWorkData.tags || [],
+    };
+
+    const res = await api.post('/api/pens', payload);
+
+    works.value.unshift(res.data);
+    currentId.value = res.data.id;
+
+    console.log('作品建立成功');
+  } catch (err) {
+    console.error('作品建立失敗', err);
+  }
+  };
   return { 
     works,
     currentWork,
@@ -209,9 +236,9 @@ export const useWorkStore = defineStore('work', () => {
 
     fetchWorks,
     fetchWorkFromId,
+    createNewWork,
     // saveCurrentWork,
     // deleteWork,
-    // createNewWork,
   }
 })
   

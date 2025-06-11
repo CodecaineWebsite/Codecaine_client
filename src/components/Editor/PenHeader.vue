@@ -34,21 +34,21 @@
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { currentWork } = storeToRefs(workStore); //放資料
+  const { createNewWork } = workStore;
   const isAutoPreview = ref(true);
-
   watch(currentWork, (newWork) => {
     console.log(newWork);
     if (newWork) {
       isAutoPreview.value = newWork.isAutoPreview ?? true;
     }
   }, { deep: true });
-	
+  
 	const isLoggedIn = !!authStore.idToken;
   const navListVisible = ref(false);
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  const userName = ref(currentWork.value.user_name);
+  // const userName = ref(currentWork.value.user_name);之後要加
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
   const title = computed({
@@ -62,7 +62,7 @@
 
   const handleSave = async() => {
     if(isLoggedIn) {
-      // 執行儲存api
+      createNewWork(currentWork.value);
     } else {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
