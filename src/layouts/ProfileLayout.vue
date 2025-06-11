@@ -1,84 +1,174 @@
 <template>
-	<!--路徑的名字profile/caines/shwocase-->
-	<!--profile未來會帶入使用者的名字 類似:id/caines/shwocase -->
-	<div>
-		<div class="pt-4">
-			<header class="profile-header">
-				<div class="pt-[110px] pb-[75px] text-center">這裡是名字</div>
-			</header>
-			<div
-				class="min-h-14 bg-black relative flex items-center justify-between p-4"
-			>
-				<div class="grid grid-cols-3 gap-4">
-					<a href="">連結1</a><a href="">連結2</a><a href="">連結3</a>
-				</div>
-				<div
-					class="absolute left-1/2 -translate-x-1/2 bottom-0 w-[124px] h-[124px]"
-				>
-					<img src="#" alt="大頭貼" class="bg-white h-full w-full" />
-				</div>
-				<div class="flex justify-center items-center gap-4">
-					<a href="/profile/following">following</a
-					><a href="/profile/followers">followers</a>
-				</div>
-			</div>
-			<div class="text-center py-4">
-				<div>location</div>
-				<div class="mt-2">bio簡短介紹自己</div>
-			</div>
-			<div class="mx-auto max-w-7xl">
-				<div class="text-gray-400 border-b-6">
-					<button
-						class="cursor-pointer hover:text-white p-2"
-						@click="caines"
-						:class="
-							route.path.startsWith('/profile/caines') ? 'text-white' : ''
-						"
-					>
-						caines
-					</button>
-					<button
-						class="cursor-pointer hover:text-white p-2"
-						@click="Following"
-						:class="route.path === '/profile/following' ? 'text-white' : ''"
-					>
-						Following
-					</button>
-					<button
-						class="cursor-pointer hover:text-white p-2"
-						@click="Followers"
-						:class="route.path === '/profile/followers' ? 'text-white' : ''"
-					>
-						Followers
-					</button>
-				</div>
-				<div>
-					<RouterView />
-				</div>
-			</div>
-		</div>
-	</div>
+  <div>
+    <div
+      class="pt-4"
+      v-if="userInfo">
+      <header class="profile-header">
+        <div class="pt-[110px] pb-[75px]">
+          <div class="text-center text-4xl pb-3">
+            {{ userInfo.display_name }}
+            <span
+              v-if="userInfo.is_pro"
+              class="bg-yellow-300 text-black text-xl font-bold px-1 py-[1px] rounded"
+              >PRO</span
+            >
+          </div>
+          <div class="text-center pb-2 text-gray-400">
+            @{{ userInfo.username }}
+          </div>
+        </div>
+      </header>
+      <div
+        class="min-h-14 bg-black relative flex items-center justify-between p-4">
+        <div class="flex gap-4 text-gray-400">
+          <a
+            class="hover:text-white"
+            v-if="userInfo.profile_link1"
+            :href="userInfo.profile_link1"
+            target="_blank"
+            >{{ userInfo.profile_link1.split("/")[2] }}</a
+          ><a
+            class="hover:text-white"
+            v-if="userInfo.profile_link2"
+            :href="userInfo.profile_link2"
+            target="_blank"
+            >{{ userInfo.profile_link2.split("/")[2] }}</a
+          ><a
+            class="hover:text-white"
+            v-if="userInfo.profile_link3"
+            :href="userInfo.profile_link3"
+            target="_blank"
+            >{{ userInfo.profile_link3.split("/")[2] }}</a
+          >
+        </div>
+        <div
+          class="absolute left-1/2 -translate-x-1/2 bottom-0 w-[124px] h-[124px]">
+          <img
+            :src="userInfo.profile_image_url || '/default-avatar.png'"
+            alt="大頭貼"
+            class="bg-black h-full w-full border-gray-700 border-6" />
+        </div>
+        <div class="flex justify-center items-center gap-4">
+          <a :href="`/${route.params.username}/following`">following</a>
+          <a :href="`/${route.params.username}/followers`">followers</a>
+          <button
+            v-if="userInfo.username !== authStore.userProfile.username"
+            class="text-black text-xs bg-green-500 px-1 py-1 cursor-pointer hover:text-white hover:bg-green-800 rounded">
+            + Follow
+          </button>
+        </div>
+      </div>
+      <div class="text-center py-4">
+        <div>{{ userInfo.location }}</div>
+        <div class="mt-2">{{ userInfo.bio }}</div>
+      </div>
+      <div class="mx-auto max-w-7xl">
+        <div class="text-gray-400 border-b-6">
+          <button
+            class="cursor-pointer hover:text-white p-2"
+            @click="caines"
+            :class="
+              route.path.startsWith('/' + route.params.username + '/caines')
+                ? 'text-white'
+                : ''
+            ">
+            caines
+          </button>
+          <button
+            class="cursor-pointer hover:text-white p-2"
+            @click="Following"
+            :class="
+              route.path === '/' + route.params.username + '/following'
+                ? 'text-white'
+                : ''
+            ">
+            Following
+          </button>
+          <button
+            class="cursor-pointer hover:text-white p-2"
+            @click="Followers"
+            :class="
+              route.path === '/' + route.params.username + '/followers'
+                ? 'text-white'
+                : ''
+            ">
+            Followers
+          </button>
+        </div>
+        <div>
+          <RouterView />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import { onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "../stores/useAuthStore";
+import api from "@/config/api";
 const router = useRouter();
 const route = useRoute();
+const userInfo = ref(null);
+const authStore = useAuthStore();
+
 const caines = () => {
-	router.push("/profile/caines");
+  router.push(`/${route.params.username}/caines`);
 };
 const Following = () => {
-	router.push("/profile/following");
+  router.push(`/${route.params.username}/following`);
 };
 const Followers = () => {
-	router.push("/profile/followers");
+  router.push(`/${route.params.username}/followers`);
 };
+
+const fetchUserInfo = async () => {
+  try {
+    const res = await api.get(`/api/users/${route.params.username}`);
+    if (res) {
+      const {
+        display_name,
+        username,
+        bio,
+        is_pro,
+        location,
+        profile_image_url,
+        profile_link1,
+        profile_link2,
+        profile_link3,
+      } = res.data;
+      userInfo.value = {
+        display_name,
+        username,
+        bio,
+        is_pro,
+        location,
+        profile_image_url,
+        profile_link1,
+        profile_link2,
+        profile_link3,
+      };
+    }
+  } catch (e) {
+    userInfo.value = null;
+  }
+};
+
+onMounted(fetchUserInfo);
+
+watch(
+  () => route.params.username,
+  () => {
+    fetchUserInfo();
+  }
+);
 </script>
 
 <style scoped>
 .profile-header {
-	background-image: url(https://cpwebassets.codepen.io/assets/packs/profile-bg-optimized-a5ca8f46aca292507f629c62b09630ad.svg);
-	background-size: cover;
+  background-image: url(https://cpwebassets.codepen.io/assets/packs/profile-bg-optimized-a5ca8f46aca292507f629c62b09630ad.svg);
+  background-size: cover;
 }
 </style>
