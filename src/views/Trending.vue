@@ -59,6 +59,9 @@
         </svg>
       </div>
     </button>
+    <p v-if="!hasMore" class="text-center text-gray-400 mt-8">
+      That's all the trending works for now!
+    </p>
   </section>
 </template>
 
@@ -76,8 +79,8 @@ import { useSavedStore } from "@/stores/savedStore";
 const swiperRef = ref(null);
 const pages = ref([]);
 const loadedPages = ref(new Set()); // 防止重複載入
-
 const swiperInstance = ref(null);
+const hasMore = ref(true);
 
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
@@ -85,10 +88,16 @@ const onSwiperInit = (swiper) => {
 };
 // 載入特定頁數資料
 const loadPage = async (pageNum) => {
-  if (loadedPages.value.has(pageNum)) return;
+  if (!hasMore.value || loadedPages.value.has(pageNum)) return;
   try {
     const res = await api.get(`/api/trending/pens?page=${pageNum}&limit=4`);
     const newCards = res.data.results || [];
+
+    if (res.data.currentPage >= res.data.totalPages) {
+      hasMore.value = false;
+      console.log("🚧 已載入到最後一頁，不會再載入更多");
+    }
+
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
     console.log(`📦 已載入第 ${pageNum} 頁`, newCards);
@@ -98,26 +107,27 @@ const loadPage = async (pageNum) => {
     });
   } catch (err) {
     console.error(`❌ 無法取得第 ${pageNum} 頁資料`, err);
+    hasMore.value = false; // 防止一直 retry
   }
 };
 
 // 當滑動頁面時觸發：自動載入下一頁
 const handleSlideChange = async () => {
   const swiper = swiperInstance.value;
-  if (!swiper) return;
+  if (!swiper || !hasMore.value) return;
 
   const currentIndex = swiper.activeIndex ?? 0;
   const totalLoaded = pages.value.length;
 
-
-  if (currentIndex === totalLoaded - 1) {
+  if (currentIndex >= totalLoaded - 1) {
     const nextPage = totalLoaded + 1;
     await loadPage(nextPage);
   }
 };
 
 const chunkedCards = computed(() =>
-  pages.value.filter((page) => Array.isArray(page)));
+  pages.value.filter((page) => Array.isArray(page))
+);
 
 // 預載入前兩頁
 onMounted(async () => {
