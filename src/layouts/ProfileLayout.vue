@@ -51,11 +51,11 @@
         <div class="flex justify-center items-center gap-4">
           <a :href="`/${route.params.username}/following`">following</a>
           <a :href="`/${route.params.username}/followers`">followers</a>
-          <button
-            v-if="userInfo.username !== authStore.userProfile.username"
-            class="text-black text-xs bg-green-500 px-1 py-1 cursor-pointer hover:text-white hover:bg-green-800 rounded">
-            + Follow
-          </button>
+          <FollowBtn
+            v-if="userInfo.username != authStore.userProfile.username"
+            :current-user="authStore.userProfile.id"
+            :targetUser="userInfo.username"
+            @update="test" />
         </div>
       </div>
       <div class="text-center py-4">
@@ -109,6 +109,7 @@ import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "../stores/useAuthStore";
 import api from "@/config/api";
+import FollowBtn from "../components/FollowBtn.vue";
 const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
@@ -122,6 +123,10 @@ const Following = () => {
 };
 const Followers = () => {
   router.push(`/${route.params.username}/followers`);
+};
+
+const test = () => {
+  console.log("test");
 };
 
 const fetchUserInfo = async () => {
