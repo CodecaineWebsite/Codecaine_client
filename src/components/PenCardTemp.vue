@@ -158,7 +158,7 @@ const userProfileImage = props.pen.userProfileImage || "https://assets.codepen.i
 const isPro = props.pen.isPro || false;
 // 作品預覽
 const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
-const previewIframeUrl = `${import.meta.env.URL_BASE}/${userName}/full/${workId}?mode=onlyPreview}`; // iframe 的 src 位址範例
+const previewIframeUrl = `${import.meta.env.VITE_URL_BASE}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
 
 // 統計資料
 const likes = props.pen.favorites_count;
