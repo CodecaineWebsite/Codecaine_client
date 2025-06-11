@@ -9,7 +9,7 @@
       :slides-per-view="1"
       :space-between="30"
       :navigation="{ nextEl: '.swiper-next', prevEl: '.swiper-prev' }"
-      class="w-full max-w-[1140px] mx-auto"
+      class="w-full max-w-[1140px] mx-auto" @slideChange="saveNextSlideCards" ref="swiperRef"
     >
       <SwiperSlide v-for="(group, index) in chunkedCards" :key="'group-' + index">
         <div class="grid grid-cols-2 gap-6">
@@ -78,28 +78,51 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import axios from 'axios'
+import { ref, computed, onMounted} from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import PenCard from '@/components/PenCard.vue'
+import { useSavedStore } from '../stores/savedStore'
 
 const isTop = ref(false)
 
-const topPenCards = ref(Array.from({ length: 12 }, (_, i) => ({
-  id: `top-${i}`,
-  author: `TopUser ${i}`,
-  avatar: 'https://assets.codepen.io/1280209/internal/avatars/users/default.png',
-  image: 'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp'
-})))
+const topPenCards = ref([])
+const recentCards = ref([])
 
-const recentCards = ref(Array.from({ length: 12 }, (_, i) => ({
-  id: `recent-${i}`,
-  author: `RecentUser ${i}`,
-  avatar: 'https://assets.codepen.io/1280209/internal/avatars/users/default.png',
-  image: 'https://shots.codepen.io/1280209/pen/MWwzQyp-512.webp'
-})))
+const swiperRef = ref(null) 
+const savedStore = useSavedStore() 
+
+const saveNextSlideCards = () => {
+  const swiper = swiperRef.value?.swiper
+  const nextIndex = swiper?.activeIndex + 1
+  const nextGroup = chunkedCards.value[nextIndex]
+  if (nextGroup) {
+    nextGroup.forEach(pen => savedStore.savePen(pen))
+    console.log(`🧠 預存第 ${nextIndex + 1} 頁卡片`, nextGroup)
+  }
+}
+
+onMounted(async () => {
+  try {
+    const [topRes, recentRes] = await Promise.all([
+      axios.get('/api/pens/trending'),
+      axios.get('/api/pens/recent')
+    ])
+
+    console.log(' 後端 trending 資料:', topRes.data)
+    console.log(' 後端 recent 資料:', recentRes.data)
+
+    topPenCards.value = topRes.data
+    recentCards.value = recentRes.data
+
+    setTimeout(saveNextSlideCards, 300)
+  } catch (err) {
+    console.error('❌ 串接後端失敗', err)
+  }
+})
 
 const chunkedCards = computed(() => {
   const cards = isTop.value ? topPenCards.value : recentCards.value
