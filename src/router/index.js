@@ -29,11 +29,6 @@ const router = createRouter({
           component: () => import("../views/Trending.vue"),
         },
         {
-          path: "user/:userId",
-          name: "profile",
-          component: () => import("../layouts/ProfileLayout.vue"),
-        },
-        {
           path: "search",
           name: "search",
           component: () => import("../views/Search.vue"),
@@ -60,12 +55,14 @@ const router = createRouter({
           },
         },
         {
-          path: "profile",
+          path: ":username",
           component: () => import("../layouts/ProfileLayout.vue"),
           children: [
             {
               path: "",
-              redirect: "/profile/caines",
+              redirect: (to) => {
+                return `/${to.params.username}/caines`;
+              },
             },
             {
               path: "caines",
@@ -74,7 +71,9 @@ const router = createRouter({
               children: [
                 {
                   path: "",
-                  redirect: "/profile/caines/showcase",
+                  redirect: (to) => {
+                    return `/${to.params.username}/caines/showcase`;
+                  },
                 },
                 {
                   path: "showcase",
