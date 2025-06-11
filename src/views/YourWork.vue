@@ -2,13 +2,17 @@
   <div class="bg-cc-17 text-cc-1 min-h-screen flex flex-col relative">
     <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
       <!-- Tabs Header -->
-      <div class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]">
+      <div
+        class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]"
+      >
         <button
           v-for="tab in tabs"
           :key="tab"
           @click="activeTab = tab"
           :class="[
-            activeTab === tab ? 'text-cc-1 font-semibold' : 'text-cc-10 hover:text-cc-1'
+            activeTab === tab
+              ? 'text-cc-1 font-semibold'
+              : 'text-cc-10 hover:text-cc-1',
           ]"
         >
           {{ tab }}
@@ -20,6 +24,7 @@
             class="bg-cc-13 px-3 py-1 text-sm hover:bg-cc-12 rounded-md flex items-center space-x-2"
             @click="createPen"
           >
+            <!-- 按下後應導去Pen頁面 -->
             <PensIcon class="fill-current w-4 h-4 text-cc-1" />
             <span>New Pen</span>
           </button>
@@ -28,7 +33,10 @@
 
       <!-- Search + Filter Bar -->
       <div>
-        <div v-if="activeTab === 'Deleted'" class="border-t-2 border-danger mt-1 mb-4"></div>
+        <div
+          v-if="activeTab === 'Deleted'"
+          class="border-t-2 border-danger mt-1 mb-4"
+        ></div>
 
         <div
           v-else
@@ -79,24 +87,63 @@
               </div>
             </div>
 
-            <!-- Tags -->
-            <button
-              v-if="activeTab === 'Pens'"
-              class="flex items-center space-x-1 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
-            >
-              <TagsIcon class="fill-current w-4 h-4 text-cc-1" />
-              <span>Tags</span>
-            </button>
+            <!-- Tags 按鈕-->
+            <div>
+              <button
+                @click="showTags = !showTags"
+                v-if="activeTab === 'Pens'"
+                class="flex items-center space-x-1 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
+              >
+                <TagsIcon class="fill-current w-4 h-4 text-cc-1" />
+                <span>Tags</span>
+              </button>
+              <div class="relative">
+                <div
+                  v-if="showTags"
+                  class="absolute z-50 bg-panel border border-default rounded shadow p-4 mt-2 w-64"
+                >
+                  <h3 class="text-sm font-semibold mb-2">Select Tags</h3>
+                  <ul class="space-y-2 max-h-48 overflow-auto">
+                    <li
+                      v-for="tag in allTags"
+                      :key="tag"
+                      class="flex justify-between items-center"
+                    >
+                      <label class="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          :value="tag"
+                          :checked="selectedTags.includes(tag)"
+                          @change="toggleTag(tag)"
+                        />
+                        <span>{{ tag }}</span>
+                      </label>
+                    </li>
+                  </ul>
+
+                  <button
+                    @click="selectedTags = []"
+                    class="text-xs text-cc-9 hover:underline mt-3"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Right Controls -->
           <div class="flex items-center space-x-2">
             <!-- View Mode -->
-            <div class="inline-flex rounded-md overflow-hidden border border-default">
+            <div
+              class="inline-flex rounded-md overflow-hidden border border-default"
+            >
               <button
                 :class="[
                   'px-3 py-2',
-                  viewMode === 'grid' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  viewMode === 'grid'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="viewMode = 'grid'"
               >
@@ -104,14 +151,16 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': viewMode === 'grid',
-                    'text-cc-10': viewMode !== 'grid'
+                    'text-cc-10': viewMode !== 'grid',
                   }"
                 />
               </button>
               <button
                 :class="[
                   'px-3 py-2 border-l border-default',
-                  viewMode === 'list' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  viewMode === 'list'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="viewMode = 'list'"
               >
@@ -119,7 +168,7 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': viewMode === 'list',
-                    'text-cc-10': viewMode !== 'list'
+                    'text-cc-10': viewMode !== 'list',
                   }"
                 />
               </button>
@@ -136,11 +185,15 @@
             </select>
 
             <!-- Sort Direction -->
-            <div class="inline-flex rounded-md overflow-hidden border border-default">
+            <div
+              class="inline-flex rounded-md overflow-hidden border border-default"
+            >
               <button
                 :class="[
                   'px-3 py-2',
-                  sortDirection === 'desc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  sortDirection === 'desc'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="sortDirection = 'desc'"
               >
@@ -148,14 +201,16 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': sortDirection === 'desc',
-                    'text-cc-10': sortDirection !== 'desc'
+                    'text-cc-10': sortDirection !== 'desc',
                   }"
                 />
               </button>
               <button
                 :class="[
                   'px-3 py-2 border-l border-default',
-                  sortDirection === 'asc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  sortDirection === 'asc'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="sortDirection = 'asc'"
               >
@@ -163,7 +218,7 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': sortDirection === 'asc',
-                    'text-cc-10': sortDirection !== 'asc'
+                    'text-cc-10': sortDirection !== 'asc',
                   }"
                 />
               </button>
@@ -180,19 +235,23 @@
               You don't have any Deleted Items.
             </h2>
             <p class="text-sm leading-relaxed text-cc-9">
-              If you want to save our world, you must hurry. We don't know how much longer we can withstand the nothing.
+              If you want to save our world, you must hurry. We don't know how
+              much longer we can withstand the nothing.
             </p>
             <p class="mt-3 italic text-cc-10 text-sm">
               — Southern Oracle, The Neverending Story
             </p>
           </div>
 
-          <div class="w-64 bg-page text-cc-1 p-6 rounded-md flex flex-col items-start">
+          <div
+            class="w-64 bg-page text-cc-1 p-6 rounded-md flex flex-col items-start"
+          >
             <div class="flex items-center text-lg font-bold mb-2">
               <span class="mr-2">🕒 3 Days</span>
             </div>
             <p class="text-sm text-cc-9">
-              You’ll be able to restore a Deleted Item for 3 days after you delete it. After that, it’s gone forever.
+              You’ll be able to restore a Deleted Item for 3 days after you
+              delete it. After that, it’s gone forever.
             </p>
           </div>
         </div>
@@ -233,13 +292,27 @@ const activeTab = ref("Pens");
 // Filters
 const showFilters = ref(false);
 const filters = ref({
-  privacy: "All"
+  privacy: "All",
 });
 
 // View/sort state
 const sortOption = ref("created");
 const sortDirection = ref("desc");
 const viewMode = ref("grid");
+
+// Tags
+const showTags = ref(false);
+const allTags = ref(["Vue", "JavaScript", "CSS", "Tailwind", "DarkMode"]); //假資料
+const selectedTags = ref([]);
+
+// Tag method
+function toggleTag(tag) {
+  if (selectedTags.value.includes(tag)) {
+    selectedTags.value = selectedTags.value.filter((t) => t !== tag);
+  } else {
+    selectedTags.value.push(tag);
+  }
+}
 
 // Methods
 function createPen() {
