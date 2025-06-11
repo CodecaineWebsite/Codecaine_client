@@ -1,6 +1,6 @@
 <template>
   <section class="px-6 py-4 relative group">
-    <h2 class="text-orange-500 font-bold mb-4">Trending</h2>
+    <!-- <h2 class="text-orange-500 font-bold mb-4">Trending</h2> -->
 
     <Swiper
       :modules="[Navigation]"
@@ -59,9 +59,9 @@
         </svg>
       </div>
     </button>
-    <p v-if="!hasMore" class="text-center text-gray-400 mt-8">
+    <!-- <p v-if="!hasMore && atLastPage" class="text-center text-gray-400 mt-8">
       That's all the trending works for now!
-    </p>
+    </p> -->
   </section>
 </template>
 
@@ -81,6 +81,7 @@ const pages = ref([]);
 const loadedPages = ref(new Set()); // 防止重複載入
 const swiperInstance = ref(null);
 const hasMore = ref(true);
+const atLastPage = ref(false);
 
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
@@ -119,7 +120,9 @@ const handleSlideChange = async () => {
   const currentIndex = swiper.activeIndex ?? 0;
   const totalLoaded = pages.value.length;
 
-  if (currentIndex >= totalLoaded - 1) {
+  atLastPage.value = currentIndex === totalLoaded - 1;
+
+  if (atLastPage.value && hasMore.value) {
     const nextPage = totalLoaded + 1;
     await loadPage(nextPage);
   }
