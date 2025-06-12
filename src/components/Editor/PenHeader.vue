@@ -128,23 +128,30 @@
 <template>
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
-        <a href="/" class="flex text-0 ">
-          <img :src="Icon" alt="icon" class=" w-9 mr-2">
+        <a href="/" class="text-0 flex-shrink-0">
+          <img :src="Icon" alt="icon" class=" w-9 mr-1 md:mr-2">
         </a>
-        <div class="flex flex-col gap-1">
-          <div>
+        <div class="flex flex-col gap-1 flex-1 min-w-0">
+          <div class="flex items-center w-full min-w-0">
             <template v-if="isEditing">
-              <input ref="titleInput" v-model="title" @blur="stopEdit" @keyup.enter="stopEdit"
-                class="bg-transparent text-white outline-none" />
+              <input
+                ref="titleInput"
+                v-model="title"
+                @blur="stopEdit"
+                @keyup.enter="stopEdit"
+                class="h-3 md:h-5 max-w-[100px] bg-transparent text-white font-black text-sm md:text-lg leading-none outline-none w-full appearance-none"
+              />
             </template>
             <template v-else>
-              <span class="text-white font-black text-sm md:text-lg">{{ title.length? title : "Untitled" }}</span>
+              <span class="h-3 md:h-5 text-white font-black text-sm md:text-lg leading-none overflow-hidden text-ellipsis whitespace-nowrap max-w-[100px]">
+                {{ title.length ? title : "Untitled" }}
+              </span>
             </template>
             <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing">
               <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
             </button>
           </div>
-          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none">
+          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis">
             {{ userName ? userName : "Captain Anonymous" }}
           </a>
         </div>
@@ -240,7 +247,8 @@
           </div>
         </div>
         <div v-if="navListVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleList"></div>
-        <button v-if="viewMode !== 'full'"  @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <!-- todo -->
+        <button v-if="viewMode !== 'full'"  @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-1 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex justify-between w-6 items-center">
             <div class="transition-transform h-0.5 bg-gray-200 relative before:content-[''] before:w-1.5 before:h-0.5 before:bg-gray-200 before:absolute before:-top-1.5 before:left-0 after:content-[''] after:w-3.5 after:h-0.5 after:bg-gray-200 after:absolute after:-bottom-1.5 after:left-0" :class="navListVisible ? 'before:w-2 w-1.5' : 'before:w-1.5 w-2.5'"></div>
             <Arrow class="w-3 h-3 fill-current transition-transform self-start mt-1.5" :class=" {'scale-y-[-1]':navListVisible}"/>
