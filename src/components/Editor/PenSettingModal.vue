@@ -19,8 +19,6 @@ const tabs = [
 ]
 const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
-const { toggleAutoSave, toggleAutoPreview } = workStore;
-console.log(currentWork.value.isAutoSave);
 
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
