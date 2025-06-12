@@ -74,7 +74,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import api from "@/config/api";
 import PenCard from "@/components/PenCardTemp.vue";
-import { useSavedStore } from "@/stores/savedStore";
 
 const swiperRef = ref(null);
 const pages = ref([]);
