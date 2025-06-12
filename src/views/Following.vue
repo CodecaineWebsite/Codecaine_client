@@ -8,13 +8,13 @@
         <span :class="[!isTop ? 'text-white' : 'text-gray-400', 'text-sm mr-2']"
           >Recent</span
         >
-        <label class="relative inline-block w-[30px] h-[16px] align-middle">
+        <label class="relative inline-block w-[30px] h-4 align-middle">
           <input type="checkbox" v-model="isTop" class="sr-only peer" />
           <span
             class="absolute inset-0 bg-cc-13 rounded-full peer-checked:bg-cc-13 transition"
           ></span>
           <span
-            class="absolute top-[2px] left-[2px] w-[12px] h-[12px] bg-white rounded-full transition-transform peer-checked:translate-x-[14px]"
+            class="absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-[14px]"
           ></span>
         </label>
         <span :class="[isTop ? 'text-white' : 'text-gray-400', 'text-sm ml-2']"
