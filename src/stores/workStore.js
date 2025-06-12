@@ -250,8 +250,56 @@ export const useWorkStore = defineStore('work', () => {
       console.error('儲存失敗', err);
     }
   };
-
   
+  // const moveToTrash = async () => {
+  //   try {
+  //     const res = await api.put(`/api/pens/${currentId.value}/trash`);
+  //     currentWork.value.is_trash = true;
+  //     currentWork.value.deleted_at = new Date();
+  //     return res.data;
+  // } catch (err) {
+  //   console.error('丟入垃圾桶失敗', err);
+  //   throw err;
+  // }
+  // };
+  const moveToTrash = async (id) => {
+  try {
+    const res = await api.put(`/api/pens/${id}/trash`);
+    
+    if (res.data?.data) {
+      currentWork.value.is_trash = true;
+      currentWork.value.deleted_at = new Date();
+      return true;
+    } else {
+      console.warn('API 回傳失敗結果：', res.data);
+      return false;
+    }
+  } catch (err) {
+    console.error('丟入垃圾桶失敗', err);
+    throw err;
+  }
+};
+
+  const markAsDeleted = async (id) => {
+    try {
+      const res = await api.put(`/api/pens/${id}/delete`);
+      currentWork.value.is_deleted = true;
+    } catch (err) {
+      console.error('標記刪除失敗', err);
+      throw err;
+    }
+  };
+
+  const deletePenPermanently = async (id) => {
+    try {
+      const res = await api.delete(`/api/pens/${id}`);
+      return res.data;
+    } catch (err) {
+      console.error('永久刪除失敗', err);
+      throw err;
+    }
+  };
+
   return { 
     works,
     currentWork,
@@ -268,7 +316,9 @@ export const useWorkStore = defineStore('work', () => {
     fetchWorkFromId,
     createNewWork,
     saveCurrentWork,
-    // deleteWork,
+    moveToTrash,
+    markAsDeleted,
+    deletePenPermanently,
   }
 })
   

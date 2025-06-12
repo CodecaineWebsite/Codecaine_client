@@ -21,8 +21,8 @@
 
   const route = useRoute();
   const workStore = useWorkStore()
-  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
-  const { currentWork } = storeToRefs(workStore); //放資料
+  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash }= workStore; //放function
+  const { currentWork, currentId } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
   const htmlCode = ref('');
@@ -296,6 +296,39 @@ const selectedTab = ref('html')
   const handleRunPreview = () => {
     previewRef.value?.runPreview()
   }
+
+  // const handleMoveToTrash = async () => {
+  //   try {
+  //     const res = await moveToTrash(currentId.value);
+  //     await router.push({ path: '/your-work'})
+  //     console.log(`作品 ID: ${currentId.value}已丟入垃圾桶`);
+  //   } catch (err) {
+  //     alert('無法丟入垃圾桶');
+  //   }
+  // };
+  const handleMoveToTrash = async () => {
+    const confirmed = window.confirm('確定要將這個作品移至垃圾桶嗎？此操作可以在垃圾桶中還原。');
+    if (!confirmed) return;
+
+  try {
+    const id = currentId.value;
+    const success = await moveToTrash(id);
+
+    if (success) {
+      console.log(`作品 ID: ${id} 已丟入垃圾桶`);
+      await router.push({ path: '/your-work' });
+    } else {
+      console.warn(`移動失敗：伺服器未回傳成功狀態`);
+      alert('無法丟入垃圾桶，請稍後再試');
+    }
+  } catch (error) {
+    console.error('丟入垃圾桶失敗：', error);
+    alert('無法丟入垃圾桶');
+  }
+};
+
+
+
 </script>
 
 <template>
@@ -515,7 +548,7 @@ const selectedTab = ref('html')
           <EditorSmallButton class="hover:bg-cc-12" @buttonClick="toggleConsole">Console</EditorSmallButton>
         </div>
         <div class="flex items-center h-full">
-          <EditorSmallButton class="hover:bg-cc-red">Delete</EditorSmallButton>
+          <EditorSmallButton class="hover:bg-cc-red" @click.prevent="handleMoveToTrash">Delete</EditorSmallButton>
         </div>
     </footer>
   </div>
