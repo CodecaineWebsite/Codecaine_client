@@ -221,14 +221,14 @@ export const useWorkStore = defineStore('work', () => {
     currentWork.value.id = res.data.id;
 
     console.log('作品建立成功');
-      return createdWork;
-    } catch (err) {
-      console.error('作品建立失敗', err);
-      return null;
-    }
+    return createdWork;
+  } catch (err) {
+    console.error('作品建立失敗', err);
+    return null;
+  }
   };
 
-  const saveCurrentWork = async () => {
+    const saveCurrentWork = async () => {
     try {
       const payload = {
         title: currentWork.value.title,
