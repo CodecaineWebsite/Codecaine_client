@@ -4,6 +4,7 @@ import api from '../config/api'
 
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
+    id: null,
     title: "",
     description: "",
     html: "",
@@ -213,15 +214,44 @@ export const useWorkStore = defineStore('work', () => {
     };
 
     const res = await api.post('/api/pens', payload);
+    const createdWork = res.data;
 
     works.value.unshift(res.data);
     currentId.value = res.data.id;
+    currentWork.value.id = res.data.id;
 
     console.log('作品建立成功');
+    return createdWork;
   } catch (err) {
     console.error('作品建立失敗', err);
+    return null;
   }
   };
+
+    const saveCurrentWork = async () => {
+    try {
+      const payload = {
+        title: currentWork.value.title,
+        description: currentWork.value.description,
+        html_code: currentWork.value.html,
+        css_code: currentWork.value.css,
+        js_code: currentWork.value.javascript,
+        view_mode: currentWork.value.view_mode,
+        is_autosave: currentWork.value.isAutoSave ?? false,
+        is_autopreview: currentWork.value.isAutoPreview ?? true,
+        resources_css: currentWork.value.links || [],
+        resources_js: currentWork.value.cdns || [],
+        tags: currentWork.value.tags || [],
+      };
+      const res = await api.put(`/api/pens/${currentId.value}`, payload);
+      currentWork.value.lastSavedTime = new Date();
+      console.log('儲存成功');
+    } catch (err) {
+      console.error('儲存失敗', err);
+    }
+  };
+
+  
   return { 
     works,
     currentWork,
@@ -237,7 +267,7 @@ export const useWorkStore = defineStore('work', () => {
     fetchWorks,
     fetchWorkFromId,
     createNewWork,
-    // saveCurrentWork,
+    saveCurrentWork,
     // deleteWork,
   }
 })
