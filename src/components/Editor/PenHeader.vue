@@ -33,8 +33,9 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  const { currentWork } = storeToRefs(workStore); //放資料
-  const { createNewWork } = workStore;
+  const { userProfile } = storeToRefs(authStore);
+  const { currentWork, currentId } = storeToRefs(workStore); //放資料
+  const { createNewWork, saveCurrentWork } = workStore;
   const isAutoPreview = ref(true);
   watch(currentWork, (newWork) => {
     console.log(newWork);
@@ -61,8 +62,15 @@
   const isLoginModalShow = ref(false)
 
   const handleSave = async() => {
+    const userName =  userProfile.value.username;
+    
     if(isLoggedIn) {
-      createNewWork(currentWork.value);
+      if(currentWork.value.id){
+        saveCurrentWork(currentWork.value);
+      } else{
+        const createdWork = await createNewWork(currentWork.value);
+        await router.push({ path: `/${userName}/pen/${currentId.value}` }); 
+      }
     } else {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
