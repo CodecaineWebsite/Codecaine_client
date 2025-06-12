@@ -11,7 +11,8 @@
         : isHovering
         ? 'bg-red-500 text-white hover:bg-red-700'
         : 'bg-gray-400 text-white',
-    ]">
+    ]"
+  >
     <span v-if="!isFollowing">+ Follow</span>
     <span v-else-if="isHovering">✕ Unfollow</span>
     <span v-else>✓ Following</span>
@@ -19,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, onMounted } from "vue";
 import api from "@/config/api";
 
 const props = defineProps({
@@ -33,19 +34,36 @@ const props = defineProps({
   },
 });
 
-console.log(props);
-
-const emit = defineEmits(["update"]);
+console.log(props); //這是可重複利用元件 拿來提醒目前使用者是誰/及目標追蹤的使用者是誰 在你載入元件的頁面會提醒
 
 const isHovering = ref(false);
-const isFollowing = ref(null);
+const isFollowing = ref(false);
 
-const handleClick = async () => {
-  isFollowing.value = !isFollowing.value;
-  emit("update", isFollowing.value);
-  const res = await api.post(`/api/follows/${props.targetUser}`);
-  console.log(res.data);
-  // 你可以在這裡呼叫 follow/unfollow API，例如：
-  // followUserAPI(props.targetUser.id) or unfollowUserAPI(...)
+const checkFollow = async () => {
+  try {
+    const res = await api.get(`/api/follows/check/${props.targetUser}`);
+    isFollowing.value = res.data.isFollowing;
+    console.log(res.data);
+  } catch (error) {
+    console.error("fetch follow error ", error);
+  }
 };
+const handleClick = async () => {
+  try {
+    if (isFollowing.value == false) {
+      const res = await api.post(`/api/follows/${props.targetUser}`);
+      console.log(res.data);
+      isFollowing.value = res.data.result;
+    } else if (isFollowing.value == true) {
+      const res = await api.delete(`/api/follows/${props.targetUser}`);
+      console.log(res.data);
+      isFollowing.value = res.data.result;
+    }
+  } catch (error) {
+    console.error("fetch follow error ", error);
+  }
+};
+onMounted(() => {
+  checkFollow();
+});
 </script>
