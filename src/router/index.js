@@ -153,11 +153,11 @@ const router = createRouter({
       component: () => import("../views/PenDetailPage.vue"),
       meta: { canBeModal: true },
     },
-    {
+    /*{
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import("../views/NotFound.vue")
-    }
+    }*/
   ],
 });
 

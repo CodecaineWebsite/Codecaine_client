@@ -11,7 +11,7 @@
         Sorry about that. We've logged the error for review, in case it's our fault.
       </p>
       
-      <!-- 連結列表 -->
+      <!-- 連結 -->
       <ul class="space-y-2">
         <li>
           <router-link 
@@ -20,25 +20,6 @@
           >
             Go to the homepage
           </router-link>
-        </li>
-        <li>
-          <a 
-            href="" 
-            class="text-cc-link-on-black hover:text-cc-link
-            transition-colors"
-          >
-            Contact Support
-          </a>
-        </li>
-        <li>
-          <a 
-            href="" 
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-cc-link-on-black hover:text-cc-link transition-colors"
-          >
-            Visit Documentation
-          </a>
         </li>
       </ul>
     </main>
