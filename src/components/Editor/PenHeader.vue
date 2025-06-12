@@ -23,6 +23,14 @@
 
   const route = useRoute();
   const router = useRouter();
+
+  const handleSignUp = () => {
+    router.push('/signup')
+  }
+  const handleLogin = () => {
+    router.push('/login')
+  }
+
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { currentWork } = storeToRefs(workStore); //放資料
@@ -319,12 +327,12 @@
           </div>
         </div>
 
-        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-2 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer">
+        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-2 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer" @click="handleSignUp">
           <div class="h-7 flex items-center gap-1">
             <span>Sign Up</span>
           </div>
         </button>
-        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
+        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer" @click="handleLogin">
           <div class="h-7 flex items-center gap-1">
             <span>Log In</span>
           </div>
