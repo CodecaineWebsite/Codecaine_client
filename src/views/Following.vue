@@ -1,8 +1,5 @@
 <template>
   <section class="px-6 py-4 relative group">
-    <!-- Following 標題 -->
-    <h2 class="text-orange-500 font-bold mb-4">Following</h2>
-
     <!-- Toggle Switch -->
     <div class="max-w-[1140px] mx-auto mb-6">
       <div
@@ -100,7 +97,7 @@
 import api from "../config/api.js";
 import { useAuthStore } from '@/stores/useAuthStore';
 const authStore = useAuthStore();
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -161,7 +158,7 @@ const handleSlideChange = async () => {
 
   if (atLastPage.value && hasMore.value) {
     const nextPage = totalLoaded + 1;
-    await loadFollowingPage(nextPage);
+    await loadPage(nextPage);
   }
 };
 
