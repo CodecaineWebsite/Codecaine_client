@@ -21,6 +21,7 @@ const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
 const { toggleAutoSave, toggleAutoPreview } = workStore;
 console.log(currentWork.value.isAutoSave);
+console.log(currentWork.value);
 
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
