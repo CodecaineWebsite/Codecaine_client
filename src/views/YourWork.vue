@@ -47,6 +47,11 @@
             <!-- Search -->
             <div class="flex rounded-md overflow-hidden">
               <input
+                v-model="searchQuery"
+                @keyup.enter="
+                  page = 1;
+                  loadPens();
+                "
                 type="text"
                 placeholder="Search for..."
                 class="bg-input text-cc-1 text-sm px-3 py-1 border border-default placeholder-cc-9 focus:outline-none rounded-l-md"
@@ -79,9 +84,9 @@
                     v-model="filters.privacy"
                     class="w-full px-2 py-1 bg-input text-cc-1 border border-default rounded-md"
                   >
-                    <option>All</option>
-                    <option>Public</option>
-                    <option>Private</option>
+                    <option value="all">All</option>
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
                   </select>
                 </div>
               </div>
@@ -158,17 +163,17 @@
               <button
                 :class="[
                   'px-3 py-2 border-l border-default',
-                  viewMode === 'list'
+                  viewMode === 'table'
                     ? 'bg-grid-active'
                     : 'bg-button bg-list-hover',
                 ]"
-                @click="viewMode = 'list'"
+                @click="viewMode = 'table'"
               >
                 <ListIcon
                   class="fill-current w-4 h-4"
                   :class="{
-                    'text-cc-1': viewMode === 'list',
-                    'text-cc-10': viewMode !== 'list',
+                    'text-cc-1': viewMode === 'table',
+                    'text-cc-10': viewMode !== 'table',
                   }"
                 />
               </button>
@@ -181,7 +186,7 @@
             >
               <option class="text-cc-20" value="created">Date Created</option>
               <option class="text-cc-20" value="updated">Date Updated</option>
-              <option class="text-cc-20" value="popularity">Popularity</option>
+              <option class="text-cc-20" value="popular">Popularity</option>
             </select>
 
             <!-- Sort Direction -->
@@ -257,17 +262,23 @@
         </div>
 
         <!-- Empty State -->
-        <div
-          v-else
-          class="border border-dashed border-cc-13 px-10 py-10 text-center rounded-md"
-        >
-          <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
-          <button
-            @click="createPen"
-            class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
+        <div v-else class="w-full">
+          <div v-if="pens.length > 0">
+            <PenCardLayout :pens="pens" :mode="viewMode" />
+            <!-- 若你有分頁按鈕，也放這裡 -->
+          </div>
+          <div
+            v-else
+            class="border border-dashed border-cc-13 px-10 py-10 text-center rounded-md"
           >
-            Go make one!
-          </button>
+            <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
+            <button
+              @click="createPen"
+              class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
+            >
+              Go make one!
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -275,7 +286,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+
+
+import api from "@/config/api.js";
+import PenCardLayout from "@/components/PenCardLayout.vue";
 
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
@@ -285,6 +301,15 @@ import ListIcon from "@/components/icons/ListIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
 
+const router = useRouter();
+
+const pens = ref([]);
+const total = ref(0);
+const page = ref(1);
+const hasNextPage = ref(false);
+
+const searchQuery = ref("");
+
 // Tabs
 const tabs = ["Pens", "Deleted"];
 const activeTab = ref("Pens");
@@ -292,7 +317,7 @@ const activeTab = ref("Pens");
 // Filters
 const showFilters = ref(false);
 const filters = ref({
-  privacy: "All",
+  privacy: "all",
 });
 
 // View/sort state
@@ -316,7 +341,7 @@ function toggleTag(tag) {
 
 // Methods
 function createPen() {
-  alert(`Create new item in "${activeTab.value}"`);
+  router.push("/pen");
 }
 
 function toggleFilters() {
@@ -332,4 +357,63 @@ const emptyStateMessage = computed(() => {
       return "Nothing here.";
   }
 });
+
+// 打API
+async function loadPens() {
+  try {
+    const { data } = await api.get("/api/my/pens", {
+      params: {
+        q: searchQuery.value, // 搜尋關鍵字
+        privacy: filters.value.privacy, // privacy: all/public/private
+        tag: selectedTags.value[0], // 只傳一個 tag，選第一個
+        sort: sortOption.value, // created / updated / popular
+        order: sortDirection.value, // asc / desc
+        view: viewMode.value, // grid / table
+        page: page.value, // 第幾頁
+      },
+    });
+
+    console.log("回傳資料：", data);
+    pens.value = data.results;
+    total.value = data.total;
+    hasNextPage.value = data.hasNextPage;
+  } catch (err) {
+    console.error("載入作品失敗", err);
+  }
+}
+
+onMounted(() => {
+  if (activeTab.value === "Pens") {
+    loadPens();
+  }
+});
+
+watch(
+  [activeTab, filters, selectedTags, sortOption, sortDirection, viewMode],
+  () => {
+    console.log(filters.value)
+    page.value = 1;
+    if (activeTab.value === "Pens") loadPens();
+  },
+  { deep: true }
+);
+
+watch(page, () => {
+  if (activeTab.value === "Pens") loadPens();
+});
+
+watch(activeTab, () => {
+  if (activeTab.value === "Deleted") {
+    pens.value = [];
+  } else {
+    loadPens();
+  }
+});
+
+
+/**
+ * createPen() 只是跳轉頁面，這個 function 要改名
+ * tag 搜尋還沒實作
+ * deleted 分頁還沒實作
+ */
 </script>
