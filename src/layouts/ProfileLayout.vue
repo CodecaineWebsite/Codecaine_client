@@ -130,9 +130,11 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
-const test = () => {
-  console.log("test");
+const test = async () => {
+  const res = await api.get(`/api/follows/followings/${route.params.username}`);
+  console.log("這人追蹤了誰", res.data);
 };
+console.log(test());
 
 const fetchUserInfo = async () => {
   try {
