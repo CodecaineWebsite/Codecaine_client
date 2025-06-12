@@ -1,9 +1,15 @@
 <template>
   <div class="group w-full bg-card-text text-white rounded-lg relative">
     <!-- 預覽 -->
-    <div class="relativegroup">
-      <!-- 圖片預覽 / iframe 預覽-->
-      <iframe :src="previewIframeUrl" width="100%" loading="lazy"></iframe>
+    <div class="relative aspect-video overflow-hidden rounded-md bg-black">
+      <!-- iframe 預覽 -->
+      <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
+        <iframe
+          :src="previewIframeUrl"
+          class="w-full h-full border-0"
+          loading="lazy"
+        ></iframe>
+      </div>
 
       <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
       <button

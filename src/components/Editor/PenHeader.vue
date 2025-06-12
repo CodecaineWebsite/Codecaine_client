@@ -61,7 +61,7 @@
   const isLoginModalShow = ref(false)
 
   const handleSave = async() => {
-    if(isLoggedIn.value) {
+    if(isLoggedIn) {
       // 執行儲存api
     } else {
       isLoginModalShow.value = true;
