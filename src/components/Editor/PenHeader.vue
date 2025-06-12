@@ -61,21 +61,33 @@
 
   const isLoginModalShow = ref(false)
 
-  const handleSave = async() => {
-    const userName =  userProfile.value.username;
-    
-    if(isLoggedIn) {
-      if(currentWork.value.id){
-        saveCurrentWork(currentWork.value);
-      } else{
-        const createdWork = await createNewWork(currentWork.value);
-        await router.push({ path: `/${userName}/pen/${currentId.value}` }); 
-      }
-    } else {
+  const handleSave = async () => {
+    const userName = userProfile.value.username;
+    const work = currentWork.value;
+
+    if (!isLoggedIn) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     }
-  }
+
+    if (work.id) {
+      saveCurrentWork(work);
+      return;
+    }
+
+    try {
+      const createdWork = await createNewWork(work);
+      if (createdWork?.id) {
+        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
+      } else {
+        alert('建立失敗，請稍後再試');
+      }
+    } catch (error) {
+      console.error('建立作品時發生錯誤：', error);
+      alert('建立失敗，請稍後再試');
+    }
+  };
+
   const closeModal = () => {
     isLoginModalShow.value = false;
     router.replace({
