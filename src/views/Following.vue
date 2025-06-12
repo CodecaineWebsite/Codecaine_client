@@ -3,7 +3,7 @@
     <!-- Toggle Switch -->
     <div class="max-w-[1140px] mx-auto mb-6">
       <div
-        class="bg-[#1E1F26] px-[18.75px] pt-[9.375px] pb-[7.5px] w-full rounded flex items-center"
+        class="bg-cc-16 px-[18.75px] pt-[9.375px] pb-[7.5px] w-full rounded flex items-center"
       >
         <span :class="[!isTop ? 'text-white' : 'text-gray-400', 'text-sm mr-2']"
           >Recent</span
@@ -11,7 +11,7 @@
         <label class="relative inline-block w-[30px] h-[16px] align-middle">
           <input type="checkbox" v-model="isTop" class="sr-only peer" />
           <span
-            class="absolute inset-0 bg-[#3d3f42] rounded-full peer-checked:bg-[#3d3f42] transition"
+            class="absolute inset-0 bg-cc-13 rounded-full peer-checked:bg-cc-13 transition"
           ></span>
           <span
             class="absolute top-[2px] left-[2px] w-[12px] h-[12px] bg-white rounded-full transition-transform peer-checked:translate-x-[14px]"
@@ -55,7 +55,7 @@
       class="swiper-prev absolute inset-y-0 left-0 z-[11] w-[90px] flex items-center justify-start group"
     >
       <div
-        class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"
+        class="relative z-10 ml-3 w-[38px] h-[70px] rounded bg-cc-14 hover:bg-cc-green-dark transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@
       class="swiper-next absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group"
     >
       <div
-        class="relative z-10 mr-3 w-[38px] h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"
+        class="relative z-10 mr-3 w-[38px] h-[70px] rounded bg-cc-14 hover:bg-cc-green-dark transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -133,17 +133,17 @@ const loadPage = async (pageNum) => {
     const newCards = res.data.results || [];
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("🚧 已載入到最後一頁，不會再載入更多");
+      console.log("已載入到最後一頁，不會再載入更多");
     }
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`📦 已載入第 ${pageNum} 頁`, newCards);
+    console.log(`已載入第 ${pageNum} 頁`, newCards);
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    console.error(`❌ 無法取得第 ${pageNum} 頁資料`, err);
-    hasMore.value = false; // 防止一直 retry
+    console.error(`無法取得第 ${pageNum} 頁資料`, err);
+    hasMore.value = false;
   }
 };
 
@@ -176,6 +176,6 @@ watch(isTop, async () => {
   loadedPages.value.clear();
   hasMore.value = true;
   await loadPage(1);
-  await loadPage(2); // 預載兩頁
+  await loadPage(2);
 });
 </script>
