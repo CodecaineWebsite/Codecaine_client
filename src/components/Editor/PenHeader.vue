@@ -129,7 +129,7 @@
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
         <a href="/" class="text-0 flex-shrink-0">
-          <img :src="Icon" alt="icon" class=" w-9 mr-1 md:mr-2">
+          <img :src="Icon" alt="icon" class="w-7 md:w-9 mr-1 md:mr-2">
         </a>
         <div class="flex flex-col gap-1 flex-1 min-w-0">
           <div class="flex items-center w-full min-w-0">
