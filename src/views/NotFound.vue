@@ -26,10 +26,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CodeCaine404',
-}
+<script setup>
+defineOptions({ name: 'CodeCaine404' })
 </script>
 
 <style>
