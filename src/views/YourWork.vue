@@ -234,30 +234,36 @@
 
       <!-- Main Content -->
       <div class="flex items-center justify-center mt-6">
-        <div v-if="activeTab === 'Deleted'" class="flex flex-col lg:flex-row w-full gap-4">
-          <div class="flex-1">
+        <div
+          v-if="activeTab === 'Deleted'"
+          class="flex flex-col lg:flex-row w-full gap-4"
+        >
+          <div class="flex-1 space-y-4">
             <!-- 有刪除作品時 -->
             <DeletedPenCard
               v-for="pen in pens"
               :key="pen.id"
               :pen="pen"
-              :onRestore="restorePen"
-              :onDelete="() => deletePen(pen.id)"
+              @restore="restorePen(pen.id)"
+              @delete="deletePen(pen.id)"
             />
+            <div
+              v-if="pens.length === 0"
+              class="flex-1 bg-page text-cc-1 p-6 rounded-md"
+            >
+              <h2 class="text-lg font-semibold mb-4">
+                You don't have any Deleted Items.
+              </h2>
+              <p class="text-sm leading-relaxed text-cc-9">
+                If you want to save our world, you must hurry. We don't know how
+                much longer we can withstand the nothing.
+              </p>
+              <p class="mt-3 italic text-cc-10 text-sm">
+                — Southern Oracle, The Neverending Story
+              </p>
+            </div>
           </div>
           <!-- 沒有任何刪除作品時顯示 -->
-          <div v-if="pens.length === 0" class="flex-1 bg-page text-cc-1 p-6 rounded-md">
-            <h2 class="text-lg font-semibold mb-4">
-              You don't have any Deleted Items.
-            </h2>
-            <p class="text-sm leading-relaxed text-cc-9">
-              If you want to save our world, you must hurry. We don't know how
-              much longer we can withstand the nothing.
-            </p>
-            <p class="mt-3 italic text-cc-10 text-sm">
-              — Southern Oracle, The Neverending Story
-            </p>
-          </div>
 
           <div
             class="w-full lg:w-64 bg-page text-cc-1 p-6 rounded flex flex-col items-start"
@@ -323,7 +329,7 @@ const searchQuery = ref("");
 
 // Tabs
 const tabs = ["Pens", "Deleted"];
-const activeTab = ref("Deleted");
+const activeTab = ref("Pens");
 
 // Filters
 const showFilters = ref(false);

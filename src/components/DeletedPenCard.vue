@@ -72,9 +72,8 @@ import PensIcon from "./icons/PensIcon.vue";
 
 defineProps({
   pen: Object, // 單一作品資料
-  onRestore: Function,
-  onDelete: Function,
 });
+const emit = defineEmits(["restore", "delete"]);
 
 const restoring = ref(false);
 const deleting = ref(false);
@@ -84,7 +83,7 @@ async function handleDelete() {
   try {
     deleting.value = true;
     showDeleteModal.value = false;
-    await onDelete?.(); // 父層傳入方法
+    emit("delete");
     // 改成 Toast
   } catch (err) {
     alert("系統發生錯誤，請稍後再試");
@@ -96,12 +95,12 @@ async function handleDelete() {
 async function handleRestore() {
   try {
     restoring.value = true;
-    // await onRestore?.();
+    emit("delete");
 
-    // 還原成功後可以加 toast 或 log（視需求）
+    // 還原成功後可以加 toast 或 log
     // showToast({ type: "success", message: "Restored!" });
-    // console.log(onRestore.value)
   } catch (err) {
+    alert("系統發生錯誤，請稍後再試")
     console.error("還原失敗", err);
     // showToast({ type: "error", message: "Restore failed." });
   } finally {
