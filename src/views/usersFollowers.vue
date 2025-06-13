@@ -19,7 +19,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import Usercard from "@/components/Usercard.vue";
+import Usercard from "@/components/UserCard.vue";
 import api from "@/config/api";
 import PaginationNav from "@/components/PaginationNav.vue";
 const route = useRoute();
