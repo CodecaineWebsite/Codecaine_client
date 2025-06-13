@@ -40,7 +40,7 @@
 
         <div
           v-else
-          class="border-t-2 border-panel bg-panel px-3 py-2 flex justify-between items-center text-sm mb-4"
+          class="border-t-2 border-panel bg-panel px-3 py-2 flex flex-col space-y-3 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 text-sm mb-4"
         >
           <!-- Left Controls -->
           <div class="flex items-stretch space-x-2 relative">
@@ -72,7 +72,7 @@
                 class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
               >
                 <FiltersIcon class="fill-current w-4 h-4 text-cc-1" />
-                <span>Filters</span>
+                <span>{{ filters.privacy !== 'all' ? filters.privacy : 'Filters' }}</span>
               </button>
 
               <div
