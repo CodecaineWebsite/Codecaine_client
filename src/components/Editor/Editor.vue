@@ -33,6 +33,7 @@
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
     roundedSelection: false,
+    autoClosingBrackets: 'always',
     renderLineHighlight: 'all',
     cursorBlinking: 'blink',
     wordWrap: 'on',
@@ -43,10 +44,11 @@
   watch(code, (newVal) => {
     emit('update:code', newVal)
   })
+  
 </script>
 
 <template>
-  <div class="w-full h-[calc(100%-43px)]">
+  <div class="w-full h-sm-[calc(100%-43px)] h-full">
     <MonacoEditor
       v-model:value="code"
       :language="language"
@@ -55,3 +57,21 @@
     />
   </div>
 </template>
+
+<style>
+  textarea.iPadShowKeyboard[widgetid="editor.contrib.ShowKeyboardWidget"] {
+    bottom: 0px !important;
+    right: 0px !important;
+    z-index: 9999 !important;
+
+    background-color: transparent !important;
+    background-size: 50% 50% !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none !important;
+    outline: none;
+    resize: none;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+</style>
