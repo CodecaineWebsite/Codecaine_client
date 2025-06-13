@@ -48,15 +48,13 @@
             <div class="flex rounded-md overflow-hidden">
               <input
                 v-model="searchQuery"
-                @keyup.enter="
-                  page = 1;
-                  loadPens();
-                "
+                @keyup.enter="handleSearch"
                 type="text"
                 placeholder="Search for..."
                 class="bg-input text-cc-1 text-sm px-3 py-1 border border-default placeholder-cc-9 focus:outline-none rounded-l-md"
               />
               <button
+                @click="handleSearch"
                 class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r-md"
               >
                 Search
@@ -107,10 +105,36 @@
                   v-if="showTags"
                   class="absolute z-50 bg-panel border border-default rounded shadow p-4 mt-2 w-64"
                 >
-                  <h3 class="text-sm font-semibold mb-2">Select Tags</h3>
+                  <div class="flex items-center gap-2 mb-2">
+                    <input
+                      v-model="tagInput"
+                      type="text"
+                      placeholder="Search tags..."
+                      class="w-full px-2 py-1 text-sm bg-input text-cc-1 border border-default rounded"
+                    />
+                    <button
+                      v-if="selectedTag"
+                      @click="clearSelectedTag"
+                      class="text-sm text-cc-9 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
                   <ul class="space-y-2 max-h-48 overflow-auto">
                     <li
-                      v-for="tag in allTags"
+                      v-for="tag in filteredTags"
+                      :key="tag"
+                      class="cursor-pointer hover:text-cc-green"
+                      @click="selectTag(tag)"
+                    >
+                      {{ tag }}
+                    </li>
+                  </ul>
+                  <!-- <h3 class="text-sm font-semibold mb-2">Select Tags</h3>
+                  <ul class="space-y-2 max-h-48 overflow-auto">
+                    <li
+                      v-for="tag in tags"
                       :key="tag"
                       class="flex justify-between items-center"
                     >
@@ -124,10 +148,10 @@
                         <span>{{ tag }}</span>
                       </label>
                     </li>
-                  </ul>
+                  </ul> -->
 
                   <button
-                    @click="selectedTags = []"
+                    @click="selectedTag = ''"
                     class="text-xs text-cc-9 hover:underline mt-3"
                   >
                     Clear All
@@ -278,11 +302,15 @@
           </div>
         </div>
 
-        <!-- Empty State -->
         <div v-else class="w-full">
           <div v-if="pens.length > 0">
             <PenCardLayout :pens="pens" :mode="viewMode" />
-            <!-- 若你有分頁按鈕，也放這裡 -->
+            <PaginationNav
+              :currentPage="page"
+              :totalPages="Math.ceil(total / 10)"
+              @prev="page--"
+              @next="page++"
+            />
           </div>
           <div
             v-else
@@ -309,6 +337,7 @@ import { useRouter } from "vue-router";
 import api from "@/config/api.js";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import DeletedPenCard from "@/components/DeletedPenCard.vue";
+import PaginationNav from "@/components/PaginationNav.vue";
 
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
@@ -343,17 +372,39 @@ const sortDirection = ref("desc");
 const viewMode = ref("grid");
 
 // Tags
+const tags = ref([]);
 const showTags = ref(false);
-const allTags = ref(["Vue", "JavaScript", "CSS", "Tailwind", "DarkMode"]); //假資料
-const selectedTags = ref([]);
+const tagInput = ref("");
+const selectedTag = ref("");
 
+const filteredTags = computed(() => {
+  if (!tagInput.value.trim()) return tags.value;
+  return tags.value.filter((tag) =>
+    tag.toLowerCase().includes(tagInput.value.toLowerCase())
+  );
+});
 // Tag method
-function toggleTag(tag) {
-  if (selectedTags.value.includes(tag)) {
-    selectedTags.value = selectedTags.value.filter((t) => t !== tag);
-  } else {
-    selectedTags.value.push(tag);
-  }
+// function toggleTag(tag) {
+//   if (selectedTags.value.includes(tag)) {
+//     selectedTags.value = selectedTags.value.filter((t) => t !== tag);
+//   } else {
+//     selectedTags.value.push(tag);
+//   }
+// }
+
+function selectTag(tag) {
+  selectedTag.value = tag;
+  tagInput.value = tag;
+  showTags.value = false;
+  page.value = 1;
+  loadPens();
+}
+
+function clearSelectedTag() {
+  selectedTag.value = "";
+  tagInput.value = "";
+  page.value = 1;
+  loadPens();
 }
 
 // Methods
@@ -375,6 +426,13 @@ const emptyStateMessage = computed(() => {
   }
 });
 
+function handleSearch() {
+  page.value = 1;
+  showFilters.value = false;
+  showTags.value = false;
+  loadPens();
+}
+
 // 打API
 async function loadPens() {
   try {
@@ -382,7 +440,7 @@ async function loadPens() {
       params: {
         q: searchQuery.value, // 搜尋關鍵字
         privacy: filters.value.privacy, // privacy: all/public/private
-        tag: selectedTags.value[0], // 只傳一個 tag，選第一個
+        tag: selectedTag.value, // 只傳一個 tag，選第一個
         sort: sortOption.value, // created / updated / popular
         order: sortDirection.value, // asc / desc
         view: viewMode.value, // grid / table
@@ -404,8 +462,18 @@ async function loadDeletedPens() {
   // 先以loadPens測試
   loadPens();
 }
+async function loadTags() {
+  try {
+    const { data } = await api.get("/api/my/tags");
+    tags.value = data;
+    console.log("載入使用者 tags 成功", tags.value);
+  } catch (err) {
+    console.error("載入使用者 tags 失敗", err);
+  }
+}
 
 onMounted(() => {
+  loadTags();
   if (activeTab.value === "Pens") {
     loadPens();
   }
@@ -416,9 +484,8 @@ onMounted(() => {
 });
 
 watch(
-  [activeTab, filters, selectedTags, sortOption, sortDirection, viewMode],
+  [activeTab, filters, selectedTag, sortOption, sortDirection, viewMode],
   () => {
-    console.log(filters.value);
     page.value = 1;
     if (activeTab.value === "Pens") loadPens();
   },
