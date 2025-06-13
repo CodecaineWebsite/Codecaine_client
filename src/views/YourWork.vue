@@ -234,8 +234,19 @@
 
       <!-- Main Content -->
       <div class="flex items-center justify-center mt-6">
-        <div v-if="activeTab === 'Deleted'" class="flex w-full gap-4">
-          <div class="flex-1 bg-page text-cc-1 p-6 rounded-md">
+        <div v-if="activeTab === 'Deleted'" class="flex flex-col lg:flex-row w-full gap-4">
+          <div class="flex-1">
+            <!-- 有刪除作品時 -->
+            <DeletedPenCard
+              v-for="pen in pens"
+              :key="pen.id"
+              :pen="pen"
+              :onRestore="restorePen"
+              :onDelete="() => deletePen(pen.id)"
+            />
+          </div>
+          <!-- 沒有任何刪除作品時顯示 -->
+          <div v-if="pens.length === 0" class="flex-1 bg-page text-cc-1 p-6 rounded-md">
             <h2 class="text-lg font-semibold mb-4">
               You don't have any Deleted Items.
             </h2>
@@ -249,7 +260,7 @@
           </div>
 
           <div
-            class="w-64 bg-page text-cc-1 p-6 rounded-md flex flex-col items-start"
+            class="w-full lg:w-64 bg-page text-cc-1 p-6 rounded flex flex-col items-start"
           >
             <div class="flex items-center text-lg font-bold mb-2">
               <span class="mr-2">🕒 3 Days</span>
@@ -289,9 +300,9 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 
-
 import api from "@/config/api.js";
 import PenCardLayout from "@/components/PenCardLayout.vue";
+import DeletedPenCard from "@/components/DeletedPenCard.vue";
 
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
@@ -312,7 +323,7 @@ const searchQuery = ref("");
 
 // Tabs
 const tabs = ["Pens", "Deleted"];
-const activeTab = ref("Pens");
+const activeTab = ref("Deleted");
 
 // Filters
 const showFilters = ref(false);
@@ -382,16 +393,26 @@ async function loadPens() {
   }
 }
 
+// TODO: 取得垃圾桶Pens API
+async function loadDeletedPens() {
+  // 先以loadPens測試
+  loadPens();
+}
+
 onMounted(() => {
   if (activeTab.value === "Pens") {
     loadPens();
+  }
+
+  if (activeTab.value === "Deleted") {
+    loadDeletedPens();
   }
 });
 
 watch(
   [activeTab, filters, selectedTags, sortOption, sortDirection, viewMode],
   () => {
-    console.log(filters.value)
+    console.log(filters.value);
     page.value = 1;
     if (activeTab.value === "Pens") loadPens();
   },
@@ -404,12 +425,49 @@ watch(page, () => {
 
 watch(activeTab, () => {
   if (activeTab.value === "Deleted") {
-    pens.value = [];
+    loadDeletedPens();
   } else {
     loadPens();
   }
 });
 
+async function deletePen(penId) {
+  try {
+    // 呼叫永久刪除 API
+    // DELETE /api/pens/:id
+    // await api.delete(`/api/pens/${penId}`);
+
+    // 從 pens 列表移除這筆
+    pens.value = pens.value.filter((pen) => pen.id !== penId);
+
+    console.log("刪除成功", penId);
+  } catch (err) {
+    console.error("刪除失敗", err);
+    // TODO: 加一個 toast 通知使用者
+  }
+}
+
+async function restorePen(penId) {
+  try {
+    // 呼叫還原 API
+    // await api.put(`/api/pens/${penId}/restore`);
+
+    // 從目前 pens 中移除這筆，因為已經不是 deleted 狀態
+    pens.value = pens.value.filter((pen) => pen.id !== penId);
+
+    console.log("還原成功", penId);
+  } catch (err) {
+    console.error("還原失敗", err);
+    // TODO: 可以加 toast 顯示錯誤訊息
+  }
+}
+
+/**
+ * deletePen()
+ * 與
+ * restorePen()
+ * 還沒實作
+ */
 
 /**
  * createPen() 只是跳轉頁面，這個 function 要改名
