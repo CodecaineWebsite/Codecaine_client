@@ -1,8 +1,7 @@
 <template>
-	<div class="content">
-		<h1>Following</h1>
-		<div>234users</div>
-		lorem
-	</div>
-	<!--內容一定要寫在div class="content"裡面!!!  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
+  <div class="content justify-center flex mt-6">
+    <div class="text-4xl bg-gray-800 p-12 rounded-lg">
+      <p>You haven't followed anyone yet.</p>
+    </div>
+  </div>
 </template>
