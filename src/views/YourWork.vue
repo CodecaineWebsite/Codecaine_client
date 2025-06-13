@@ -62,7 +62,11 @@
             </div>
 
             <!-- Filters -->
-            <div class="relative flex items-stretch">
+            <div
+              class="relative flex items-stretch"
+              ref="filtersDropdownRef"
+              @click.stop
+            >
               <button
                 @click="toggleFilters"
                 class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
@@ -94,7 +98,8 @@
             <!-- Tags 按鈕-->
             <div
               v-if="activeTab === 'Pens'"
-              
+              ref="tagsDropdownRef"
+              @click.stop
               :class="[
                 ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 bg-button-hover',
                 showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
@@ -111,11 +116,7 @@
               <!-- Tags 輸入與選單 -->
               <div class="relative flex items-center">
                 <!-- 展開中顯示輸入框 + 下拉選單 -->
-                <div
-                  v-if="showTags"
-                  
-                  class="relative h-full flex items-center"
-                >
+                <div v-if="showTags" class="relative h-full flex items-center">
                   <div class="flex items-center gap-2">
                     <input
                       v-model="tagInput"
@@ -133,7 +134,6 @@
                   </div>
 
                   <ul
-                  
                     class="absolute top-full left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
                   >
                     <li
@@ -151,7 +151,7 @@
                 <div
                   v-else
                   class="flex items-center gap-2 cursor-pointer"
-                  @click="showTags = true"
+                  @click="openTagMenu"
                 >
                   <span class="text-sm">
                     {{ selectedTag || "Tags" }}
@@ -336,7 +336,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from "vue";
 import { useRouter } from "vue-router";
 
 import api from "@/config/api.js";
@@ -381,6 +388,43 @@ const tags = ref([]);
 const showTags = ref(false);
 const tagInput = ref("");
 const selectedTag = ref("");
+
+const tagsDropdownRef = ref(null);
+const filtersDropdownRef = ref(null);
+
+function handleClickOutside(event) {
+  // Tags dropdown
+  if (
+    showTags.value &&
+    tagsDropdownRef.value &&
+    !tagsDropdownRef.value.contains(event.target)
+  ) {
+    showTags.value = false;
+  }
+
+  // Filters dropdown
+  if (
+    showFilters.value &&
+    filtersDropdownRef.value &&
+    !filtersDropdownRef.value.contains(event.target)
+  ) {
+    showFilters.value = false;
+  }
+}
+
+function openTagMenu() {
+  nextTick(() => {
+    showTags.value = true;
+  });
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 
 const filteredTags = computed(() => {
   if (!tagInput.value.trim()) return tags.value;
@@ -477,10 +521,7 @@ onMounted(() => {
   if (activeTab.value === "Deleted") {
     loadDeletedPens();
   }
-
 });
-
-
 
 watch(
   [activeTab, filters, selectedTag, sortOption, sortDirection, viewMode],
