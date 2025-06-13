@@ -251,17 +251,6 @@ export const useWorkStore = defineStore('work', () => {
     }
   };
   
-  // const moveToTrash = async () => {
-  //   try {
-  //     const res = await api.put(`/api/pens/${currentId.value}/trash`);
-  //     currentWork.value.is_trash = true;
-  //     currentWork.value.deleted_at = new Date();
-  //     return res.data;
-  // } catch (err) {
-  //   console.error('丟入垃圾桶失敗', err);
-  //   throw err;
-  // }
-  // };
   const moveToTrash = async (id) => {
   try {
     const res = await api.put(`/api/pens/${id}/trash`);
@@ -321,62 +310,3 @@ export const useWorkStore = defineStore('work', () => {
     deletePenPermanently,
   }
 })
-  
-  
-  // todo:
-  // fetch取得作品function 未來的works資料取得
-  // 儲存作品function
-  // 執行作品function
-  // 刪除作品function
-
-  // 更新作品Preview function
-
-
-
-
- 
-
-  // const fetchWorkFromId = async (id) => {
-  //   try {
-  //     const res = await api.get(`/api/pens/${id}`);
-  //     return res.data;
-  //     // currentWork.value = res.data;
-  //   } catch (err) {
-  //     console.error('取得作品失敗', err);
-  //   }
-  // };
-
-  // const createNewWork = async (newWorkData) => {
-  //   try {
-  //     const res = await api.post('/api/pens', newWorkData);
-  //     works.value.push(res.data);
-  //     currentId.value = res.data.id;
-  //     currentWork.value = res.data;
-  //     console.log('作品建立成功');
-  //   } catch (err) {
-  //     console.error('作品建立失敗', err);
-  //   }
-  // };
-
-  // const saveCurrentWork = async () => {
-  //   try {
-  //     const res = await api.put(`/api/pens/${currentId.value}`, currentWork.value);
-  //     currentWork.value.lastSavedTime = new Date();
-  //     console.log('儲存成功');
-  //   } catch (err) {
-  //     console.error('儲存失敗', err);
-  //   }
-  // };
-
-  // const deleteWork = async (id) => {
-  //   try {
-  //     await api.delete(`/api/pens/${id}`);
-  //     works.value = works.value.filter(work => work.id !== id);
-  //     if (currentId.value === id) {
-  //       handleCurrentIdChange(null);
-  //     }
-  //     console.log('刪除成功');
-  //   } catch (err) {
-  //     console.error('刪除失敗', err);
-  //   }
-  // };
