@@ -16,9 +16,10 @@
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
 
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
 
   const route = useRoute();
+  const router = useRouter();
   const workStore = useWorkStore()
   const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash }= workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
