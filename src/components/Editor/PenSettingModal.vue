@@ -19,8 +19,6 @@ const tabs = [
 ]
 const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
-const { toggleAutoSave, toggleAutoPreview } = workStore;
-console.log(currentWork.value.isAutoSave);
 
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
@@ -110,12 +108,12 @@ const removeLink = (index) => {
         <div class="w-full h-0.5 bg-gray-600 mb-4"></div>
       </div>
       <div class="md:flex h-full px-4 block overflow-y-auto ">
-        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key"  class="whitespace-nowrap transition hover:bg-gray-600 px-1.5 md:pl-4 ml-1 md:ml-0 relative -left-4 before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
+        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-auto">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative -left-4 before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
             {{  tab.label }}
           </li>
         </ul>
-        <div class="md:hidden w-full flex my-3 md:before:content-none before:content-[''] before:relative before:w-full before:h-0.5 before:bg-gray-700 before:mt-2"></div>
+        <div class="md:hidden w-full flex mb-1 md:before:content-none before:content-[''] before:relative before:w-full before:h-0.5 before:bg-gray-700"></div>
         <div class="md:w-3/4 w-full h-11/12 overflow-y-auto">
 
           <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">

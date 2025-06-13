@@ -23,6 +23,14 @@
 
   const route = useRoute();
   const router = useRouter();
+
+  const handleSignUp = () => {
+    router.push('/signup')
+  }
+  const handleLogin = () => {
+    router.push('/login')
+  }
+
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { userProfile } = storeToRefs(authStore);
@@ -148,27 +156,36 @@
 <template>
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
-        <a href="/" class="flex text-0 ">
-          <img :src="Icon" alt="icon" class=" w-9 mb-2 ml-1 mr-2 ">
+        <a href="/" class="text-0 flex-shrink-0">
+          <img :src="Icon" alt="icon" class="w-7 md:w-9 mr-1 md:mr-2">
         </a>
-        <div>
-          <template v-if="isEditing">
-            <input ref="titleInput" v-model="title" @blur="stopEdit" @keyup.enter="stopEdit"
-              class="bg-transparent border-b border-white text-white outline-none" />
-          </template>
-          <template v-else>
-            <span class="text-white font-black">{{ title.length? title : "Untitled" }}</span>
-          </template>
-          <button type="button" class="ml-1" @click="toggleEdit">
-            <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
-          </button>
-          <div>
-            <a href="#" class="text-sm text-gray-400">{{ userName ? userName : "Captain Anonymous" }}</a>
+        <div class="flex flex-col gap-1 flex-1 min-w-0">
+          <div class="flex items-center w-full min-w-0">
+            <template v-if="isEditing">
+              <input
+                ref="titleInput"
+                v-model="title"
+                @blur="stopEdit"
+                @keyup.enter="stopEdit"
+                class="h-3 md:h-5 max-w-[100px] bg-transparent text-white font-black text-sm md:text-lg leading-none outline-none w-full appearance-none"
+              />
+            </template>
+            <template v-else>
+              <span class="h-3 md:h-5 text-white font-black text-sm md:text-lg leading-none overflow-hidden text-ellipsis whitespace-nowrap max-w-[100px]">
+                {{ title.length ? title : "Untitled" }}
+              </span>
+            </template>
+            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing">
+              <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
+            </button>
           </div>
+          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis">
+            {{ userName ? userName : "Captain Anonymous" }}
+          </a>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 mr-3">
+      <div class="flex items-center gap-1 md:gap-2 mr-2 md:mr-3 ">
         <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
           <div class="h-7 flex">
             <Like class="w-4 "/>
@@ -182,8 +199,8 @@
           </div>
         </button>
 
-        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!currentWork.isAutoPreview && viewMode !== 'full'" type="button" class="text-[aliceblue] rounded px-1 py-1 md:px-4 md:py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="runPreview">
+          <div class="h-7 flex items-center gap-1 text-xs md:text-15">
             <Run class="w-4" />
             <span>Run</span>
           </div>
@@ -258,7 +275,8 @@
           </div>
         </div>
         <div v-if="navListVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleList"></div>
-        <button v-if="viewMode !== 'full'"  @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-2 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <!-- todo -->
+        <button v-if="viewMode !== 'full'"  @click.prevent="toggleList" type="button" class="flex md:hidden text-[aliceblue] rounded px-1 py-1 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex justify-between w-6 items-center">
             <div class="transition-transform h-0.5 bg-gray-200 relative before:content-[''] before:w-1.5 before:h-0.5 before:bg-gray-200 before:absolute before:-top-1.5 before:left-0 after:content-[''] after:w-3.5 after:h-0.5 after:bg-gray-200 after:absolute after:-bottom-1.5 after:left-0" :class="navListVisible ? 'before:w-2 w-1.5' : 'before:w-1.5 w-2.5'"></div>
             <Arrow class="w-3 h-3 fill-current transition-transform self-start mt-1.5" :class=" {'scale-y-[-1]':navListVisible}"/>
@@ -339,13 +357,13 @@
           </div>
         </div>
 
-        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-2 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!isLoggedIn" type="button" class="text-black rounded px-1 py-1 md:px-4 md:py-2 bg-[#47cf73] hover:cursor-pointer" @click="handleSignUp">
+          <div class="h-7 flex items-center gap-1 whitespace-nowrap text-xs md:text-15">
             <span>Sign Up</span>
           </div>
         </button>
-        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-2 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer">
-          <div class="h-7 flex items-center gap-1">
+        <button v-if="!isLoggedIn" type="button" class="text-[aliceblue] rounded px-1 py-1 md:px-4 md:py-2 bg-[#444857] hover:cursor-pointer" @click="handleLogin">
+          <div class="h-7 flex items-center gap-1 whitespace-nowrap text-xs md:text-15">
             <span>Log In</span>
           </div>
         </button>

@@ -1,6 +1,5 @@
 <script setup>
-	import { ref, onMounted, onUnmounted, watch } from 'vue';
-  import Arrow from '../assets/arrow.vue';
+	import { ref, onMounted, onUnmounted, onBeforeUnmount, watch } from 'vue';
   import Settings from '../assets/settings.vue';
   import Close from '../assets/close.vue';
   import HTMLIcon from '../assets/html.vue';
@@ -39,7 +38,7 @@
     { id: 'js', label: 'JS' }
   ]
 
-const selectedTab = ref('html')
+  const selectedTab = ref('html')
   const isMobile = ref(false)
   const checkMobile = () => {
     isMobile.value = window.innerWidth < 640
@@ -50,6 +49,12 @@ const selectedTab = ref('html')
   })
   onUnmounted(() => {
     window.removeEventListener('resize', checkMobile)
+  })
+
+  watch(isMobile, (mobile) => {
+    if (mobile && selectedLayout.value.id !== 'center') {
+      selectedLayout.value = layoutOptions.find(opt => opt.id === 'center')
+    }
   })
 
   watch(currentWork, (newWork) => {
@@ -146,6 +151,19 @@ const selectedTab = ref('html')
   let startY = 0
   let initialHeight = 0
   const editorWrapperRef = ref(null)
+
+  function updateEditorSizeByDevice() {
+    editorWrapperSize.value = window.innerWidth < 640 ? 200 : 300
+  }
+
+  onMounted(() => {
+    updateEditorSizeByDevice()
+    window.addEventListener('resize', updateEditorSizeByDevice)
+  })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', updateEditorSizeByDevice)
+  })
   
   function startEditorDrag(e) {
     e.preventDefault()
@@ -337,24 +355,22 @@ const selectedTab = ref('html')
     <AnonLoginModal/>
     <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" />
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
-      <!--  -->
-      <div>
+
         <!-- 手機 Tabs -->
-        <div v-if="isMobile" class="flex border-b border-gray-600 mb-1">
+        <div v-if="isMobile" class="flex border-b border-gray-600 mb-1 px-2 gap-1">
           <button
             v-for="tab in tabs"
             :key="tab.id"
             @click="selectedTab = tab.id"
             :class="[
-              'flex-1 py-2 text-center font-semibold',
-              selectedTab === tab.id ? 'border-b-2 border-gray-300' : 'text-gray-600'
+              'px-3 py-1 text-center font-medium my-1 text-sm bg-cc-14',
+              selectedTab === tab.id ? 'bg-gray-600 ' : 'text-gray-500 '
             ]"
           >
             {{ tab.label }}
           </button>
         </div>
 
-        <!-- 編輯器容器 -->
         <div
           ref="editorWrapperRef"
           class="flex overflow-hidden"
@@ -406,7 +422,6 @@ const selectedTab = ref('html')
                 :class="selectedLayout.id === 'center' ? 'w-4 cursor-col-resize border-x' : 'h-0 cursor-row-resize border-y'"
                 @pointerdown="(e) => startColumnDrag(0, e.currentTarget, e)"
               ></div>
-
 
               <div :style="selectedLayout.id === 'center'
                 ? { flexBasis: columnSizes[1] + '%', minWidth: '0px' }
@@ -468,7 +483,6 @@ const selectedTab = ref('html')
             </div>
           </template>
 
-          <!-- 手機只顯示選中Tab的編輯器 -->
           <template v-else>
             <div class="relative flex-grow min-w-0">
               <Editor
@@ -492,7 +506,6 @@ const selectedTab = ref('html')
             </div>
           </template>
         </div>
-      </div>
 
       <div
         :class="[
@@ -507,10 +520,8 @@ const selectedTab = ref('html')
         @pointerdown="startEditorDrag"
       ></div>
 
-      <!-- preview -->
       <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
         <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
-          <!-- Preview iframe -->
           <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
         </div>
         <div v-show="isConsoleShow">

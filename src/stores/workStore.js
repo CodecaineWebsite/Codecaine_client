@@ -13,8 +13,8 @@ export const useWorkStore = defineStore('work', () => {
     links:[],
     cdns: [], 
     view_mode: "center",
-    isAutosave: true,
-    isAutopreview: true,
+    isAutoSave: true,
+    isAutoPreview: true,
     is_private: false,
     tags:[],
   }
