@@ -6,29 +6,22 @@
       </li>
     </ul>
   </div>
-  <div class="flex gap-2 justify-center mt-4 mb-12">
-    <button
-      :disabled="page === 1"
-      @click="page--"
-      class="p-2 bg-gray-600 rounded disabled:opacity-50 cursor-pointer hover:bg-gray-500"
-    >
-      ＜Prev
-    </button>
-    <button
-      :disabled="page === totalPages"
-      @click="page++"
-      class="p-2 bg-gray-600 rounded disabled:opacity-50 cursor-pointer hover:bg-gray-500"
-    >
-      Next＞
-    </button>
+  <div>
+    <PaginationNav
+      :currentPage="page"
+      :totalPages="totalPages"
+      @prev="page--"
+      @next="page++"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import Usercard from "@/components/Usercard.vue";
 import api from "@/config/api";
-import { useRoute } from "vue-router";
+import PaginationNav from "@/components/PaginationNav.vue";
 const route = useRoute();
 
 const users = ref([]);
@@ -135,7 +128,7 @@ onMounted(() => {
     { id: 2, display_name: "Bob", username: "bob", profile_image: "" },
     { id: 1, display_name: "Alice", username: "alice", profile_image: "" },
     { id: 2, display_name: "Bob", username: "bob", profile_image: "" },
-    { id: 2, display_name: "Bob", username: "bob", profile_image: "" },
+    { id: 2, display_name: "last", username: "bob", profile_image: "" },
   ];
 });
 </script>
