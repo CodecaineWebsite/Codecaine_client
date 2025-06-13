@@ -65,7 +65,7 @@
       // 執行儲存api
     } else {
       isLoginModalShow.value = true;
-      router.push({ path: '/pen', query: { modal: 'login' } })
+      router.push({ path: route.path, query: { modal: 'login' } })
     }
   }
   const closeModal = () => {
