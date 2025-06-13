@@ -107,9 +107,9 @@
 import { onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "../stores/useAuthStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import api from "@/config/api";
-import FollowBtn from "../components/FollowBtn.vue";
+import FollowBtn from "@/components/FollowBtn.vue";
 const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
