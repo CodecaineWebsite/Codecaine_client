@@ -22,7 +22,7 @@
         <div class="ml-auto">
           <button
             class="bg-cc-13 px-3 py-1 text-sm hover:bg-cc-12 rounded-md flex items-center space-x-2"
-            @click="createPen"
+            @click="goPen"
           >
             <!-- 按下後應導去Pen頁面 -->
             <PensIcon class="fill-current w-4 h-4 text-cc-1" />
@@ -43,29 +43,29 @@
           class="border-t-2 border-panel bg-panel px-3 py-2 flex justify-between items-center text-sm mb-4"
         >
           <!-- Left Controls -->
-          <div class="flex items-center space-x-2 relative">
+          <div class="flex items-stretch space-x-2 relative">
             <!-- Search -->
-            <div class="flex rounded-md overflow-hidden">
+            <div class="flex rounded overflow-hidden">
               <input
                 v-model="searchQuery"
                 @keyup.enter="handleSearch"
                 type="text"
                 placeholder="Search for..."
-                class="bg-input text-cc-1 text-sm px-3 py-1 border border-default placeholder-cc-9 focus:outline-none rounded-l-md"
+                class="bg-input text-cc-1 text-sm px-3 py-1 placeholder-cc-9 focus:outline-none rounded-l"
               />
               <button
                 @click="handleSearch"
-                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r-md"
+                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r"
               >
                 Search
               </button>
             </div>
 
             <!-- Filters -->
-            <div class="relative">
+            <div class="relative flex items-stretch">
               <button
                 @click="toggleFilters"
-                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
+                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
               >
                 <FiltersIcon class="fill-current w-4 h-4 text-cc-1" />
                 <span>Filters</span>
@@ -73,14 +73,15 @@
 
               <div
                 v-if="showFilters"
-                class="absolute top-full left-0 mt-2 bg-panel border border-cc-13 rounded-md shadow-lg p-4 w-56 z-50"
+                ref="filtersRef"
+                class="absolute top-full left-0 bg-cc-16 rounded shadow-md p-4 w-56 z-50"
               >
                 <h3 class="text-sm font-semibold text-cc-1 mb-3">Filters</h3>
                 <div class="mb-3">
                   <label class="block text-sm mb-1">Privacy</label>
                   <select
                     v-model="filters.privacy"
-                    class="w-full px-2 py-1 bg-input text-cc-1 border border-default rounded-md"
+                    class="w-full px-2 py-1 bg-input text-cc-1 border border-default rounded"
                   >
                     <option value="all">All</option>
                     <option value="public">Public</option>
@@ -91,26 +92,36 @@
             </div>
 
             <!-- Tags 按鈕-->
-            <div>
+            <div
+              v-if="activeTab === 'Pens'"
+              
+              :class="[
+                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 bg-button-hover',
+                showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
+              ]"
+            >
+              <!-- Toggle 開關 -->
               <button
                 @click="showTags = !showTags"
-                v-if="activeTab === 'Pens'"
-                class="flex items-center space-x-1 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
+                class="flex items-center space-x-2 text-cc-1"
               >
-                <TagsIcon class="fill-current w-4 h-4 text-cc-1" />
-                <span>Tags</span>
+                <TagsIcon class="fill-current w-4 h-4" />
               </button>
-              <div class="relative">
+
+              <!-- Tags 輸入與選單 -->
+              <div class="relative flex items-center">
+                <!-- 展開中顯示輸入框 + 下拉選單 -->
                 <div
                   v-if="showTags"
-                  class="absolute z-50 bg-panel border border-default rounded shadow p-4 mt-2 w-64"
+                  
+                  class="relative h-full flex items-center"
                 >
-                  <div class="flex items-center gap-2 mb-2">
+                  <div class="flex items-center gap-2">
                     <input
                       v-model="tagInput"
                       type="text"
                       placeholder="Search tags..."
-                      class="w-full px-2 py-1 text-sm bg-input text-cc-1 border border-default rounded"
+                      class="w-full text-sm text-cc-1 px-2 focus:outline-none"
                     />
                     <button
                       v-if="selectedTag"
@@ -121,40 +132,36 @@
                     </button>
                   </div>
 
-                  <ul class="space-y-2 max-h-48 overflow-auto">
+                  <ul
+                  
+                    class="absolute top-full left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
+                  >
                     <li
                       v-for="tag in filteredTags"
                       :key="tag"
-                      class="cursor-pointer hover:text-cc-green"
+                      class="px-2 py-0.5 cursor-pointer bg-cc-17 hover:bg-cc-12"
                       @click="selectTag(tag)"
                     >
                       {{ tag }}
                     </li>
                   </ul>
-                  <!-- <h3 class="text-sm font-semibold mb-2">Select Tags</h3>
-                  <ul class="space-y-2 max-h-48 overflow-auto">
-                    <li
-                      v-for="tag in tags"
-                      :key="tag"
-                      class="flex justify-between items-center"
-                    >
-                      <label class="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          :value="tag"
-                          :checked="selectedTags.includes(tag)"
-                          @change="toggleTag(tag)"
-                        />
-                        <span>{{ tag }}</span>
-                      </label>
-                    </li>
-                  </ul> -->
+                </div>
 
+                <!-- 沒展開時顯示選到的 tag 或字樣 -->
+                <div
+                  v-else
+                  class="flex items-center gap-2 cursor-pointer"
+                  @click="showTags = true"
+                >
+                  <span class="text-sm">
+                    {{ selectedTag || "Tags" }}
+                  </span>
                   <button
-                    @click="selectedTag = ''"
-                    class="text-xs text-cc-9 hover:underline mt-3"
+                    v-if="selectedTag"
+                    @click.stop="clearSelectedTag"
+                    class="text-sm text-cc-9 hover:text-white"
                   >
-                    Clear All
+                    ✕
                   </button>
                 </div>
               </div>
@@ -162,11 +169,9 @@
           </div>
 
           <!-- Right Controls -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-stretch space-x-2">
             <!-- View Mode -->
-            <div
-              class="inline-flex rounded-md overflow-hidden border border-default"
-            >
+            <div class="inline-flex rounded overflow-hidden">
               <button
                 :class="[
                   'px-3 py-2',
@@ -318,7 +323,7 @@
           >
             <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
             <button
-              @click="createPen"
+              @click="goPen"
               class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
             >
               Go make one!
@@ -331,7 +336,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 
 import api from "@/config/api.js";
@@ -383,14 +388,6 @@ const filteredTags = computed(() => {
     tag.toLowerCase().includes(tagInput.value.toLowerCase())
   );
 });
-// Tag method
-// function toggleTag(tag) {
-//   if (selectedTags.value.includes(tag)) {
-//     selectedTags.value = selectedTags.value.filter((t) => t !== tag);
-//   } else {
-//     selectedTags.value.push(tag);
-//   }
-// }
 
 function selectTag(tag) {
   selectedTag.value = tag;
@@ -408,7 +405,7 @@ function clearSelectedTag() {
 }
 
 // Methods
-function createPen() {
+function goPen() {
   router.push("/pen");
 }
 
@@ -448,7 +445,7 @@ async function loadPens() {
       },
     });
 
-    console.log("回傳資料：", data);
+    console.log("回傳資料：", data.results);
     pens.value = data.results;
     total.value = data.total;
     hasNextPage.value = data.hasNextPage;
@@ -466,7 +463,6 @@ async function loadTags() {
   try {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
-    console.log("載入使用者 tags 成功", tags.value);
   } catch (err) {
     console.error("載入使用者 tags 失敗", err);
   }
@@ -481,7 +477,10 @@ onMounted(() => {
   if (activeTab.value === "Deleted") {
     loadDeletedPens();
   }
+
 });
+
+
 
 watch(
   [activeTab, filters, selectedTag, sortOption, sortDirection, viewMode],
