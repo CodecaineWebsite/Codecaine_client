@@ -56,7 +56,6 @@
             v-if="userInfo.username != authStore.userProfile.username"
             :current-user="authStore.userProfile.id"
             :target-user="userInfo.username"
-            @update="test"
           />
         </div>
       </div>
@@ -69,33 +68,21 @@
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="caines"
-            :class="
-              route.path.startsWith('/' + route.params.username + '/caines')
-                ? 'text-white'
-                : ''
-            "
+            :class="route.path.includes('caines') ? 'text-white' : ''"
           >
-            caines
+            Caines
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Following"
-            :class="
-              route.path === '/' + route.params.username + '/following'
-                ? 'text-white'
-                : ''
-            "
+            :class="route.name === 'Profilefollowing' ? 'text-white' : ''"
           >
             Following
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Followers"
-            :class="
-              route.path === '/' + route.params.username + '/followers'
-                ? 'text-white'
-                : ''
-            "
+            :class="route.name === 'Profilefollowers' ? 'text-white' : ''"
           >
             Followers
           </button>
@@ -129,12 +116,6 @@ const Following = () => {
 const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
-
-const test = async () => {
-  const res = await api.get(`/api/follows/followings/${route.params.username}`);
-  console.log("這人追蹤了誰", res.data);
-};
-console.log(test());
 
 const fetchUserInfo = async () => {
   try {

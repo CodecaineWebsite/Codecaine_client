@@ -66,7 +66,7 @@ const router = createRouter({
             },
             {
               path: "caines",
-              name: "userscaines",
+              name: "Profilecaines",
               component: () => import("../views/usersCaines.vue"),
               children: [
                 {
@@ -77,7 +77,7 @@ const router = createRouter({
                 },
                 {
                   path: "showcase",
-                  name: "cainesshowcase",
+                  name: "cainesShowcase",
                   component: () => import("../views/Showcase.vue"),
                 },
                 {
@@ -87,12 +87,12 @@ const router = createRouter({
                 },
                 {
                   path: "private",
-                  name: "cainesprivate",
+                  name: "cainesPrivate",
                   component: () => import("../views/Private.vue"),
                 },
                 {
                   path: "loved",
-                  name: "cainesloved",
+                  name: "cainesLoved",
                   component: () => import("../views/Loved.vue"),
                 },
               ],
