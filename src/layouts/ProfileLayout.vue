@@ -195,6 +195,8 @@ watch(
   () => route.params.username,
   () => {
     fetchUserInfo();
+    countFollowers();
+    countFollowing();
   }
 );
 </script>
