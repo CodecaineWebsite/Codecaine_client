@@ -3,7 +3,7 @@
     <button
       v-if="currentPage > 1"
       @click="$emit('prev')"
-      class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1"
+      class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1 cursor-pointer"
     >
       <LeftArrowIcon class="fill-current w-2" />
       Prev
@@ -12,7 +12,7 @@
     <button
       v-if="currentPage < totalPages"
       @click="$emit('next')"
-      class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1"
+      class="px-4 py-3 bg-[#444857] hover:bg-[#5A5F73] rounded-sm flex gap-1 cursor-pointer"
     >
       Next
       <RightArrowIcon class="fill-current w-2" />
