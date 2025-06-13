@@ -28,6 +28,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    historyApiFallback: true,  // 處理前端路由的404問題
+  },
   optimizeDeps: {
     include: ['monaco-editor/esm/vs/editor/editor.api'],
   },
