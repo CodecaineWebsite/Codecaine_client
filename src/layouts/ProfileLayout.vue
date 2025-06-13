@@ -49,9 +49,17 @@
             class="bg-black h-full w-full border-gray-700 border-6"
           />
         </div>
-        <div class="flex justify-center items-center gap-4">
-          <a :href="`/${route.params.username}/following`">following</a>
-          <a :href="`/${route.params.username}/followers`">followers</a>
+        <div class="flex justify-center items-center gap-4 text-gray-400">
+          <a
+            :href="`/${route.params.username}/following`"
+            class="hover:text-white"
+            ><span class="text-white">{{ userFollowings }}</span> Following</a
+          >
+          <a
+            :href="`/${route.params.username}/followers`"
+            class="hover:text-white"
+            ><span class="text-white">{{ userFollowers }}</span> Followers</a
+          >
           <FollowBtn
             v-if="userInfo.username != authStore.userProfile.username"
             :current-user="authStore.userProfile.id"
@@ -106,7 +114,8 @@ const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
 const authStore = useAuthStore();
-
+const userFollowers = ref(0);
+const userFollowings = ref(0);
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -115,6 +124,33 @@ const Following = () => {
 };
 const Followers = () => {
   router.push(`/${route.params.username}/followers`);
+};
+
+const countFollowers = async () => {
+  try {
+    const res = await api.get(
+      `/api/follows/followers/${route.params.username}`
+    );
+    if (res) {
+      const { data } = res;
+      userFollowers.value = data.followers.length;
+    }
+  } catch (e) {
+    return 0;
+  }
+};
+const countFollowing = async () => {
+  try {
+    const res = await api.get(
+      `/api/follows/followings/${route.params.username}`
+    );
+    if (res) {
+      const { data } = res;
+      userFollowings.value = data.followings.length;
+    }
+  } catch (e) {
+    return 0;
+  }
 };
 
 const fetchUserInfo = async () => {
@@ -149,7 +185,11 @@ const fetchUserInfo = async () => {
   }
 };
 
-onMounted(fetchUserInfo);
+onMounted(() => {
+  fetchUserInfo();
+  countFollowers();
+  countFollowing();
+});
 
 watch(
   () => route.params.username,
