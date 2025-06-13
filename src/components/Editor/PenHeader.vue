@@ -1,16 +1,12 @@
 <script setup>
 	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
-
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import UserMenu from '../UserMenu.vue';
-  
   import PenIcon from '../icons/PenIcon.vue';
-
   import PenSettingModal from './PenSettingModal.vue';
-  
   import Icon from '../../assets/icon.svg';
   import Edit from '../../assets/edit.vue';
   import Like from '../../assets/like.vue';
@@ -56,25 +52,20 @@
     get: () => currentWork.value.title,
     set: (val) => currentWork.value.title = val,
   })
-
   provide('title', title)
 
   const isLoginModalShow = ref(false)
-
-    const handleSave = async () => {
-    const userName = userProfile.value.username;
+  const handleSave = async () => {
     const work = currentWork.value;
-
     if (!isLoggedIn) {
       isLoginModalShow.value = true;
       return router.push({ path: '/pen', query: { modal: 'login' } });
     }
-
+    const userName = userProfile.value.username;
     if (work.id) {
       saveCurrentWork(work);
       return;
     }
-
     try {
       const createdWork = await createNewWork(work);
       if (createdWork?.id) {
