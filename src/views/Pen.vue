@@ -23,7 +23,9 @@
   const workStore = useWorkStore();
   const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash }= workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  handleCurrentIdChange(route.params.id)
+  onMounted( () => {
+    handleCurrentIdChange(route.params.id)
+  })
 
   const penHeader = ref(null)
   const htmlCode = ref('');
