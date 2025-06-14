@@ -1,21 +1,20 @@
 <script setup>
-	import { provide, ref, watch, nextTick } from 'vue';
+	import { provide, ref, watch, nextTick, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
-  import UserMenu from '../UserMenu.vue';
-  import PenIcon from '../icons/PenIcon.vue';
-  import PenSettingModal from './PenSettingModal.vue';
-  import Icon from '../../assets/icon.svg';
-  import Edit from '../../assets/edit.vue';
-  import Like from '../../assets/like.vue';
-  import Run from '../../assets/run.vue';
-  import Cloud from '../../assets/cloud.vue';
+  import UserMenu from '@/components/UserMenu.vue';
+  import PenIcon from '@/components/icons/PenIcon.vue';
+  import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
+  import Icon from '@/assets/icon.svg';
+  import Edit from '@/assets/edit.vue';
+  import Like from '@/assets/like.vue';
+  import Run from '@/assets/run.vue';
+  import Cloud from '@/assets/cloud.vue';
   import Arrow from '@/assets/arrow.vue';
-  import Settings from '../../assets/settings.vue';
-  import Layout from '../../assets/layout.vue';
-  import { computed } from 'vue';
+  import Settings from '@/assets/settings.vue';
+  import Layout from '@/assets/layout.vue';
   import { useHandleSave } from '@/utils/handleWorkSave';
 
   const route = useRoute();
