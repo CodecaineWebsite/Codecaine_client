@@ -1,8 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import api from '../config/api'
+
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
+    id: null,
     title: "",
     description: "",
     html: "",
@@ -41,8 +43,8 @@ export const useWorkStore = defineStore('work', () => {
         javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
-        cdns: data.resources_js,
-        links: data.resources_css
+        cdns: data.resources_js || [],
+        links: data.resources_css || []
       }
       
     } else {
@@ -195,6 +197,98 @@ export const useWorkStore = defineStore('work', () => {
     }
   };
 
+  const createNewWork = async (newWorkData) => {
+    try {
+    const payload = {
+      title: newWorkData.title || '',
+      description: newWorkData.description || '',
+      html_code: newWorkData.html || '',
+      css_code: newWorkData.css || '',
+      js_code: newWorkData.javascript || '',
+      view_mode: newWorkData.view_mode,
+      is_autosave: newWorkData.isAutoSave ?? false,
+      is_autopreview: newWorkData.isAutoPreview ?? true,
+      resources_css: newWorkData.links || [],
+      resources_js: newWorkData.cdns || [],
+      tags: newWorkData.tags || [],
+    };
+
+    const res = await api.post('/api/pens', payload);
+    const createdWork = res.data;
+
+    works.value.unshift(res.data);
+    currentId.value = res.data.id;
+    currentWork.value.id = res.data.id;
+
+    console.log('作品建立成功');
+    return createdWork;
+  } catch (err) {
+    console.error('作品建立失敗', err);
+    return null;
+  }
+  };
+
+    const saveCurrentWork = async () => {
+    try {
+      const payload = {
+        title: currentWork.value.title,
+        description: currentWork.value.description,
+        html_code: currentWork.value.html,
+        css_code: currentWork.value.css,
+        js_code: currentWork.value.javascript,
+        view_mode: currentWork.value.view_mode,
+        is_autosave: currentWork.value.isAutoSave ?? false,
+        is_autopreview: currentWork.value.isAutoPreview ?? true,
+        resources_css: currentWork.value.links || [],
+        resources_js: currentWork.value.cdns || [],
+        tags: currentWork.value.tags || [],
+      };
+      const res = await api.put(`/api/pens/${currentId.value}`, payload);
+      currentWork.value.lastSavedTime = new Date();
+      console.log('儲存成功');
+    } catch (err) {
+      console.error('儲存失敗', err);
+    }
+  };
+  
+  const moveToTrash = async (id) => {
+  try {
+    const res = await api.put(`/api/pens/${id}/trash`);
+    
+    if (res.data?.data) {
+      currentWork.value.is_trash = true;
+      currentWork.value.deleted_at = new Date();
+      return true;
+    } else {
+      console.warn('API 回傳失敗結果：', res.data);
+      return false;
+    }
+  } catch (err) {
+    console.error('丟入垃圾桶失敗', err);
+    throw err;
+  }
+};
+
+  const markAsDeleted = async (id) => {
+    try {
+      const res = await api.put(`/api/pens/${id}/delete`);
+      currentWork.value.is_deleted = true;
+    } catch (err) {
+      console.error('標記刪除失敗', err);
+      throw err;
+    }
+  };
+
+  const deletePenPermanently = async (id) => {
+    try {
+      const res = await api.delete(`/api/pens/${id}`);
+      return res.data;
+    } catch (err) {
+      console.error('永久刪除失敗', err);
+      throw err;
+    }
+  };
+
   return { 
     works,
     currentWork,
@@ -209,67 +303,10 @@ export const useWorkStore = defineStore('work', () => {
 
     fetchWorks,
     fetchWorkFromId,
-    // saveCurrentWork,
-    // deleteWork,
-    // createNewWork,
+    createNewWork,
+    saveCurrentWork,
+    moveToTrash,
+    markAsDeleted,
+    deletePenPermanently,
   }
 })
-  
-  
-  // todo:
-  // fetch取得作品function 未來的works資料取得
-  // 儲存作品function
-  // 執行作品function
-  // 刪除作品function
-
-  // 更新作品Preview function
-
-
-
-
- 
-
-  // const fetchWorkFromId = async (id) => {
-  //   try {
-  //     const res = await api.get(`/api/pens/${id}`);
-  //     return res.data;
-  //     // currentWork.value = res.data;
-  //   } catch (err) {
-  //     console.error('取得作品失敗', err);
-  //   }
-  // };
-
-  // const createNewWork = async (newWorkData) => {
-  //   try {
-  //     const res = await api.post('/api/pens', newWorkData);
-  //     works.value.push(res.data);
-  //     currentId.value = res.data.id;
-  //     currentWork.value = res.data;
-  //     console.log('作品建立成功');
-  //   } catch (err) {
-  //     console.error('作品建立失敗', err);
-  //   }
-  // };
-
-  // const saveCurrentWork = async () => {
-  //   try {
-  //     const res = await api.put(`/api/pens/${currentId.value}`, currentWork.value);
-  //     currentWork.value.lastSavedTime = new Date();
-  //     console.log('儲存成功');
-  //   } catch (err) {
-  //     console.error('儲存失敗', err);
-  //   }
-  // };
-
-  // const deleteWork = async (id) => {
-  //   try {
-  //     await api.delete(`/api/pens/${id}`);
-  //     works.value = works.value.filter(work => work.id !== id);
-  //     if (currentId.value === id) {
-  //       handleCurrentIdChange(null);
-  //     }
-  //     console.log('刪除成功');
-  //   } catch (err) {
-  //     console.error('刪除失敗', err);
-  //   }
-  // };
