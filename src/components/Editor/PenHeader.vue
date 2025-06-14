@@ -2,7 +2,7 @@
 	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import UserMenu from '../UserMenu.vue';
   import PenIcon from '../icons/PenIcon.vue';
@@ -16,6 +16,7 @@
   import Settings from '../../assets/settings.vue';
   import Layout from '../../assets/layout.vue';
   import { computed } from 'vue';
+  import { useHandleSave } from '@/utils/handleWorkSave';
 
   const route = useRoute();
   const router = useRouter();
@@ -29,9 +30,9 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  const { userProfile } = storeToRefs(authStore);
+  // const { userProfile } = storeToRefs(authStore);
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  const { createNewWork, saveCurrentWork } = workStore;
+  // const { createNewWork, saveCurrentWork } = workStore;
   const isAutoPreview = ref(true);
   watch(currentWork, (newWork) => {
     console.log(newWork);
@@ -45,7 +46,7 @@
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  // const userName = ref(currentWork.value.user_name);之後要加
+  const userName = ref("");
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
   const title = computed({
@@ -55,40 +56,18 @@
   provide('title', title)
 
   const isLoginModalShow = ref(false)
-  const handleSave = async () => {
-    const work = currentWork.value;
+  const { handleSave } = useHandleSave();
+
+  const handleWorkSave = async () => {
     if (!isLoggedIn) {
       isLoginModalShow.value = true;
-      return router.push({ path: '/pen', query: { modal: 'login' } });
-    }
-    const userName = userProfile.value.username;
-    if (work.id) {
-      saveCurrentWork(work);
-      return;
-    }
-    try {
-      const createdWork = await createNewWork(work);
-      if (createdWork?.id) {
-        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
-      } else {
-        alert('建立失敗，請稍後再試');
-      }
-    } catch (error) {
-      console.error('建立作品時發生錯誤：', error);
-      alert('建立失敗，請稍後再試');
+      router.push({ path: route.path, query: { modal: 'login' } })
+    } else {
+      handleSave()
     }
   };
 
-  const closeModal = () => {
-    isLoginModalShow.value = false;
-    router.replace({
-      query: {
-        ...route.query,
-        modal: undefined,
-      },
-    })
-  }
- 
+
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
   };
@@ -198,7 +177,7 @@
         </button>
         <div class="md:flex hidden" v-if="viewMode !== 'full'">
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
-            :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleSave">
+            :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
             <div class="h-7 flex items-center gap-1 ">
               <Cloud class="w-4 text-white" alt="saveBtn"/>
               <span class="text-15">Save</span>
@@ -274,7 +253,7 @@
           </div>
         </button>
         <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
-          <button class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleSave">
+          <button class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleWorkSave">
             <Cloud class="w-4 mx-1" alt="saveBtn"/>
             <span>Save</span>
           </button>
