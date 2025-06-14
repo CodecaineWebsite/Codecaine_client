@@ -14,7 +14,7 @@
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore';
 
   import { useRoute, useRouter } from 'vue-router'
 

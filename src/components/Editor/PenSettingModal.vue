@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref, watch } from 'vue';
 import Arrow from '../../assets/arrow.vue';
-import { useWorkStore } from '@/stores/workStore';
+import { useWorkStore } from '@/stores/useWorkStore';
 import { storeToRefs } from 'pinia'
 
 const title = inject('title')

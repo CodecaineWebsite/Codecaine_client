@@ -2,7 +2,7 @@
 	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import UserMenu from '../UserMenu.vue';
   import PenIcon from '../icons/PenIcon.vue';
@@ -61,34 +61,27 @@
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     }
-    const userName = userProfile.value.username;
-    if (work.id) {
-      saveCurrentWork(work);
-      return;
-    }
-    try {
-      const createdWork = await createNewWork(work);
-      if (createdWork?.id) {
-        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
-      } else {
+    else {
+      const userName = userProfile.value.username;
+      if (work.id) {
+        saveCurrentWork(work);
+        return;
+      }
+      try {
+        const createdWork = await createNewWork(work);
+        if (createdWork?.id) {
+          await router.push({ path: `/${userName}/pen/${createdWork.id}` });
+        } else {
+          alert('建立失敗，請稍後再試');
+        }
+      } catch (error) {
+        console.error('建立作品時發生錯誤：', error);
         alert('建立失敗，請稍後再試');
       }
-    } catch (error) {
-      console.error('建立作品時發生錯誤：', error);
-      alert('建立失敗，請稍後再試');
     }
   };
 
-  const closeModal = () => {
-    isLoginModalShow.value = false;
-    router.replace({
-      query: {
-        ...route.query,
-        modal: undefined,
-      },
-    })
-  }
- 
+
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
   };
