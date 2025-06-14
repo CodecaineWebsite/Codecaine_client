@@ -17,29 +17,23 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore();
 
-// 輸入框綁定
 const account = ref('')
 const password = ref('')
+const success = ref("")
+const error = ref("")
 
 const emailForResetPassword = ref('')
 const resetError = ref("");
 const resetSuccess = ref("");
 
-// 錯誤訊息
-const success = ref("")
-const error = ref("")
-
-// 判斷 modal
 const modalType = computed(() => route.query.modal)
 const showModal = computed(() => modalType.value === 'login' || modalType.value === 'signup')
 
-// 忘記密碼區塊開關
 const isForgetPassword = ref(false)
 const toggleIsForgetPassword = () => {
   isForgetPassword.value = !isForgetPassword.value
 }
 
-// 關閉 modal（清除網址 query）
 const close = () => {
   const newQuery = { ...route.query }
   delete newQuery.modal
@@ -97,7 +91,6 @@ const handleResetPassword = async () => {
   }
 };
 
-// 切換登入/註冊
 const handleToLogIn = () => {
   error.value = "";
   account.value = "";

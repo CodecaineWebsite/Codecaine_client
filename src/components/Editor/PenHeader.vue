@@ -30,9 +30,7 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  // const { userProfile } = storeToRefs(authStore);
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  // const { createNewWork, saveCurrentWork } = workStore;
   const isAutoPreview = ref(true);
   watch(currentWork, (newWork) => {
     console.log(newWork);
