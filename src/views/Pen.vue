@@ -21,7 +21,7 @@
   const route = useRoute();
   const router = useRouter();
   const workStore = useWorkStore();
-  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash }= workStore; //放function
+  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
   onMounted( () => {
     handleCurrentIdChange(route.params.id)
