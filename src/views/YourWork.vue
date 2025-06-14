@@ -313,7 +313,7 @@
             <PenCardLayout :pens="pens" :mode="viewMode" />
             <PaginationNav
               :currentPage="page"
-              :totalPages="Math.ceil(total / 10)"
+              :totalPages="totalPages"
               @prev="page--"
               @next="page++"
             />
@@ -365,6 +365,7 @@ const router = useRouter();
 const pens = ref([]);
 const total = ref(0);
 const page = ref(1);
+const totalPages = ref(1)
 const hasNextPage = ref(false);
 
 const searchQuery = ref("");
@@ -492,6 +493,7 @@ async function loadPens() {
 
     pens.value = data.results;
     total.value = data.total;
+    totalPages.value = data.totalPages;
     hasNextPage.value = data.hasNextPage;
   } catch (err) {
     alert("Failed to load pens. Please try again later.");
