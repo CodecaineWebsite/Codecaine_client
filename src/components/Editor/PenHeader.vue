@@ -35,11 +35,9 @@
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
   watch(currentWork, (newWork) => {
-    console.log(newWork);
     if (newWork) {
       isAutoPreview.value = newWork.isAutoPreview ?? true;
       isAuthor.value = userProfile.value.id === currentWork.value.user_id;
-      console.log(isAuthor.value);
     }
   }, { deep: true });
   
