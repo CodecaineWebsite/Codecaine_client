@@ -34,8 +34,11 @@
 
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
+  const userName = ref(currentWork.value.userName || userProfile.value.username);
+
   watch(currentWork, (newWork) => {
     if (newWork) {
+      userName.value = newWork.userName;
       isAutoPreview.value = newWork.isAutoPreview ?? true;
       isAuthor.value = userProfile.value.id === currentWork.value.user_id;
     }
@@ -46,7 +49,6 @@
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  const userName = ref("");
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
   const selectedTab = ref('');
