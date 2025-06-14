@@ -238,10 +238,10 @@ export const useWorkStore = defineStore('work', () => {
     };
 
     const res = await api.post('/api/pens', payload);
-    const createdWork = res.data;
-    works.value.unshift(res.data);
-    currentId.value = res.data.id;
-    currentWork.value.id = res.data.id;
+    const createdWork = res.data.data;
+    works.value.unshift(res.data.data);
+    currentId.value = res.data.data.id;
+    currentWork.value.id = res.data.data.id;
     console.log('Work created successfully');
     return createdWork;
   } catch (err) {
