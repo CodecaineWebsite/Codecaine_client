@@ -29,6 +29,9 @@ export const useWorkStore = defineStore('work', () => {
   const updateLinks = (newLinks) => {
   currentWork.value.resources_css = newLinks
   }
+  const updateTags = (newTags) => {
+  currentWork.value.tags = newTags
+  }
 
   const currentWork = ref(workTemplate)
 
@@ -57,14 +60,16 @@ export const useWorkStore = defineStore('work', () => {
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
         cdns: data.resources_js || [],
-        links: data.resources_css || []
+        links: data.resources_css || [],
+        tags: data.tags || [],
       }
       
     } else {
       currentId.value = ""
       currentWork.value = workTemplate
     }
-    
+    console.log('Loaded tags:', currentWork.value.tags)
+
   }
   
   // 更新CurrentCode 
@@ -321,7 +326,7 @@ export const useWorkStore = defineStore('work', () => {
     updatePreviewSrc,
     updateCDNs,
     updateLinks,
-
+    updateTags,
     fetchWorks,
     fetchWorkFromId,
     createNewWork,

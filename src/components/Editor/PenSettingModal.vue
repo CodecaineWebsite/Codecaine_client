@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue';
+import { inject, ref, watch, computed  } from 'vue';
 import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/useWorkStore'; 
 import { storeToRefs } from 'pinia'
@@ -43,6 +43,7 @@ const { currentWork } = storeToRefs(workStore)
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
+const tags = ref(currentWork.value.tags)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -53,8 +54,12 @@ watch(links, (newLinks) => {
 }, { deep: true })
 
 const activeTab = ref(props.selectedTab)
+watch(tags, (newTags) => {
+  workStore.updateTags(newTags)
+}, { deep: true })
 const cdnInput = ref('')
 const linkInput = ref('')
+const tagInput = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
 const addCDN = () => {
@@ -87,6 +92,26 @@ const addLink = () => {
 const removeLink = (index) => {
   links.value.splice(index, 1)
 }
+const addTag = async() => {
+  if (!tagInput.value.trim()) return;
+  const tag = tagInput.value.trim();
+  if (tags.value.includes(tag)) {
+    alert("這個 tag 已經加入了！");
+    return;
+  }
+  tags.value.push(tag);
+  tagInput.value = '';
+  await workStore.saveCurrentWork();
+  
+}
+console.log(currentWork.value.tags)
+
+const removeTag = async(index) => {
+  tags.value.splice(index, 1)
+  await workStore.saveCurrentWork();
+}
+
+
 
 </script>
 <template>
@@ -295,13 +320,23 @@ const removeLink = (index) => {
                 <span class="text-xs align-text-bottom">comma separated, max of five</span>
               </div>
               <div class="relative">
-                <input type="text" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
+                <input type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
+              </div>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="(tag, index) in tags"
+                  :key="`${tag}-${index}`"
+                  class="flex items-center bg-green-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full"
+                >
+                  {{ tag }}
+                  <button @click="removeTag(index)" class="ml-1 text-gray-500 hover:text-red-500">
+                    ✕
+                  </button>
+                </span>
               </div>
             </div>
           </div>
-
           <div v-show="activeTab === 'privacy'" class="w-full flex flex-col gap-4">
-            
             <div v-if="isPro" class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
                 <label>
