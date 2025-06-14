@@ -48,7 +48,7 @@
 </script>
 
 <template>
-  <div class="w-full h-sm-[calc(100%-43px)] h-full">
+  <div class="w-full h-full md:h-[calc(100%-43px)]">
     <MonacoEditor
       v-model:value="code"
       :language="language"
