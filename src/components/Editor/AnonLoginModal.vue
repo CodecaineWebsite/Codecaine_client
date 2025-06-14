@@ -2,9 +2,30 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Close from '../icons/Close.vue';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { loginWithEmail, registerWithEmail, resetPassword } from '@/utils/authCore';
+import {
+  getLoginErrorMessage,
+  getResetErrorMessage,
+} from "@/utils/errorHandlers";
+import { syncUser } from "@/utils/user";
+import { auth } from "../../config/firebase";
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore();
+
+// 輸入框綁定
+const account = ref('')
+const password = ref('')
+
+const emailForResetPassword = ref('')
+const resetError = ref("");
+const resetSuccess = ref("");
+
+// 錯誤訊息
+const success = ref("")
+const error = ref("")
 
 // 判斷 modal
 const modalType = computed(() => route.query.modal)
@@ -23,29 +44,69 @@ const close = () => {
   router.replace({ path: route.path, query: newQuery })
 }
 
+const handleLogIn = async() => {
+  error.value = "";
+  success.value = "";
+
+  try {
+    const { token } = await loginWithEmail(auth, account.value, password.value);
+    authStore.setToken(token);
+    await syncUser();
+    // alert("登入成功！");
+    // router.push("/trending");
+  } catch (e) {
+    error.value = getLoginErrorMessage(e.code);
+    console.error(e);
+  }
+}
+
+const handleSignUp = async() => {
+  error.value = "";
+  success.value = "";
+
+  try {
+    await registerWithEmail(auth, account.value, password.value);
+    success.value = "註冊成功！";
+    // 執行login 
+    // 儲存程式碼
+    // 導向作品url
+  } catch (e) {
+    const msg = getRegisterErrorMessage(e.code);
+    alert(msg);
+    error.value = msg;
+    console.error("註冊失敗:", e);
+  }
+}
+
+const handleResetPassword = async () => {
+  resetError.value = "";
+  resetSuccess.value = "";
+  if (!resetEmail.value) {
+    resetError.value = "Please enter your email.";
+    return;
+  }
+  try {
+    await resetPassword(auth, resetEmail.value);
+    resetSuccess.value = "Password reset email sent!";
+    resetEmail.value = "";
+  } catch (e) {
+    resetError.value = getResetErrorMessage(e.code);
+  }
+};
+
 // 切換登入/註冊
 const handleToLogIn = () => {
-  error.value = ""
+  error.value = "";
+  account.value = "";
+  password.value = "";
   router.push({ path: route.path, query: { ...route.query, modal: 'login' } })
 }
 const handleToSignUp = () => {
-  error.value = ""
+  error.value = "";
+  account.value = "";
+  password.value = "";
   router.push({ path: route.path, query: { ...route.query, modal: 'signup' } })
 }
-
-// 輸入框綁定
-const loginAccount = ref('')
-const loginPassword = ref('')
-
-const emailForResetPassword = ref('')
-
-const signUpName = ref('')
-const signUpUserName = ref('')
-const signUpEmail = ref('')
-const signUpPassword = ref('')
-
-// 錯誤訊息
-const error = ref("")
 
 </script>
 
@@ -77,11 +138,11 @@ const error = ref("")
       <main v-if="modalType === 'login'" class="flex-1">
         <form class="flex flex-col gap-4 text-zinc-900 text-sm">
           <div>
-            <label for="account" class="text-slate-700">Username or Email</label>
+            <label for="account" class="text-slate-700">Email</label>
             <input
               type="text"
               class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="loginAccount"
+              v-model="account"
             />
           </div>
           <div>
@@ -89,10 +150,10 @@ const error = ref("")
             <input
               type="password"
               class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="loginPassword"
+              v-model="password"
             />
           </div>
-          <button type="button" class="w-full h-10 bg-emerald-400 rounded-md">Log In</button>
+          <button type="button" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer" @click="handleLogIn">Log In</button>
           <a href="#" class="text-slate-400 text-center" @click.prevent="toggleIsForgetPassword">Forget Password?</a>
         </form>
 
@@ -102,7 +163,7 @@ const error = ref("")
         >
           <form class="p-5">
             <h2 class="mb-2 text-white font-bold">Reset Your Password</h2>
-            <label for="resetEmail" class="text-slate-400">Username or Email</label>
+            <label for="resetEmail" class="text-slate-400">Email</label>
             <input
               type="text"
               id="resetEmail"
@@ -110,7 +171,7 @@ const error = ref("")
               class="p-2.5 mt-1 mb-3 bg-gray-100 w-full rounded-md h-12 outline-none focus:ring-2 focus:ring-stone-300 text-black"
               v-model="emailForResetPassword"
             />
-            <button type="button" class="w-full h-10 bg-slate-500 text-white hover:bg-slate-400 rounded-md">
+            <button type="button" class="w-full h-10 bg-slate-500 text-white hover:bg-slate-400 rounded-md" @click="handleResetPassword">
               Send Password Reset Email
             </button>
           </form>
@@ -119,33 +180,14 @@ const error = ref("")
 
       <!-- 註冊 -->
       <main v-else-if="modalType === 'signup'" class="flex-1 mb-4">
-        <form class="flex flex-col gap-3 text-zinc-900 text-sm">
-          <div>
-            <label for="name" class="text-slate-700">Name</label>
-            <input
-              id="name"
-              type="text"
-              class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="signUpName"
-            />
-          </div>
-          <div>
-            <label for="username" class="text-slate-700">Choose a username</label>
-            <input
-              id="username"
-              type="text"
-              class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="signUpUserName"
-            />
-            <span class="text-xs text-gray-300">codepen.io/username</span>
-          </div>
+        <form class="flex flex-col gap-4 text-zinc-900 text-sm" @submit.prevent="handleSignUp">
           <div>
             <label for="email" class="text-slate-700">Email</label>
             <input
               type="text"
               id="email"
               class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="signUpEmail"
+              v-model="account"
             />
           </div>
           <div>
@@ -154,10 +196,10 @@ const error = ref("")
               type="password"
               id="password"
               class="p-2.5 mt-1 bg-gray-100 w-full rounded-md h-11 outline-none focus:ring-2 focus:ring-stone-300"
-              v-model="signUpPassword"
+              v-model="password"
             />
           </div>
-          <button type="button" class="w-full h-10 bg-emerald-400 rounded-md">Sign Up</button>
+          <button type="submit" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer">Sign Up</button>
         </form>
       </main>
 
