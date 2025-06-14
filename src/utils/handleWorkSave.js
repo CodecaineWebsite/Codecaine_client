@@ -24,11 +24,11 @@ export function useHandleSave() {
       if (createdWork?.id) {
         await router.push({ path: `/${userName}/pen/${createdWork.id}` });
       } else {
-        alert('建立失敗，請稍後再試');
+        alert('Failed to create. Please try again later.');
       }
     } catch (error) {
       console.error('建立作品時發生錯誤：', error);
-      alert('建立失敗，請稍後再試');
+      alert('Failed to create. Please try again later.');
     }
 
   }

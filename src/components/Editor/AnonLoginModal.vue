@@ -65,7 +65,7 @@ const handleSignUp = async() => {
 
   try {
     await registerWithEmail(auth, account.value, password.value);
-    success.value = "註冊成功！";
+    success.value = "You have successfully registered!";
     handleLogIn()
   } catch (e) {
     const msg = getRegisterErrorMessage(e.code);
@@ -130,7 +130,6 @@ const handleToSignUp = () => {
         <p class="bg-red-500 text-white text-sm p-2 my-1">{{ error }}</p>
       </div>
 
-      <!-- 登入 -->
       <main v-if="modalType === 'login'" class="flex-1">
         <form class="flex flex-col gap-4 text-zinc-900 text-sm">
           <div>
