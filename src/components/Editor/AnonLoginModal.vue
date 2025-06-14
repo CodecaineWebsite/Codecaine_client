@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Close from '../icons/Close.vue';
+import Close from '@/components/icons/Close.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { loginWithEmail, registerWithEmail, resetPassword } from '@/utils/authCore';
 import {
@@ -9,8 +9,10 @@ import {
   getResetErrorMessage,
 } from "@/utils/errorHandlers";
 import { syncUser } from "@/utils/user";
-import { auth } from "../../config/firebase";
+import { auth } from "@/config/firebase";
+import { useHandleSave } from '@/utils/handleWorkSave';
 
+const { handleSave } = useHandleSave();
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore();
@@ -52,8 +54,11 @@ const handleLogIn = async() => {
     const { token } = await loginWithEmail(auth, account.value, password.value);
     authStore.setToken(token);
     await syncUser();
-    // alert("登入成功！");
-    // router.push("/trending");
+
+    handleSave();
+
+    account.value = ""
+    password.value = ""
   } catch (e) {
     error.value = getLoginErrorMessage(e.code);
     console.error(e);
@@ -67,9 +72,7 @@ const handleSignUp = async() => {
   try {
     await registerWithEmail(auth, account.value, password.value);
     success.value = "註冊成功！";
-    // 執行login 
-    // 儲存程式碼
-    // 導向作品url
+    handleLogIn()
   } catch (e) {
     const msg = getRegisterErrorMessage(e.code);
     alert(msg);
