@@ -21,11 +21,10 @@
         <!-- New Pen -->
         <div class="ml-auto">
           <button
-            class="bg-cc-13 px-3 py-1 text-sm hover:bg-cc-12 rounded-md flex items-center space-x-2"
+            class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2"
             @click="goPen"
           >
-            <!-- 按下後應導去Pen頁面 -->
-            <PensIcon class="fill-current w-4 h-4 text-cc-1" />
+            <PensIcon class="fill-current w-3 h-3 text-cc-1" />
             <span>New Pen</span>
           </button>
         </div>
@@ -72,7 +71,9 @@
                 class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
               >
                 <FiltersIcon class="fill-current w-4 h-4 text-cc-1" />
-                <span>{{ filters.privacy !== 'all' ? filters.privacy : 'Filters' }}</span>
+                <span>{{
+                  filters.privacy !== "all" ? filters.privacy : "Filters"
+                }}</span>
               </button>
 
               <div
@@ -211,7 +212,7 @@
             <!-- Sort Dropdown -->
             <select
               v-model="sortOption"
-              class="bg-dropdown text-cc-1 px-3 py-1 border border-cc-1 rounded-md focus:outline-none"
+              class="bg-dropdown text-cc-4 px-3 py-1 rounded focus:outline-none"
             >
               <option class="text-cc-20" value="created">Date Created</option>
               <option class="text-cc-20" value="updated">Date Updated</option>
@@ -220,7 +221,7 @@
 
             <!-- Sort Direction -->
             <div
-              class="inline-flex rounded-md overflow-hidden border border-default"
+              class="inline-flex rounded overflow-hidden border border-default"
             >
               <button
                 :class="[
@@ -479,13 +480,13 @@ async function loadPens() {
   try {
     const { data } = await api.get("/api/my/pens", {
       params: {
-        q: searchQuery.value, // 搜尋關鍵字
-        privacy: filters.value.privacy, // privacy: all/public/private
-        tag: selectedTag.value, // 只傳一個 tag，選第一個
-        sort: sortOption.value, // created / updated / popular
-        order: sortDirection.value, // asc / desc
-        view: viewMode.value, // grid / table
-        page: page.value, // 第幾頁
+        q: searchQuery.value,
+        privacy: filters.value.privacy,
+        tag: selectedTag.value,
+        sort: sortOption.value,
+        order: sortDirection.value,
+        view: viewMode.value,
+        page: page.value, 
       },
     });
 
@@ -493,8 +494,8 @@ async function loadPens() {
     total.value = data.total;
     hasNextPage.value = data.hasNextPage;
   } catch (err) {
-    alert("載入作品失敗，請稍後再試");
-    // 可以加一個 toast 通知使用者  
+    alert("Failed to load pens. Please try again later.");
+    // 可以加一個 toast 通知使用者
   }
 }
 
@@ -505,7 +506,7 @@ async function loadDeletedPens() {
 
     pens.value = data;
   } catch (err) {
-    alert("載入刪除作品失敗，請稍後再試");
+    alert("Failed to load deleted pens. Please try again later.");
     // 可以加一個 toast 通知使用者
   }
 }
@@ -514,7 +515,7 @@ async function loadTags() {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
   } catch (err) {
-    alert("載入使用者 tags 失敗，請稍後再試");
+    alert("Failed to load user tags. Please try again later."); // 應該可以不加
     // 可以加一個 toast 通知使用者
   }
 }
@@ -551,29 +552,22 @@ watch(activeTab, () => {
   }
 });
 
-// DELETE /api/pens/:id    
 async function deletePen(penId) {
   try {
     await api.delete(`/api/pens/${penId}/`);
-
-    // 從 pens 列表移除這筆
     pens.value = pens.value.filter((pen) => pen.id !== penId);
   } catch (err) {
-    alert("刪除失敗，請稍後再試");
+    alert("Failed to delete. Please try again later.");
     // TODO: 加一個 toast 通知使用者
   }
 }
 
 async function restorePen(penId) {
   try {
-    // 呼叫還原 API
     await api.put(`/api/pens/${penId}/restore`);
-
-    // 從目前 pens 中移除這筆，因為已經不是 deleted 狀態
     pens.value = pens.value.filter((pen) => pen.id !== penId);
-
   } catch (err) {
-    alert("還原失敗，請稍後再試");
+    alert("Failed to restore. Please try again later.");
     // TODO: 可以加 toast 顯示錯誤訊息
   }
 }
@@ -581,7 +575,7 @@ async function restorePen(penId) {
 /**
  * TODO:
  * 頁面載入中狀態
- * 
- * 
+ * 加上 toast 通知
+ * 加上錯誤處理
  */
 </script>
