@@ -25,6 +25,7 @@
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
 
+  const penHeader = ref(null)
   const htmlCode = ref('');
   const cssCode = ref('');
   const javascriptCode = ref('');
@@ -98,6 +99,10 @@
     const match = layoutOptions.find(option => option.id === newMode)
     if (match) selectedLayout.value = match
   }, { immediate: true })
+
+  const handleOpenSetting = (tab) => {
+    penHeader.value?.toggleSetting(tab);
+  }
 
 
   // 拖拉改欄位大小 計算變更高度或寬度
@@ -316,15 +321,6 @@
     previewRef.value?.runPreview()
   }
 
-  // const handleMoveToTrash = async () => {
-  //   try {
-  //     const res = await moveToTrash(currentId.value);
-  //     await router.push({ path: '/your-work'})
-  //     console.log(`作品 ID: ${currentId.value}已丟入垃圾桶`);
-  //   } catch (err) {
-  //     alert('無法丟入垃圾桶');
-  //   }
-  // };
   const handleMoveToTrash = async () => {
     const confirmed = window.confirm('確定要將這個作品移至垃圾桶嗎？此操作可以在垃圾桶中還原。');
     if (!confirmed) return;
@@ -346,14 +342,12 @@
   }
 };
 
-
-
 </script>
 
 <template>
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
-    <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" />
+    <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" ref="penHeader"/>
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
 
         <!-- 手機 Tabs -->
@@ -440,7 +434,7 @@
                     </div>
                   </h2>
                   <div class="h-full flex items-center gap-2 px-3">
-                    <EditorSmallButton class="hover:bg-cc-12">
+                    <EditorSmallButton class="hover:bg-cc-12" @click="handleOpenSetting('css')">
                       <Settings class="w-2.5 h-2.5" alt="setting button"/>
                     </EditorSmallButton>
                   </div>
@@ -472,7 +466,7 @@
                     </div>
                   </h2>
                   <div class="h-full flex items-center gap-2 px-3">
-                    <EditorSmallButton class="hover:bg-cc-12">
+                    <EditorSmallButton class="hover:bg-cc-12" @click="handleOpenSetting('js')">
                       <Settings class="w-2.5 h-2.5" alt="setting button" />
                     </EditorSmallButton>
                   </div>
