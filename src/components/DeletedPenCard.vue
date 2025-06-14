@@ -95,13 +95,13 @@ async function handleDelete() {
 async function handleRestore() {
   try {
     restoring.value = true;
-    emit("delete");
+    emit("restore");
 
     // 還原成功後可以加 toast 或 log
     // showToast({ type: "success", message: "Restored!" });
   } catch (err) {
     alert("系統發生錯誤，請稍後再試")
-    console.error("還原失敗", err);
+    // 還原失敗可以加 toast 或 log
     // showToast({ type: "error", message: "Restore failed." });
   } finally {
     restoring.value = false;

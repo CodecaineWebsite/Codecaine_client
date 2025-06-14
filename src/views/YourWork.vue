@@ -489,26 +489,33 @@ async function loadPens() {
       },
     });
 
-    console.log("回傳資料：", data.results);
     pens.value = data.results;
     total.value = data.total;
     hasNextPage.value = data.hasNextPage;
   } catch (err) {
-    console.error("載入作品失敗", err);
+    alert("載入作品失敗，請稍後再試");
+    // 可以加一個 toast 通知使用者  
   }
 }
 
 // TODO: 取得垃圾桶Pens API
 async function loadDeletedPens() {
-  // 先以loadPens測試
-  loadPens();
+  try {
+    const { data } = await api.get("/api/pens/trash");
+
+    pens.value = data;
+  } catch (err) {
+    alert("載入刪除作品失敗，請稍後再試");
+    // 可以加一個 toast 通知使用者
+  }
 }
 async function loadTags() {
   try {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
   } catch (err) {
-    console.error("載入使用者 tags 失敗", err);
+    alert("載入使用者 tags 失敗，請稍後再試");
+    // 可以加一個 toast 通知使用者
   }
 }
 
@@ -517,7 +524,6 @@ onMounted(() => {
   if (activeTab.value === "Pens") {
     loadPens();
   }
-
   if (activeTab.value === "Deleted") {
     loadDeletedPens();
   }
@@ -537,6 +543,7 @@ watch(page, () => {
 });
 
 watch(activeTab, () => {
+  pens.value = [];
   if (activeTab.value === "Deleted") {
     loadDeletedPens();
   } else {
@@ -544,18 +551,15 @@ watch(activeTab, () => {
   }
 });
 
+// DELETE /api/pens/:id    
 async function deletePen(penId) {
   try {
-    // 呼叫永久刪除 API
-    // DELETE /api/pens/:id
-    // await api.delete(`/api/pens/${penId}`);
+    await api.delete(`/api/pens/${penId}/`);
 
     // 從 pens 列表移除這筆
     pens.value = pens.value.filter((pen) => pen.id !== penId);
-
-    console.log("刪除成功", penId);
   } catch (err) {
-    console.error("刪除失敗", err);
+    alert("刪除失敗，請稍後再試");
     // TODO: 加一個 toast 通知使用者
   }
 }
@@ -563,28 +567,21 @@ async function deletePen(penId) {
 async function restorePen(penId) {
   try {
     // 呼叫還原 API
-    // await api.put(`/api/pens/${penId}/restore`);
+    await api.put(`/api/pens/${penId}/restore`);
 
     // 從目前 pens 中移除這筆，因為已經不是 deleted 狀態
     pens.value = pens.value.filter((pen) => pen.id !== penId);
 
-    console.log("還原成功", penId);
   } catch (err) {
-    console.error("還原失敗", err);
+    alert("還原失敗，請稍後再試");
     // TODO: 可以加 toast 顯示錯誤訊息
   }
 }
 
 /**
- * deletePen()
- * 與
- * restorePen()
- * 還沒實作
- */
-
-/**
- * createPen() 只是跳轉頁面，這個 function 要改名
- * tag 搜尋還沒實作
- * deleted 分頁還沒實作
+ * TODO:
+ * 頁面載入中狀態
+ * 
+ * 
  */
 </script>
