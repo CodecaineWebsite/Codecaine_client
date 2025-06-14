@@ -5,6 +5,7 @@ import api from '../config/api'
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
     id: null,
+    userId: null,
     userName: null,
     title: "",
     description: "",
@@ -39,6 +40,7 @@ export const useWorkStore = defineStore('work', () => {
       currentWork.value = {
         ...data,
         userName: data.username,
+        userId: data.user_id,
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
