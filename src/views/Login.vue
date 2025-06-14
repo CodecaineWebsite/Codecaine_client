@@ -68,7 +68,7 @@
               <label
                 for="username"
                 class="block mb-1 text-sm"
-                >Username or Email</label
+                >Email</label
               >
               <input
                 v-model="email"
@@ -127,7 +127,7 @@
                 <label
                   for="reset-email"
                   class="block mb-1 text-sm"
-                  >Username Or Email</label
+                  >Email</label
                 >
                 <input
                   v-model="resetEmail"

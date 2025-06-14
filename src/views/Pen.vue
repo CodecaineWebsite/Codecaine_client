@@ -14,7 +14,7 @@
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
 
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore';
 
   import { useRoute, useRouter } from 'vue-router'
 
@@ -67,9 +67,6 @@
       links.value = newWork.links || [];
     }
   }, { deep: true });
-	// 
-  const consoleHeight = ref(200);  // 預設高度 px
-  const previewContainer = ref(null);
 
   const layoutOptionVisible = ref(false);
   const isConsoleShow = ref(false);
@@ -112,7 +109,7 @@
   const dragElement = ref(null)
   const mainRef = ref(null);
 
-  const MIN_SIZE = 0
+  // const MIN_SIZE = 0
 
   // 啟動 / 停止拖曳時禁用選取文字
   function enableNoSelect() {
@@ -123,6 +120,9 @@
   }
 
   // Console 拖曳
+  const consoleHeight = ref(200);  // 預設高度 px
+  const previewContainer = ref(null);
+
   function startConsoleDrag(e) {
     e.preventDefault()
     isDraggingConsole.value = true
@@ -409,7 +409,7 @@
                     </div>
                   </h2>
                   <div class="h-full flex items-center gap-2 px-3">
-                    <EditorSmallButton class="hover:bg-cc-12">
+                    <EditorSmallButton class="hover:bg-cc-12" @click="handleOpenSetting('html')">
                       <Settings class="w-2.5 h-2.5" alt="setting button"/>
                     </EditorSmallButton>
                   </div>
