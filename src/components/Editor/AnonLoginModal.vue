@@ -16,6 +16,7 @@ const { handleSave } = useHandleSave();
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore();
+const modal = ref(null)
 
 const account = ref('')
 const password = ref('')
@@ -34,12 +35,25 @@ const toggleIsForgetPassword = () => {
   isForgetPassword.value = !isForgetPassword.value
 }
 
+const startClick = (e) => {
+  mouseDownInside = modal.value?.contains(e.target);
+};
+
+const checkClose = (e) => {
+  const mouseUpInside = modal.value?.contains(e.target);
+
+  if (!mouseDownInside && !mouseUpInside) {
+    close();
+  }
+};
+
 const close = () => {
   const newQuery = { ...route.query }
   delete newQuery.modal
   router.replace({ path: route.path, query: newQuery })
 }
 
+let mouseDownInside = false;
 const handleLogIn = async() => {
   error.value = "";
   success.value = "";
@@ -110,9 +124,12 @@ const handleToSignUp = () => {
   <div
     v-if="showModal"
     class="fixed inset-0 bg-black/50 flex justify-center items-start z-50"
-    @click.self="close"
+    @mousedown="startClick" @mouseup="checkClose"
   >
-    <div class="relative bg-white rounded-xl mt-8 w-80 shadow-lg flex flex-col min-w-lg min-h-[70vh] max-h-[80vh] pt-7.5 px-15 overflow-y-auto">
+    <div
+      ref="modal"
+      class="relative bg-white rounded-xl mt-8 w-80 shadow-lg flex flex-col min-w-lg min-h-[70vh] max-h-[80vh] pt-7.5 px-15 overflow-y-auto"
+    >
       <div class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"></div>
       <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10" @click="close">
         <Close class="w-3 h-3 cursor-pointer" />
