@@ -25,6 +25,7 @@ import api from "@/config/api";
 
 const props = defineProps({
   currentUser: {
+    //可移除此prop留下targetUser就好
     type: [String, Number],
     required: true,
   },
@@ -43,7 +44,6 @@ const checkFollow = async () => {
   try {
     const res = await api.get(`/api/follows/check/${props.targetUser}`);
     isFollowing.value = res.data.isFollowing;
-    console.log(res.data);
   } catch (error) {
     console.error("fetch follow error ", error);
   }
@@ -52,11 +52,9 @@ const handleClick = async () => {
   try {
     if (isFollowing.value == false) {
       const res = await api.post(`/api/follows/${props.targetUser}`);
-      console.log(res.data);
       isFollowing.value = res.data.result;
     } else if (isFollowing.value == true) {
       const res = await api.delete(`/api/follows/${props.targetUser}`);
-      console.log(res.data);
       isFollowing.value = res.data.result;
     }
   } catch (error) {

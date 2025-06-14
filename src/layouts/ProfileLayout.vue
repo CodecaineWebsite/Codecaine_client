@@ -49,14 +49,21 @@
             class="bg-black h-full w-full border-gray-700 border-6"
           />
         </div>
-        <div class="flex justify-center items-center gap-4">
-          <a :href="`/${route.params.username}/following`">following</a>
-          <a :href="`/${route.params.username}/followers`">followers</a>
+        <div class="flex justify-center items-center gap-4 text-gray-400">
+          <a
+            :href="`/${route.params.username}/following`"
+            class="hover:text-white"
+            ><span class="text-white">{{ userFollowings }}</span> Following</a
+          >
+          <a
+            :href="`/${route.params.username}/followers`"
+            class="hover:text-white"
+            ><span class="text-white">{{ userFollowers }}</span> Followers</a
+          >
           <FollowBtn
             v-if="userInfo.username != authStore.userProfile.username"
             :current-user="authStore.userProfile.id"
             :target-user="userInfo.username"
-            @update="test"
           />
         </div>
       </div>
@@ -69,33 +76,21 @@
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="caines"
-            :class="
-              route.path.startsWith('/' + route.params.username + '/caines')
-                ? 'text-white'
-                : ''
-            "
+            :class="route.path.includes('caines') ? 'text-white' : ''"
           >
-            caines
+            Caines
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Following"
-            :class="
-              route.path === '/' + route.params.username + '/following'
-                ? 'text-white'
-                : ''
-            "
+            :class="route.name === 'Profilefollowing' ? 'text-white' : ''"
           >
             Following
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Followers"
-            :class="
-              route.path === '/' + route.params.username + '/followers'
-                ? 'text-white'
-                : ''
-            "
+            :class="route.name === 'Profilefollowers' ? 'text-white' : ''"
           >
             Followers
           </button>
@@ -112,14 +107,15 @@
 import { onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "../stores/useAuthStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import api from "@/config/api";
-import FollowBtn from "../components/FollowBtn.vue";
+import FollowBtn from "@/components/FollowBtn.vue";
 const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
 const authStore = useAuthStore();
-
+const userFollowers = ref(0);
+const userFollowings = ref(0);
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -130,8 +126,31 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
-const test = () => {
-  console.log("test");
+const countFollowers = async () => {
+  try {
+    const res = await api.get(
+      `/api/follows/followers/${route.params.username}`
+    );
+    if (res) {
+      const { data } = res;
+      userFollowers.value = data.followers.length;
+    }
+  } catch (e) {
+    return 0;
+  }
+};
+const countFollowing = async () => {
+  try {
+    const res = await api.get(
+      `/api/follows/followings/${route.params.username}`
+    );
+    if (res) {
+      const { data } = res;
+      userFollowings.value = data.followings.length;
+    }
+  } catch (e) {
+    return 0;
+  }
 };
 
 const fetchUserInfo = async () => {
@@ -166,12 +185,18 @@ const fetchUserInfo = async () => {
   }
 };
 
-onMounted(fetchUserInfo);
+onMounted(() => {
+  fetchUserInfo();
+  countFollowers();
+  countFollowing();
+});
 
 watch(
   () => route.params.username,
   () => {
     fetchUserInfo();
+    countFollowers();
+    countFollowing();
   }
 );
 </script>

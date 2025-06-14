@@ -4,41 +4,29 @@
       <button
         class="cursor-pointer hover:text-white"
         @click="showcase"
-        :class="
-          route.path === '/' + route.params.username + '/caines/showcase'
-            ? 'text-white'
-            : ''
-        ">
+        :class="route.name === 'cainesShowcase' ? 'text-white' : ''"
+      >
         Showcase
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="publicProfile"
-        :class="
-          route.path === '/' + route.params.username + '/caines/public'
-            ? 'text-white'
-            : ''
-        ">
+        :class="route.name === 'cainesPublic' ? 'text-white' : ''"
+      >
         Public
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="privateProfile"
-        :class="
-          route.path === '/' + route.params.username + '/caines/private'
-            ? 'text-white'
-            : ''
-        ">
+        :class="route.name === 'cainesPrivate' ? 'text-white' : ''"
+      >
         Private
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="loved"
-        :class="
-          route.path === '/' + route.params.username + '/caines/loved'
-            ? 'text-white'
-            : ''
-        ">
+        :class="route.name === 'cainesLoved' ? 'text-white' : ''"
+      >
         Loved
       </button>
     </div>

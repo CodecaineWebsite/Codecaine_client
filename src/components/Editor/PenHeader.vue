@@ -1,16 +1,12 @@
 <script setup>
 	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
-
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/workStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import UserMenu from '../UserMenu.vue';
-  
   import PenIcon from '../icons/PenIcon.vue';
-
   import PenSettingModal from './PenSettingModal.vue';
-  
   import Icon from '../../assets/icon.svg';
   import Edit from '../../assets/edit.vue';
   import Like from '../../assets/like.vue';
@@ -33,41 +29,56 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  const { currentWork } = storeToRefs(workStore); //放資料
+  const { userProfile } = storeToRefs(authStore);
+  const { currentWork, currentId } = storeToRefs(workStore); //放資料
+  const { createNewWork, saveCurrentWork } = workStore;
   const isAutoPreview = ref(true);
-
   watch(currentWork, (newWork) => {
     console.log(newWork);
     if (newWork) {
       isAutoPreview.value = newWork.isAutoPreview ?? true;
     }
   }, { deep: true });
-	
+  
 	const isLoggedIn = !!authStore.idToken;
   const navListVisible = ref(false);
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  const userName = ref(currentWork.value.user_name);
+  // const userName = ref(currentWork.value.user_name);之後要加
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
   const title = computed({
     get: () => currentWork.value.title,
     set: (val) => currentWork.value.title = val,
   })
-
   provide('title', title)
 
   const isLoginModalShow = ref(false)
-
-  const handleSave = async() => {
-    if(isLoggedIn) {
-      // 執行儲存api
-    } else {
+  const handleSave = async () => {
+    const work = currentWork.value;
+    if (!isLoggedIn) {
       isLoginModalShow.value = true;
-      router.push({ path: '/pen', query: { modal: 'login' } })
+      return router.push({ path: '/pen', query: { modal: 'login' } });
     }
-  }
+    const userName = userProfile.value.username;
+    if (work.id) {
+      saveCurrentWork(work);
+      return;
+    }
+    try {
+      const createdWork = await createNewWork(work);
+      if (createdWork?.id) {
+        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
+      } else {
+        alert('建立失敗，請稍後再試');
+      }
+    } catch (error) {
+      console.error('建立作品時發生錯誤：', error);
+      alert('建立失敗，請稍後再試');
+    }
+  };
+
   const closeModal = () => {
     isLoginModalShow.value = false;
     router.replace({
