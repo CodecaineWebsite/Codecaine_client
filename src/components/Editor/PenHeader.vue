@@ -49,6 +49,7 @@
   const userName = ref("");
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
+  const selectedTab = ref('');
   const title = computed({
     get: () => currentWork.value.title,
     set: (val) => currentWork.value.title = val,
@@ -74,7 +75,8 @@
   const toggleLayout = () => {
     layoutOptionVisible.value = !layoutOptionVisible.value
   };
-  const toggleSetting = () => {
+  const toggleSetting = (tab) => {
+    selectedTab.value = tab;
     settingOptionVisible.value = !settingOptionVisible.value
   };
   const toggleList = () => {
@@ -100,8 +102,8 @@
   const toggleEdit = () => {
     isEditing.value = true
     nextTick(() => {
-    titleInput.value?.focus();
-  });
+      titleInput.value?.focus();
+    });
   };
 
   const stopEdit = () => {
@@ -121,6 +123,8 @@
     viewMode.value = mode;
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
+
+  defineExpose({ toggleSetting });
 </script>
 
 <template>
@@ -257,21 +261,21 @@
             <Cloud class="w-4 mx-1" alt="saveBtn"/>
             <span>Save</span>
           </button>
-          <button @click.prevent="toggleSetting" class="flex w-full px-2 py-1 hover:bg-gray-500">
+          <button @click.prevent="toggleSetting('html')" class="flex w-full px-2 py-1 hover:bg-gray-500">
             <Settings class="w-4 mx-1"/>
             <span>Settings</span>
           </button>
           <div class="w-full bg-gray-700 h-[1px] mb-4"></div>
         </div>
-        <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting('html')" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex items-center gap-1">
             <Settings alt="settingBtn" class="w-4"/>
             <span class="text-15">Settings</span>
           </div>
         </button>
-        <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
+        <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting('html')"></div>
 
-        <PenSettingModal v-if="settingOptionVisible" @close="toggleSetting" class="z-50" />
+        <PenSettingModal :selectedTab="selectedTab" v-if="settingOptionVisible" @close="toggleSetting('html')" class="z-50" />
 
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
