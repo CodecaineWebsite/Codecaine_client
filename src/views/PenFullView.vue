@@ -3,7 +3,7 @@
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
 
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore';
   import { useRoute } from 'vue-router'
   import { storeToRefs } from 'pinia'
 

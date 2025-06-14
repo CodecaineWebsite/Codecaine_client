@@ -2,7 +2,7 @@
 	import { provide, ref, watch, nextTick } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/useWorkStore';
+  import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
   import UserMenu from '../UserMenu.vue';
   import PenIcon from '../icons/PenIcon.vue';
