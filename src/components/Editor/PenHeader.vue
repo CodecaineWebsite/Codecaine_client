@@ -29,14 +29,17 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  // const { userProfile } = storeToRefs(authStore);
-  const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  // const { createNewWork, saveCurrentWork } = workStore;
+  const { userProfile } = storeToRefs(authStore);
+  const { currentWork } = storeToRefs(workStore); //放資料
+
+  const isAuthor = ref(false);
   const isAutoPreview = ref(true);
   watch(currentWork, (newWork) => {
     console.log(newWork);
     if (newWork) {
       isAutoPreview.value = newWork.isAutoPreview ?? true;
+      isAuthor.value = userProfile.value.id === currentWork.value.user_id;
+      console.log(isAuthor.value);
     }
   }, { deep: true });
   
@@ -174,7 +177,7 @@
             <span>Run</span>
           </div>
         </button>
-        <div class="md:flex hidden" v-if="viewMode !== 'full'">
+        <div class="md:flex hidden" v-if="viewMode !== 'full' && isAuthor">
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
             <div class="h-7 flex items-center gap-1 ">
@@ -252,7 +255,7 @@
           </div>
         </button>
         <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
-          <button class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleWorkSave">
+          <button v-if="isAuthor" class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleWorkSave">
             <Cloud class="w-4 mx-1" alt="saveBtn"/>
             <span>Save</span>
           </button>
@@ -296,7 +299,7 @@
             </div>
             <ul
               class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65 justify-between text-sm p-1"
-              v-if="userName"
+              v-if="currentWork.user_id"
             >
               <li
                 class="flex py-1 px-5 justify-between transition duration-300"
