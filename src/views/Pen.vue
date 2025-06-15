@@ -15,16 +15,27 @@
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
+  import { useAuthStore } from '@/stores/useAuthStore';
 
   import { useRoute, useRouter } from 'vue-router'
 
   const route = useRoute();
   const router = useRouter();
   const workStore = useWorkStore();
-  const { updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
+  const authStore = useAuthStore();
+  const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  onMounted( () => {
-    handleCurrentIdChange(route.params.id)
+
+  onMounted( async() => {
+    await handleCurrentIdChange(route.params.id);
+    if (!route.params.id) {
+     const userInit = {
+        userName: authStore.userProfile.username,
+        displayName: authStore.userProfile.display_name,
+        isPro: authStore.userProfile.is_pro,
+      };
+      await handleInitWork(userInit)
+    }
   })
 
   const penHeader = ref(null)
@@ -352,7 +363,6 @@
     <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" ref="penHeader"/>
     <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
 
-        <!-- 手機 Tabs -->
         <div v-if="isMobile" class="flex border-b border-gray-600 mb-1 px-2 gap-1">
           <button
             v-for="tab in tabs"

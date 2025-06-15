@@ -3,6 +3,11 @@ import { inject, ref, watch } from 'vue';
 import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/useWorkStore'; 
 import { storeToRefs } from 'pinia'
+import { useRoute, useRouter } from 'vue-router'
+import ProTag from '@/components/Editor/ProTag.vue';
+
+const route = useRoute();
+const router = useRouter();
 
 const props = defineProps({
   cdns: {
@@ -37,6 +42,7 @@ const { currentWork } = storeToRefs(workStore)
 
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
+const isPro = ref(currentWork.value.isPro)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -103,6 +109,7 @@ const removeLink = (index) => {
         <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-auto">
           <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative -left-4 before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
             {{ tab.label }}
+            <ProTag v-if="tab.key === 'privacy'"/>
           </li>
         </ul>
         <div class="md:hidden w-full flex mb-1 md:before:content-none before:content-[''] before:relative before:w-full before:h-0.5 before:bg-gray-700"></div>
@@ -292,11 +299,45 @@ const removeLink = (index) => {
               </div>
             </div>
           </div>
+
+          <div v-show="activeTab === 'privacy'" class="w-full flex flex-col gap-4">
+            
+            <div v-if="isPro" class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="flex flex-col">
+                <label>
+                  Privacy
+                </label>
+                <span class="text-xs align-text-bottom mb-4 mt-1">Set this Pen as private. Only you can access it .</span>
+              </div>
+              <label class="py-2 hover:cursor-pointer">
+                <div class="relative inline-block w-13 h-7 ">
+                  <input type="checkbox" class="opacity-0 w-0 h-0 peer" v-model="currentWork.isPrivate"/>
+                  <span
+                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"
+                    ></span>
+                </div>
+              </label>
+              <span class="ml-4">{{ currentWork.isPrivate ? 'On' : 'Off' }}</span>              
+            </div>
+
+            <div v-else class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="flex flex-col items-center justify-center gap-3 py-3">
+                <div class="my-4">
+                  <img src="https://cpwebassets.codepen.io/assets/pro/privacy-048c44f7b51ade74eef277e8027a41fe1a8651c393278b25a807ad7ea79f8418.svg" alt="">
+                </div>
+                <h4 class="font-semibold text-15">Keep it secret; keep it safe.</h4>
+                <p class="font-thin text-15 text-center">Private Pens are hidden everywhere on CodePen, except to you. You can still share them and other people can see them, they just can't find them through searching or browsing.</p>
+                <!-- todo 加入導向升級pro頁面 -->
+                <a href="#" @click.prevent="router.push('/')" class="py-2 px-3 bg-cc-yellow rounded text-cc-20 hover:text-cc-1 hover:bg-cc-yellow-dark">Upgrade to PRO</a>
+              </div>
+            </div>
+          </div>
+
           <div v-show="activeTab === 'behavior'" class="md:w-3/4 w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
-              <label for="autoSave">Auto Save</label>
-              <span class="text-xs align-text-bottom mb-4 mt-1">If active, Pens will autosave every 30 seconds after being saved once.</span>
+                <label for="autoSave">Auto Save</label>
+                <span class="text-xs align-text-bottom mb-4 mt-1">If active, Pens will autosave every 30 seconds after being saved once.</span>
               </div>
               <label class="py-2 hover:cursor-pointer">
                 <div class="relative inline-block w-13 h-7 ">
@@ -306,7 +347,7 @@ const removeLink = (index) => {
                     ></span>
                 </div>
               </label>
-              <span class="ml-2">{{ currentWork.isAutoSave ? 'on' : 'off' }}</span>              
+              <span class="ml-4">{{ currentWork.isAutoSave ? 'on' : 'off' }}</span>              
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
@@ -321,7 +362,7 @@ const removeLink = (index) => {
                     ></span>
                 </div>
               </label>
-              <span class="ml-2">{{ currentWork.isAutoPreview ? 'on' : 'off' }}</span>              
+              <span class="ml-4">{{ currentWork.isAutoPreview ? 'on' : 'off' }}</span>              
             </div>
           </div>
         </div>
