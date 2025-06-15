@@ -37,13 +37,24 @@
   const userName = ref(currentWork.value.userName || userProfile.value.username);
   isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
 
+  const isEdited = ref(false)
   watch(currentWork, (newWork) => {
     if (newWork) {
       userName.value = newWork.userName;
       isAutoPreview.value = newWork.isAutoPreview ?? true;
     }
   }, { deep: true });
-  
+  watch( () => [
+      currentWork.value.title,
+      currentWork.value.html,
+      currentWork.value.css,
+      currentWork.value.javascript,
+      currentWork.value.view_mode,
+    ],
+    () => {
+      isEdited.value = true
+    }
+  )
 	const isLoggedIn = !!authStore.idToken;
   const navListVisible = ref(false);
   
@@ -60,16 +71,15 @@
 
   const isLoginModalShow = ref(false)
   const { handleSave } = useHandleSave();
-
   const handleWorkSave = async () => {
     if (!isLoggedIn) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
       handleSave()
+      isEdited.value = false;
     }
   };
-
 
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
@@ -182,8 +192,15 @@
           </div>
         </button>
         <div class="md:flex hidden" v-if="viewMode !== 'full' && isAuthor">
-          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
+          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer relative"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
+            <span  
+              class="h-1 bg-yellow-300 absolute mx-auto left-1 right-1 top-1 origin-center transition-all duration-500"
+              :class="{
+                'w-21': isEdited,
+                'w-0': !isEdited,
+              }">
+            </span>
             <div class="h-7 flex items-center gap-1 ">
               <Cloud class="w-4 text-white" alt="saveBtn"/>
               <span class="text-15">Save</span>
