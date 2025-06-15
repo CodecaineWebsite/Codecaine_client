@@ -4,7 +4,7 @@
       v-if="!isLoaded"
       class="grid grid-cols-6 gap-5 mb-12">
       <li
-        v-for="n in 18"
+        v-for="n in pageSize"
         :key="'skeleton-' + n"
         class="bg-gray-700 h-[60px] rounded-md p-1 flex flex-row items-center gap-1 animate-pulse">
         <div class="w-12 h-12 overflow-hidden p-1 rounded-lg">
@@ -59,7 +59,7 @@ const pagedUsers = computed(() =>
 );
 const totalPages = computed(() => Math.ceil(users.value.length / pageSize));
 
-const fetchFollwers = async () => {
+const fetchFollowers = async () => {
   isLoaded.value = false;
   try {
     const res = await api.get(
@@ -74,13 +74,13 @@ const fetchFollwers = async () => {
 };
 
 onMounted(() => {
-  fetchFollwers();
+  fetchFollowers();
 });
 
 watch(
   () => route.params.username,
   () => {
-    fetchFollwers();
+    fetchFollowers();
   }
 );
 </script>
