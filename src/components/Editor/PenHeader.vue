@@ -36,12 +36,14 @@
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
   const userName = ref(currentWork.value.userName || userProfile.value.username);
-  isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
+  const isPro = ref(true);
 
   watch(currentWork, (newWork) => {
     if (newWork) {
+      isPro.value = newWork.isPro;
       userName.value = newWork.userName;
       isAutoPreview.value = newWork.isAutoPreview ?? true;
+      isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
     }
   }, { deep: true });
   
@@ -209,8 +211,7 @@
                     <input
                       type="checkbox"
                       class="opacity-0 w-0 h-0 peer"
-                      :disabled="!currentWork.isPro"
-                      :key="currentWork.isPro"
+                      :disabled="!isPro"
                       v-model="currentWork.isPrivate"
                     />
                     <span
