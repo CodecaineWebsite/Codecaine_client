@@ -16,9 +16,16 @@ const editContent = ref(props.comment.content);
 
 const isOwner = authStore.user?.uid === props.comment.user?.id;
 
+const usernameRegex = /(^|\s)@([a-zA-Z0-9_]+)/g;
+
 const parsedContent = computed(() => {
-  const withBreaks = props.comment.content.replace(/\n/g, "  \n");
-  const rawHTML = marked.parse(withBreaks || "");
+  let content = props.comment.content.replace(/\n/g, "  \n");
+
+  content = content.replace(usernameRegex, (match, space, username) => {
+    return `${space}[@${username}](/${username})`;
+  });
+
+  const rawHTML = marked.parse(content);
   return DOMPurify.sanitize(rawHTML);
 });
 
@@ -84,6 +91,12 @@ const deleteComment = async () => {
         </button>
       </div>
     </div>
+    <button
+      @click="emit('mention', `@${comment.user?.username} `)"
+      class="text-sm text-blue-500 hover:underline"
+    >
+      回覆
+    </button>
 
     <div v-if="editing">
       <textarea

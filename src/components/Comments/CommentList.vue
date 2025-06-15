@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/config/api.js";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -29,44 +29,22 @@ const error = ref("");
 
 const newComment = ref(""); // 新增留言的內容
 const sending = ref(false); // 是否正在發送留言
+const commentInput = ref(null);
 
-const editingId = ref(null); // 正在編輯的留言 ID
-const editingContent = ref(""); // 編輯中的留言內容
 
-const startEdit = (comment) => {
-  editingId.value = comment.id;
-  editingContent.value = comment.content;
-};
-function cancelEdit() {
-  editingId.value = null;
-  editingContent.value = "";
-}
-
-async function submitEdit() {
-  if (!editingContent.value.trim()) {
-    error.value = "編輯內容不能為空";
+async function insertMention(mentionText) {
+  if (!authStore.user) {
+    error.value = "請先登入後再提及其他用戶";
     return;
   }
-  sending.value = true;
-  try {
-    const res = await api.put(`/api/comments/${editingId.value}`, {
-      content: editingContent.value.trim(),
-    });
-    const index = comments.value.findIndex((c) => c.id === editingId.value);
-    if (index !== -1) {
-      const { data } = res;
-      console.log("編輯後的留言資料:", data);
-      comments.value[index] = res.data; // 更新編輯後的留言
-    }
-    cancelEdit(); // 清除編輯狀態
-    error.value = ""; // 清除錯誤訊息
-  } catch (err) {
-    error.value = "編輯留言失敗，請稍後再試";
-    console.error("編輯留言失敗：", err);
-    alert("編輯留言失敗，請稍後再試");
-  } finally {
-    sending.value = false;
+  if (!newComment.value.includes(mentionText)) {
+    newComment.value = newComment.value
+      ? `${newComment.value} \n${mentionText}`
+      : mentionText + " ";
   }
+  nextTick(() => {
+    commentInput.value?.focus();
+  });
 }
 
 async function deleteComment(comment) {
@@ -164,6 +142,7 @@ watch(() => props.penId, fetchComments); // 若 penId 有變也重新撈
         class="w-8 h-8 rounded-full object-cover"
       />
       <textarea
+        ref="commentInput"
         v-model="newComment"
         placeholder="寫下你的留言..."
         rows="3"
@@ -191,6 +170,7 @@ watch(() => props.penId, fetchComments); // 若 penId 有變也重新撈
           if (i !== -1) comments[i] = updated;
         }
       "
+      @mention="insertMention"
     />
     <!-- 如果沒有留言 -->
     <p v-if="comments.length === 0 && !loading">目前尚無留言</p>
