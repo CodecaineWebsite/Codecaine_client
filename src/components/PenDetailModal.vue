@@ -1,40 +1,58 @@
 <template>
   <div
     @click="handleOverlayClick"
-    class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center text-cc-20"
+    class="fixed inset-0 bg-black/40 z-50  text-cc-20 overflow-auto"
   >
     <div
       @click.stop
-      class="bg-white w-[90%] max-w-4xl p-6 rounded shadow-lg relative"
+      class="mx-auto mt-16 mb-10  w-[90%] max-w-4xl bg-white p-6 rounded shadow-lg relative"
     >
       <button class="absolute top-2 right-2" @click="$emit('close')">✕</button>
 
       <!-- modal 版 Header -->
-      <PenDetailModalHeader v-if="from === 'card'" :pen-id="penId" />
+      <!-- <PenDetailModalHeader v-if="from === 'card'" :pen="pen" /> -->
       <!-- iframe 預覽 -->
-      <PenDetailPreviewIframe v-if="from === 'card'" :pen-id="penId" />
+      <!-- <PenDetailPreviewIframe v-if="from === 'card'" :pen="pen" /> -->
 
-      <PenDetailContent :pen-id="penId" />
+      <PenDetailContent v-if="pen" :pen="pen" @close="close"/>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import  api  from "@/config/api.js"; 
 import { useModalStore } from '@/stores/useModalStore.js'
-import PenDetailModalHeader from "./PenDetailModalHeader.vue";
-import PenDetailPreviewIframe from "./PenDetailPreviewIframe.vue";
-import PenDetailContent from "@/components/PenDetailContent.vue";
+import PenDetailModalHeader from "@/components/PenDetailModalHeader.vue";
+import PenDetailPreviewIframe from "@/components/PenDetailPreviewIframe.vue";
+import PenDetailContent from "@/components/PenDetailContent.vue"; 
 const props = defineProps({
-  penId: String,
-  from: String, // 也可以是類型 'card' | 'editor'
+  penId: Number,
+  from: String, // 'card' | 'editor'
 });
 
-const modalStore = useModalStore()
+const modalStore = useModalStore();
+const pen = ref(null);
+
 function close() {
   modalStore.closeModal()
 }
-// 這個其實可以不寫，但如果你未來要擴充（例如點背景播放音效），就保留 function 寫法
+
 function handleOverlayClick() {
   close()
 }
+
+
+async function fetchPenDetail() {
+  try {
+    const res = await api.get(`/api/pens/${props.penId}`);
+    pen.value = res.data;
+  } catch (err) {
+    console.error("Failed to load works", err);
+  }
+}
+
+onMounted(() => {
+  fetchPenDetail();
+});
 </script>
