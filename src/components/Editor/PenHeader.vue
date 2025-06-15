@@ -1,21 +1,21 @@
 <script setup>
-	import { provide, ref, watch, nextTick } from 'vue';
+	import { provide, ref, watch, nextTick, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
-  import { useWorkStore } from '@/stores/workStore';
+  import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
-  import UserMenu from '../UserMenu.vue';
-  import PenIcon from '../icons/PenIcon.vue';
-  import PenSettingModal from './PenSettingModal.vue';
-  import Icon from '../../assets/icon.svg';
-  import Edit from '../../assets/edit.vue';
-  import Like from '../../assets/like.vue';
-  import Run from '../../assets/run.vue';
-  import Cloud from '../../assets/cloud.vue';
+  import UserMenu from '@/components/UserMenu.vue';
+  import PenIcon from '@/components/icons/PenIcon.vue';
+  import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
+  import Icon from '@/assets/icon.svg';
+  import Edit from '@/assets/edit.vue';
+  import Like from '@/assets/like.vue';
+  import Run from '@/assets/run.vue';
+  import Cloud from '@/assets/cloud.vue';
   import Arrow from '@/assets/arrow.vue';
-  import Settings from '../../assets/settings.vue';
-  import Layout from '../../assets/layout.vue';
-  import { computed } from 'vue';
+  import Settings from '@/assets/settings.vue';
+  import Layout from '@/assets/layout.vue';
+  import { useHandleSave } from '@/utils/handleWorkSave';
 
   const route = useRoute();
   const router = useRouter();
@@ -30,12 +30,16 @@
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork, currentId } = storeToRefs(workStore); //放資料
-  const { createNewWork, saveCurrentWork } = workStore;
+  const { currentWork } = storeToRefs(workStore); //放資料
+
+  const isAuthor = ref(false);
   const isAutoPreview = ref(true);
+  const userName = ref(currentWork.value.userName || userProfile.value.username);
+  isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
+
   watch(currentWork, (newWork) => {
-    console.log(newWork);
     if (newWork) {
+      userName.value = newWork.userName;
       isAutoPreview.value = newWork.isAutoPreview ?? true;
     }
   }, { deep: true });
@@ -45,9 +49,9 @@
   
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
-  // const userName = ref(currentWork.value.user_name);之後要加
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
+  const selectedTab = ref('');
   const title = computed({
     get: () => currentWork.value.title,
     set: (val) => currentWork.value.title = val,
@@ -55,47 +59,26 @@
   provide('title', title)
 
   const isLoginModalShow = ref(false)
-  const handleSave = async () => {
-    const work = currentWork.value;
+  const { handleSave } = useHandleSave();
+
+  const handleWorkSave = async () => {
     if (!isLoggedIn) {
       isLoginModalShow.value = true;
-      return router.push({ path: '/pen', query: { modal: 'login' } });
-    }
-    const userName = userProfile.value.username;
-    if (work.id) {
-      saveCurrentWork(work);
-      return;
-    }
-    try {
-      const createdWork = await createNewWork(work);
-      if (createdWork?.id) {
-        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
-      } else {
-        alert('建立失敗，請稍後再試');
-      }
-    } catch (error) {
-      console.error('建立作品時發生錯誤：', error);
-      alert('建立失敗，請稍後再試');
+      router.push({ path: route.path, query: { modal: 'login' } })
+    } else {
+      handleSave()
     }
   };
 
-  const closeModal = () => {
-    isLoginModalShow.value = false;
-    router.replace({
-      query: {
-        ...route.query,
-        modal: undefined,
-      },
-    })
-  }
- 
+
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
   };
   const toggleLayout = () => {
     layoutOptionVisible.value = !layoutOptionVisible.value
   };
-  const toggleSetting = () => {
+  const toggleSetting = (tab) => {
+    selectedTab.value = tab;
     settingOptionVisible.value = !settingOptionVisible.value
   };
   const toggleList = () => {
@@ -121,8 +104,8 @@
   const toggleEdit = () => {
     isEditing.value = true
     nextTick(() => {
-    titleInput.value?.focus();
-  });
+      titleInput.value?.focus();
+    });
   };
 
   const stopEdit = () => {
@@ -142,6 +125,8 @@
     viewMode.value = mode;
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
+
+  defineExpose({ toggleSetting });
 </script>
 
 <template>
@@ -196,9 +181,9 @@
             <span>Run</span>
           </div>
         </button>
-        <div class="md:flex hidden" v-if="viewMode !== 'full'">
+        <div class="md:flex hidden" v-if="viewMode !== 'full' && isAuthor">
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
-            :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleSave">
+            :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
             <div class="h-7 flex items-center gap-1 ">
               <Cloud class="w-4 text-white" alt="saveBtn"/>
               <span class="text-15">Save</span>
@@ -274,25 +259,25 @@
           </div>
         </button>
         <div v-if="navListVisible" class="z-50 absolute flex flex-col top-14 right-0 w-55 gap-1 py-1 bg-[#1E1F26] rounded-sm">
-          <button class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleSave">
+          <button v-if="isAuthor" class="flex w-full px-2 py-1 hover:bg-gray-500" @click.prevent="handleWorkSave">
             <Cloud class="w-4 mx-1" alt="saveBtn"/>
             <span>Save</span>
           </button>
-          <button @click.prevent="toggleSetting" class="flex w-full px-2 py-1 hover:bg-gray-500">
+          <button @click.prevent="toggleSetting('html')" class="flex w-full px-2 py-1 hover:bg-gray-500">
             <Settings class="w-4 mx-1"/>
             <span>Settings</span>
           </button>
           <div class="w-full bg-gray-700 h-[1px] mb-4"></div>
         </div>
-        <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
+        <button v-if="viewMode !== 'full'" @click.prevent="toggleSetting('html')" type="button" class="hidden md:flex text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" >
           <div class="h-7 flex items-center gap-1">
             <Settings alt="settingBtn" class="w-4"/>
             <span class="text-15">Settings</span>
           </div>
         </button>
-        <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting"></div>
+        <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting('html')"></div>
 
-        <PenSettingModal v-if="settingOptionVisible" @close="toggleSetting" class="z-50" />
+        <PenSettingModal :selectedTab="selectedTab" v-if="settingOptionVisible" @close="toggleSetting('html')" class="z-50" />
 
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
@@ -318,7 +303,7 @@
             </div>
             <ul
               class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65 justify-between text-sm p-1"
-              v-if="userName"
+              v-if="currentWork.user_id"
             >
               <li
                 class="flex py-1 px-5 justify-between transition duration-300"

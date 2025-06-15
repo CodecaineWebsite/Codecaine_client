@@ -1,8 +1,23 @@
 <script setup>
 import { inject, ref, watch, computed  } from 'vue';
 import Arrow from '../../assets/arrow.vue';
-import { useWorkStore } from '@/stores/workStore';
+import { useWorkStore } from '@/stores/useWorkStore'; 
 import { storeToRefs } from 'pinia'
+
+const props = defineProps({
+  cdns: {
+    type: Array,
+    default: () => []
+  },
+  links: {
+    type: Array,
+    default: () => []  
+  },
+  selectedTab: {
+    type: String,
+    default: "html"
+  }
+});
 
 const title = inject('title')
 const emit = defineEmits(['close', 'update:cdns', 'update:links'])
@@ -49,18 +64,7 @@ const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
 const tagInput = ref('')
-const props = defineProps({
-  cdns: {
-    type: Array,
-    default: () => []
-  },
-  links: {
-    type: Array,
-    default: () => []  
-  },
 
-
-});
 
 const srcDoc = ref('')
 
@@ -119,7 +123,7 @@ const removeTag = async(index) => {
 </script>
 <template>
   <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
-    <div  class=" flex flex-col rounded-sm  bg-[#131417] text-white border-4 border-gray-600 h-full w-full " >
+    <div class=" flex flex-col rounded-sm bg-cc-17 text-white border-3 border-gray-600 h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
           <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Pen Settings</span>
@@ -373,7 +377,7 @@ const removeTag = async(index) => {
         </div>
       </div>
     </div>
-    <div class="bg-gray-600 w-full flex flex-col py-4 px-2 ">
+    <div class="bg-cc-15 w-full flex flex-col py-4 px-2 ">
     <button type="submit" @click.prevent="emit('close')" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
     </div>
   </div>

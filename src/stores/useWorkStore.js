@@ -5,6 +5,8 @@ import api from '../config/api'
 export const useWorkStore = defineStore('work', () => {
   const workTemplate = {
     id: null,
+    userId: null,
+    userName: null,
     title: "",
     description: "",
     html: "",
@@ -31,7 +33,6 @@ export const useWorkStore = defineStore('work', () => {
   currentWork.value.tags = newTags
   }
 
-
   const currentWork = ref(workTemplate)
 
   // 改變currentId function
@@ -41,6 +42,8 @@ export const useWorkStore = defineStore('work', () => {
       const data = await fetchWorkFromId(id)
       currentWork.value = {
         ...data,
+        userName: data.username,
+        userId: data.user_id,
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
