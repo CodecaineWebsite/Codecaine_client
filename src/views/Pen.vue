@@ -72,7 +72,6 @@
   })
 
   watch(currentWork, (newWork) => {
-    console.log(newWork);
     if (newWork) {
       htmlCode.value = newWork.html || '';
       cssCode.value = newWork.css || '';
