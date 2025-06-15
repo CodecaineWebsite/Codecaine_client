@@ -17,7 +17,8 @@ const editContent = ref(props.comment.content);
 const isOwner = authStore.user?.uid === props.comment.user?.id;
 
 const parsedContent = computed(() => {
-  const rawHTML = marked.parse(props.comment.content || "");
+  const withBreaks = props.comment.content.replace(/\n/g, "  \n");
+  const rawHTML = marked.parse(withBreaks || "");
   return DOMPurify.sanitize(rawHTML);
 });
 
