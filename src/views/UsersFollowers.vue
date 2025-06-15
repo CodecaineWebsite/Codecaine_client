@@ -19,7 +19,9 @@
     <ul
       class="grid grid-cols-6 gap-5 mb-12"
       v-else-if="users.length">
-      <li v-for="user in pagedUsers">
+      <li
+        v-for="user in users"
+        :key="user.id">
         <Usercard
           :username="user.username"
           :display-name="user.display_name"
@@ -44,30 +46,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import Usercard from "@/components/UserCard.vue";
 import api from "@/config/api";
 import PaginationNav from "@/components/PaginationNav.vue";
+
 const route = useRoute();
 const isLoaded = ref(false);
 const users = ref([]);
 const page = ref(1);
 const pageSize = 30;
-const pagedUsers = computed(() =>
-  users.value.slice((page.value - 1) * pageSize, page.value * pageSize)
-);
-const totalPages = computed(() => Math.ceil(users.value.length / pageSize));
+const totalPages = ref(1);
 
 const fetchFollowers = async () => {
   isLoaded.value = false;
   try {
     const res = await api.get(
-      `/api/follows/followers/${route.params.username}`
+      `/api/follows/followers/${route.params.username}?page=${page.value}&pageSize=${pageSize}`
     );
     users.value = res.data.followers || [];
+    totalPages.value = res.data.totalPages || 1;
   } catch (e) {
     users.value = [];
+    totalPages.value = 1;
   } finally {
     isLoaded.value = true;
   }
@@ -80,7 +82,7 @@ onMounted(() => {
 });
 
 watch(
-  () => route.params.username,
+  () => [route.params.username, page.value],
   () => {
     setTimeout(() => {
       fetchFollowers();
