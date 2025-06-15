@@ -83,7 +83,7 @@ const addLink = () => {
     alert('請輸入有效的 link URL（必須以 http 或 https 開頭）');
     return;
   }  if (links.value.includes(url)) {
-    alert("這個 link 已經加入了！");
+    alert("This link has already been added!");
     return;
   }
   links.value.push(url);
@@ -96,7 +96,7 @@ const addTag = async() => {
   if (!tagInput.value.trim()) return;
   const tag = tagInput.value.trim();
   if (tags.value.includes(tag)) {
-    alert("這個 tag 已經加入了！");
+    alert("This tag has already been added!");
     return;
   }
   tags.value.push(tag);
