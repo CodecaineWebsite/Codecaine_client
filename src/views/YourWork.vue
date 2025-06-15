@@ -2,25 +2,29 @@
   <div class="bg-cc-17 text-cc-1 min-h-screen flex flex-col relative">
     <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
       <!-- Tabs Header -->
-      <div class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]">
+      <div
+        class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]"
+      >
         <button
           v-for="tab in tabs"
           :key="tab"
           @click="activeTab = tab"
           :class="[
-            activeTab === tab ? 'text-cc-1 font-semibold' : 'text-cc-10 hover:text-cc-1'
+            activeTab === tab
+              ? 'text-cc-1 font-semibold'
+              : 'text-cc-10 hover:text-cc-1',
           ]"
         >
           {{ tab }}
         </button>
 
-        <!-- New Pen -->
+        <!-- New Pen button -->
         <div class="ml-auto">
           <button
-            class="bg-cc-13 px-3 py-1 text-sm hover:bg-cc-12 rounded-md flex items-center space-x-2"
-            @click="createPen"
+            class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2"
+            @click="goPen"
           >
-            <PensIcon class="fill-current w-4 h-4 text-cc-1" />
+            <PensIcon class="fill-current w-3 h-3 text-cc-1" />
             <span>New Pen</span>
           </button>
         </div>
@@ -28,75 +32,153 @@
 
       <!-- Search + Filter Bar -->
       <div>
-        <div v-if="activeTab === 'Deleted'" class="border-t-2 border-danger mt-1 mb-4"></div>
+        <div
+          v-if="activeTab === 'Deleted'"
+          class="border-t-2 border-danger mt-1 mb-4"
+        ></div>
 
         <div
           v-else
-          class="border-t-2 border-panel bg-panel px-3 py-2 flex justify-between items-center text-sm mb-4"
+          class="border-t-2 border-panel bg-panel px-3 py-2 flex flex-col space-y-3 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 text-sm mb-4"
         >
           <!-- Left Controls -->
-          <div class="flex items-center space-x-2 relative">
+          <div class="flex items-stretch space-x-2 relative">
             <!-- Search -->
-            <div class="flex rounded-md overflow-hidden">
+            <div class="flex rounded overflow-hidden">
               <input
+                v-model="searchQuery"
+                @keyup.enter="handleSearch"
                 type="text"
                 placeholder="Search for..."
-                class="bg-input text-cc-1 text-sm px-3 py-1 border border-default placeholder-cc-9 focus:outline-none rounded-l-md"
+                class="bg-input text-cc-1 text-sm px-3 py-1 placeholder-cc-9 focus:outline-none rounded-l"
               />
               <button
-                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r-md"
+                @click="handleSearch"
+                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r"
               >
                 Search
               </button>
             </div>
 
             <!-- Filters -->
-            <div class="relative">
+            <div
+              class="relative flex items-stretch"
+              ref="filtersDropdownRef"
+              @click.stop
+            >
               <button
                 @click="toggleFilters"
-                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
+                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
               >
                 <FiltersIcon class="fill-current w-4 h-4 text-cc-1" />
-                <span>Filters</span>
+                <span>{{
+                  filters.privacy !== "all" ? filters.privacy : "Filters"
+                }}</span>
               </button>
 
               <div
                 v-if="showFilters"
-                class="absolute top-full left-0 mt-2 bg-panel border border-cc-13 rounded-md shadow-lg p-4 w-56 z-50"
+                ref="filtersRef"
+                class="absolute top-full left-0 bg-cc-16 rounded shadow-md p-4 w-56 z-50"
               >
                 <h3 class="text-sm font-semibold text-cc-1 mb-3">Filters</h3>
                 <div class="mb-3">
                   <label class="block text-sm mb-1">Privacy</label>
                   <select
                     v-model="filters.privacy"
-                    class="w-full px-2 py-1 bg-input text-cc-1 border border-default rounded-md"
+                    class="w-full px-2 py-1 bg-input text-cc-1 border border-default rounded"
                   >
-                    <option>All</option>
-                    <option>Public</option>
-                    <option>Private</option>
+                    <option value="all">All</option>
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            <!-- Tags -->
-            <button
+            <!-- Tags 按鈕-->
+            <div
               v-if="activeTab === 'Pens'"
-              class="flex items-center space-x-1 bg-button text-cc-1 text-sm px-3 py-1 border border-default bg-button-hover rounded-md"
+              ref="tagsDropdownRef"
+              @click.stop
+              :class="[
+                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 bg-button-hover',
+                showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
+              ]"
             >
-              <TagsIcon class="fill-current w-4 h-4 text-cc-1" />
-              <span>Tags</span>
-            </button>
+              <!-- Toggle 開關 -->
+              <button
+                @click="showTags = !showTags"
+                class="flex items-center space-x-2 text-cc-1"
+              >
+                <TagsIcon class="fill-current w-4 h-4" />
+              </button>
+
+              <!-- Tags 輸入與選單 -->
+              <div class="relative flex items-center">
+                <!-- 展開中顯示輸入框 + 下拉選單 -->
+                <div v-if="showTags" class="relative h-full flex items-center">
+                  <div class="flex items-center gap-2">
+                    <input
+                      v-model="tagInput"
+                      type="text"
+                      placeholder="Search tags..."
+                      class="w-full text-sm text-cc-1 px-2 focus:outline-none"
+                    />
+                    <button
+                      v-if="selectedTag"
+                      @click="clearSelectedTag"
+                      class="text-sm text-cc-9 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <ul
+                    class="absolute top-full left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
+                  >
+                    <li
+                      v-for="tag in filteredTags"
+                      :key="tag"
+                      class="px-2 py-0.5 cursor-pointer bg-cc-17 hover:bg-cc-12"
+                      @click="selectTag(tag)"
+                    >
+                      {{ tag }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- 沒展開時顯示選到的 tag 或字樣 -->
+                <div
+                  v-else
+                  class="flex items-center gap-2 cursor-pointer"
+                  @click="openTagMenu"
+                >
+                  <span class="text-sm">
+                    {{ selectedTag || "Tags" }}
+                  </span>
+                  <button
+                    v-if="selectedTag"
+                    @click.stop="clearSelectedTag"
+                    class="text-sm text-cc-9 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Right Controls -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-stretch space-x-2">
             <!-- View Mode -->
-            <div class="inline-flex rounded-md overflow-hidden border border-default">
+            <div class="inline-flex rounded overflow-hidden">
               <button
                 :class="[
                   'px-3 py-2',
-                  viewMode === 'grid' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  viewMode === 'grid'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="viewMode = 'grid'"
               >
@@ -104,22 +186,24 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': viewMode === 'grid',
-                    'text-cc-10': viewMode !== 'grid'
+                    'text-cc-10': viewMode !== 'grid',
                   }"
                 />
               </button>
               <button
                 :class="[
                   'px-3 py-2 border-l border-default',
-                  viewMode === 'list' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  viewMode === 'table'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
-                @click="viewMode = 'list'"
+                @click="viewMode = 'table'"
               >
                 <ListIcon
                   class="fill-current w-4 h-4"
                   :class="{
-                    'text-cc-1': viewMode === 'list',
-                    'text-cc-10': viewMode !== 'list'
+                    'text-cc-1': viewMode === 'table',
+                    'text-cc-10': viewMode !== 'table',
                   }"
                 />
               </button>
@@ -128,19 +212,23 @@
             <!-- Sort Dropdown -->
             <select
               v-model="sortOption"
-              class="bg-dropdown text-cc-1 px-3 py-1 border border-cc-1 rounded-md focus:outline-none"
+              class="bg-dropdown text-cc-4 px-3 py-1 rounded focus:outline-none"
             >
               <option class="text-cc-20" value="created">Date Created</option>
               <option class="text-cc-20" value="updated">Date Updated</option>
-              <option class="text-cc-20" value="popularity">Popularity</option>
+              <option class="text-cc-20" value="popular">Popularity</option>
             </select>
 
             <!-- Sort Direction -->
-            <div class="inline-flex rounded-md overflow-hidden border border-default">
+            <div
+              class="inline-flex rounded overflow-hidden border border-default"
+            >
               <button
                 :class="[
                   'px-3 py-2',
-                  sortDirection === 'desc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  sortDirection === 'desc'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="sortDirection = 'desc'"
               >
@@ -148,14 +236,16 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': sortDirection === 'desc',
-                    'text-cc-10': sortDirection !== 'desc'
+                    'text-cc-10': sortDirection !== 'desc',
                   }"
                 />
               </button>
               <button
                 :class="[
                   'px-3 py-2 border-l border-default',
-                  sortDirection === 'asc' ? 'bg-grid-active' : 'bg-button bg-list-hover'
+                  sortDirection === 'asc'
+                    ? 'bg-grid-active'
+                    : 'bg-button bg-list-hover',
                 ]"
                 @click="sortDirection = 'asc'"
               >
@@ -163,7 +253,7 @@
                   class="fill-current w-4 h-4"
                   :class="{
                     'text-cc-1': sortDirection === 'asc',
-                    'text-cc-10': sortDirection !== 'asc'
+                    'text-cc-10': sortDirection !== 'asc',
                   }"
                 />
               </button>
@@ -174,41 +264,72 @@
 
       <!-- Main Content -->
       <div class="flex items-center justify-center mt-6">
-        <div v-if="activeTab === 'Deleted'" class="flex w-full gap-4">
-          <div class="flex-1 bg-page text-cc-1 p-6 rounded-md">
-            <h2 class="text-lg font-semibold mb-4">
-              You don't have any Deleted Items.
-            </h2>
-            <p class="text-sm leading-relaxed text-cc-9">
-              If you want to save our world, you must hurry. We don't know how much longer we can withstand the nothing.
-            </p>
-            <p class="mt-3 italic text-cc-10 text-sm">
-              — Southern Oracle, The Neverending Story
-            </p>
+        <div
+          v-if="activeTab === 'Deleted'"
+          class="flex flex-col lg:flex-row w-full gap-4"
+        >
+          <div class="flex-1 space-y-4">
+            <!-- 有刪除作品時 -->
+            <DeletedPenCard
+              v-for="pen in pens"
+              :key="pen.id"
+              :pen="pen"
+              @restore="restorePen(pen.id)"
+              @delete="deletePen(pen.id)"
+            />
+            <!-- 沒有任何刪除作品時顯示 -->
+            <div
+              v-if="pens.length === 0"
+              class="flex-1 bg-page text-cc-1 p-6 rounded-md"
+            >
+              <h2 class="text-lg font-semibold mb-4">
+                You don't have any Deleted Items.
+              </h2>
+              <p class="text-sm leading-relaxed text-cc-9">
+                If you want to save our world, you must hurry. We don't know how
+                much longer we can withstand the nothing.
+              </p>
+              <p class="mt-3 italic text-cc-10 text-sm">
+                — Southern Oracle, The Neverending Story
+              </p>
+            </div>
           </div>
 
-          <div class="w-64 bg-page text-cc-1 p-6 rounded-md flex flex-col items-start">
+          <div
+            class="w-full lg:w-64 bg-page text-cc-1 p-6 rounded flex flex-col items-start"
+          >
             <div class="flex items-center text-lg font-bold mb-2">
               <span class="mr-2">🕒 3 Days</span>
             </div>
             <p class="text-sm text-cc-9">
-              You’ll be able to restore a Deleted Item for 3 days after you delete it. After that, it’s gone forever.
+              You’ll be able to restore a Deleted Item for 3 days after you
+              delete it. After that, it’s gone forever.
             </p>
           </div>
         </div>
 
-        <!-- Empty State -->
-        <div
-          v-else
-          class="border border-dashed border-cc-13 px-10 py-10 text-center rounded-md"
-        >
-          <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
-          <button
-            @click="createPen"
-            class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
+        <div v-else class="w-full">
+          <div v-if="pens.length > 0">
+            <PenCardLayout :pens="pens" :mode="viewMode" />
+            <PaginationNav
+              :currentPage="page"
+              :totalPages="totalPages"
+              @prev="page--"
+              @next="page++"
+            />
+          </div>
+          <div
+            v-else
+            class="border border-dashed border-cc-13 px-10 py-10 text-center rounded-md"
           >
-            Go make one!
-          </button>
+            <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
+            <button
+              @click="goPen"
+              class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
+            >
+              Go make one!
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -216,7 +337,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from "vue";
+import { useRouter } from "vue-router";
+
+import api from "@/config/api.js";
+import PenCardLayout from "@/components/PenCardLayout.vue";
+import DeletedPenCard from "@/components/DeletedPenCard.vue";
+import PaginationNav from "@/components/PaginationNav.vue";
 
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
@@ -226,31 +360,76 @@ import ListIcon from "@/components/icons/ListIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
 
+const router = useRouter();
+
+// data
+const pens = ref([]);
+const tags = ref([]);
+const total = ref(0);
+const page = ref(1);
+const totalPages = ref(1);
+const hasNextPage = ref(false);
+
 // Tabs
 const tabs = ["Pens", "Deleted"];
 const activeTab = ref("Pens");
 
-// Filters
+// Search + Filters bar
+const searchQuery = ref("");
 const showFilters = ref(false);
 const filters = ref({
-  privacy: "All"
+  privacy: "all",
 });
-
-// View/sort state
+const viewMode = ref("grid");
 const sortOption = ref("created");
 const sortDirection = ref("desc");
-const viewMode = ref("grid");
+const showTags = ref(false);
+const tagInput = ref("");
+const selectedTag = ref("");
 
-// Methods
-function createPen() {
-  alert(`Create new item in "${activeTab.value}"`);
+// Dropdown refs
+const tagsDropdownRef = ref(null);
+const filtersDropdownRef = ref(null);
+
+function handleClickOutside(event) {
+  if (
+    showTags.value &&
+    tagsDropdownRef.value &&
+    !tagsDropdownRef.value.contains(event.target)
+  ) {
+    showTags.value = false;
+  }
+  
+  if (
+    showFilters.value &&
+    filtersDropdownRef.value &&
+    !filtersDropdownRef.value.contains(event.target)
+  ) {
+    showFilters.value = false;
+  }
 }
 
-function toggleFilters() {
-  showFilters.value = !showFilters.value;
+function openTagMenu() {
+  nextTick(() => {
+    showTags.value = true;
+  });
 }
 
-// Empty state message
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
+const filteredTags = computed(() => {
+  if (!tagInput.value.trim()) return tags.value;
+  return tags.value.filter((tag) =>
+    tag.toLowerCase().includes(tagInput.value.toLowerCase())
+  );
+});
+
 const emptyStateMessage = computed(() => {
   switch (activeTab.value) {
     case "Pens":
@@ -259,4 +438,138 @@ const emptyStateMessage = computed(() => {
       return "Nothing here.";
   }
 });
+
+function selectTag(tag) {
+  selectedTag.value = tag;
+  tagInput.value = tag;
+  showTags.value = false;
+  page.value = 1;
+  loadPens();
+}
+
+function clearSelectedTag() {
+  selectedTag.value = "";
+  tagInput.value = "";
+  page.value = 1;
+  loadPens();
+}
+
+function goPen() {
+  router.push("/pen");
+}
+
+function toggleFilters() {
+  showFilters.value = !showFilters.value;
+}
+
+function handleSearch() {
+  page.value = 1;
+  showFilters.value = false;
+  showTags.value = false;
+  loadPens();
+}
+
+async function loadPens() {
+  try {
+    const { data } = await api.get("/api/my/pens", {
+      params: {
+        q: searchQuery.value,
+        privacy: filters.value.privacy,
+        tag: selectedTag.value,
+        sort: sortOption.value,
+        order: sortDirection.value,
+        view: viewMode.value,
+        page: page.value,
+      },
+    });
+
+    pens.value = data.results;
+    total.value = data.total;
+    totalPages.value = data.totalPages;
+    hasNextPage.value = data.hasNextPage;
+  } catch (err) {
+    alert("Failed to load pens. Please try again later.");
+    // 可以加一個 toast 通知使用者
+  }
+}
+
+async function loadDeletedPens() {
+  try {
+    const { data } = await api.get("/api/pens/trash");
+
+    pens.value = data;
+  } catch (err) {
+    alert("Failed to load deleted pens. Please try again later.");
+    // 可以加一個 toast 通知使用者
+  }
+}
+async function loadTags() {
+  try {
+    const { data } = await api.get("/api/my/tags");
+    tags.value = data;
+  } catch (err) {
+    // 應該可以不加 toast，因為這個功能不是很重要
+    console.error("Failed to load tags:", err);
+  }
+}
+
+onMounted(() => {
+  loadTags();
+  if (activeTab.value === "Pens") {
+    loadPens();
+  }
+  if (activeTab.value === "Deleted") {
+    loadDeletedPens();
+  }
+});
+
+watch(
+  [activeTab, filters, selectedTag, sortOption, sortDirection, viewMode],
+  () => {
+    page.value = 1;
+    if (activeTab.value === "Pens") loadPens();
+  },
+  { deep: true }
+);
+
+watch(page, () => {
+  if (activeTab.value === "Pens") loadPens();
+});
+
+watch(activeTab, () => {
+  pens.value = [];
+  if (activeTab.value === "Deleted") {
+    loadDeletedPens();
+  } else {
+    loadPens();
+  }
+});
+
+async function deletePen(penId) {
+  try {
+    await api.delete(`/api/pens/${penId}/`);
+    pens.value = pens.value.filter((pen) => pen.id !== penId);
+  } catch (err) {
+    alert("Failed to delete. Please try again later.");
+    // TODO: 加一個 toast 通知使用者
+  }
+}
+
+async function restorePen(penId) {
+  try {
+    await api.put(`/api/pens/${penId}/restore`);
+    pens.value = pens.value.filter((pen) => pen.id !== penId);
+  } catch (err) {
+    alert("Failed to restore. Please try again later.");
+    // TODO: 加 toast 顯示錯誤訊息
+  }
+}
+
+/**
+ * TODO:
+ * 頁面載入中狀態
+ * 加上 toast 通知
+ * 加上錯誤處理
+ * 這頁太長了需要考慮拆分元件
+ */
 </script>

@@ -160,7 +160,7 @@ const title = props.pen.title || "Untitled";
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
-const userProfileImage = props.pen.userProfileImage || "https://assets.codepen.io/t-1/user-default-avatar.jpg";
+const userProfileImage = props.pen.profile_image || "https://assets.codepen.io/t-1/user-default-avatar.jpg";
 const isPro = props.pen.isPro || false;
 // 作品預覽
 const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
