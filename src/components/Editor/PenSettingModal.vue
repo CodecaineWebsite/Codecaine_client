@@ -38,13 +38,6 @@ const { currentWork } = storeToRefs(workStore)
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const tags = ref(currentWork.value.tags)
-console.log(Array.isArray(currentWork.value.tags)) // 應該要是 true
-console.log(currentWork.value);
-console.log(currentWork.value.tags);
-// const tags = computed({
-//   get: () => currentWork.value.tags,
-//   set: (val) => currentWork.value.tags = val,
-// })
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -90,7 +83,7 @@ const addLink = () => {
     alert('請輸入有效的 link URL（必須以 http 或 https 開頭）');
     return;
   }  if (links.value.includes(url)) {
-    alert("這個 link 已經加入了！");
+    alert("This link has already been added!");
     return;
   }
   links.value.push(url);
@@ -103,7 +96,7 @@ const addTag = async() => {
   if (!tagInput.value.trim()) return;
   const tag = tagInput.value.trim();
   if (tags.value.includes(tag)) {
-    alert("這個 tag 已經加入了！");
+    alert("This tag has already been added!");
     return;
   }
   tags.value.push(tag);
