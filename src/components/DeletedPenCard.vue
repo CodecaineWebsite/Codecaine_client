@@ -83,10 +83,10 @@ async function handleDelete() {
   try {
     deleting.value = true;
     showDeleteModal.value = false;
-    emit("delete");
+    await emit("delete");
     // 改成 Toast
   } catch (err) {
-    alert("系統發生錯誤，請稍後再試");
+    alert("An error occurred. Please try again later.");
   } finally {
     deleting.value = false;
   }
@@ -95,13 +95,13 @@ async function handleDelete() {
 async function handleRestore() {
   try {
     restoring.value = true;
-    emit("restore");
+    await emit("restore");
 
-    // 還原成功後可以加 toast 或 log
+    // 還原成功後可以加 toast 
     // showToast({ type: "success", message: "Restored!" });
   } catch (err) {
-    alert("系統發生錯誤，請稍後再試")
-    // 還原失敗可以加 toast 或 log
+    alert("An error occurred. Please try again later.")
+    // 還原失敗可以加 toast 
     // showToast({ type: "error", message: "Restore failed." });
   } finally {
     restoring.value = false;

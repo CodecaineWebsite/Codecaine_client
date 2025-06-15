@@ -18,7 +18,7 @@
           {{ tab }}
         </button>
 
-        <!-- New Pen -->
+        <!-- New Pen button -->
         <div class="ml-auto">
           <button
             class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2"
@@ -277,6 +277,7 @@
               @restore="restorePen(pen.id)"
               @delete="deletePen(pen.id)"
             />
+            <!-- 沒有任何刪除作品時顯示 -->
             <div
               v-if="pens.length === 0"
               class="flex-1 bg-page text-cc-1 p-6 rounded-md"
@@ -293,7 +294,6 @@
               </p>
             </div>
           </div>
-          <!-- 沒有任何刪除作品時顯示 -->
 
           <div
             class="w-full lg:w-64 bg-page text-cc-1 p-6 rounded flex flex-col items-start"
@@ -362,40 +362,36 @@ import AscIcon from "@/components/icons/AscIcon.vue";
 
 const router = useRouter();
 
+// data
 const pens = ref([]);
+const tags = ref([]);
 const total = ref(0);
 const page = ref(1);
-const totalPages = ref(1)
+const totalPages = ref(1);
 const hasNextPage = ref(false);
-
-const searchQuery = ref("");
 
 // Tabs
 const tabs = ["Pens", "Deleted"];
 const activeTab = ref("Pens");
 
-// Filters
+// Search + Filters bar
+const searchQuery = ref("");
 const showFilters = ref(false);
 const filters = ref({
   privacy: "all",
 });
-
-// View/sort state
+const viewMode = ref("grid");
 const sortOption = ref("created");
 const sortDirection = ref("desc");
-const viewMode = ref("grid");
-
-// Tags
-const tags = ref([]);
 const showTags = ref(false);
 const tagInput = ref("");
 const selectedTag = ref("");
 
+// Dropdown refs
 const tagsDropdownRef = ref(null);
 const filtersDropdownRef = ref(null);
 
 function handleClickOutside(event) {
-  // Tags dropdown
   if (
     showTags.value &&
     tagsDropdownRef.value &&
@@ -403,8 +399,7 @@ function handleClickOutside(event) {
   ) {
     showTags.value = false;
   }
-
-  // Filters dropdown
+  
   if (
     showFilters.value &&
     filtersDropdownRef.value &&
@@ -435,6 +430,15 @@ const filteredTags = computed(() => {
   );
 });
 
+const emptyStateMessage = computed(() => {
+  switch (activeTab.value) {
+    case "Pens":
+      return "No Pens.";
+    default:
+      return "Nothing here.";
+  }
+});
+
 function selectTag(tag) {
   selectedTag.value = tag;
   tagInput.value = tag;
@@ -450,7 +454,6 @@ function clearSelectedTag() {
   loadPens();
 }
 
-// Methods
 function goPen() {
   router.push("/pen");
 }
@@ -459,16 +462,6 @@ function toggleFilters() {
   showFilters.value = !showFilters.value;
 }
 
-// Empty state message
-const emptyStateMessage = computed(() => {
-  switch (activeTab.value) {
-    case "Pens":
-      return "No Pens.";
-    default:
-      return "Nothing here.";
-  }
-});
-
 function handleSearch() {
   page.value = 1;
   showFilters.value = false;
@@ -476,7 +469,6 @@ function handleSearch() {
   loadPens();
 }
 
-// 打API
 async function loadPens() {
   try {
     const { data } = await api.get("/api/my/pens", {
@@ -487,7 +479,7 @@ async function loadPens() {
         sort: sortOption.value,
         order: sortDirection.value,
         view: viewMode.value,
-        page: page.value, 
+        page: page.value,
       },
     });
 
@@ -501,7 +493,6 @@ async function loadPens() {
   }
 }
 
-// TODO: 取得垃圾桶Pens API
 async function loadDeletedPens() {
   try {
     const { data } = await api.get("/api/pens/trash");
@@ -517,8 +508,8 @@ async function loadTags() {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
   } catch (err) {
-    alert("Failed to load user tags. Please try again later."); // 應該可以不加
-    // 可以加一個 toast 通知使用者
+    // 應該可以不加 toast，因為這個功能不是很重要
+    console.error("Failed to load tags:", err);
   }
 }
 
@@ -570,7 +561,7 @@ async function restorePen(penId) {
     pens.value = pens.value.filter((pen) => pen.id !== penId);
   } catch (err) {
     alert("Failed to restore. Please try again later.");
-    // TODO: 可以加 toast 顯示錯誤訊息
+    // TODO: 加 toast 顯示錯誤訊息
   }
 }
 
@@ -579,5 +570,6 @@ async function restorePen(penId) {
  * 頁面載入中狀態
  * 加上 toast 通知
  * 加上錯誤處理
+ * 這頁太長了需要考慮拆分元件
  */
 </script>
