@@ -74,13 +74,17 @@ const fetchFollowers = async () => {
 };
 
 onMounted(() => {
-  fetchFollowers();
+  setTimeout(() => {
+    fetchFollowers();
+  }, 600);
 });
 
 watch(
   () => route.params.username,
   () => {
-    fetchFollowers();
+    setTimeout(() => {
+      fetchFollowers();
+    }, 600);
   }
 );
 </script>
