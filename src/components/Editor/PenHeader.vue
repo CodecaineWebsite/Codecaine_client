@@ -46,15 +46,23 @@
   }, { deep: true });
   watch( () => [
       currentWork.value.title,
+      currentWork.value.description,
       currentWork.value.html,
       currentWork.value.css,
       currentWork.value.javascript,
+      currentWork.value.cdns,
+      currentWork.value.links,
       currentWork.value.view_mode,
+      currentWork.value.isAutoSave,
+      currentWork.value.isAutoPreview,
+      currentWork.value.is_private,
+      currentWork.value.tags,
     ],
     () => {
       isEdited.value = true
     }
   )
+  
 	const isLoggedIn = !!authStore.idToken;
   const navListVisible = ref(false);
   
