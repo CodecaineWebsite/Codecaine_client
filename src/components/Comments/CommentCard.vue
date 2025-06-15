@@ -4,11 +4,21 @@ import api from "@/config/api";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 const props = defineProps({
   comment: Object,
 });
 const emit = defineEmits(["delete", "update"]);
+
+const createdTimeAgo = computed(() => {
+  return dayjs.utc(props.comment.created_at).local().fromNow();
+});
 
 const authStore = useAuthStore();
 const editing = ref(false);
@@ -73,13 +83,14 @@ const deleteComment = async () => {
         alt="avatar"
         class="w-8 h-8 rounded-full object-cover"
       />
-      <div class="text-sm text-cc-1">
+      <div class="text-sm text-cc-13">
         <span class="font-semibold">{{
           comment.user?.display_name || "未知用戶"
         }}</span>
         <span class="text-cc-8"
           >(@{{ comment.user?.username || "unknown" }})</span
         >
+        <span class="text-cc-8 text-xs">• {{ createdTimeAgo }}</span>
       </div>
 
       <div v-if="isOwner" class="ml-auto space-x-2 text-xs">
@@ -90,13 +101,14 @@ const deleteComment = async () => {
           刪除
         </button>
       </div>
-    </div>
-    <button
+      <button
       @click="emit('mention', `@${comment.user?.username} `)"
       class="text-sm text-blue-500 hover:underline"
     >
       回覆
     </button>
+    </div>
+    
 
     <div v-if="editing">
       <textarea

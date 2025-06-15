@@ -31,7 +31,6 @@ const newComment = ref(""); // 新增留言的內容
 const sending = ref(false); // 是否正在發送留言
 const commentInput = ref(null);
 
-
 async function insertMention(mentionText) {
   if (!authStore.user) {
     error.value = "請先登入後再提及其他用戶";
@@ -98,14 +97,26 @@ const submitComment = async (content) => {
   try {
     const res = await api.post("/api/comments", {
       pen_id: props.penId,
-      content: newComment.value.trim(),
+      content: content.trim(),
     });
-    comments.value.unshift(res.data); // 將新留言添加到最前面
-    newComment.value = ""; // 清空輸入框
-    error.value = ""; // 清除錯誤訊息
+    comments.value.unshift(res.data);
+    newComment.value = "";
+    error.value = "";
   } catch (err) {
-    error.value = "留言失敗，請稍後再試";
+    if (err.response?.status === 429) {
+      error.value = "你留言太快了，請稍後再試～";
+    } else {
+      error.value = "留言失敗，請稍後再試";
+    }
     console.error("留言失敗：", err);
+  } finally {
+    sending.value = false;
+    setTimeout(() => {
+      sending.value = false;
+    }, 2000);
+    nextTick(() => {
+      commentInput.value?.focus();
+    });
   }
 };
 onMounted(fetchComments);
