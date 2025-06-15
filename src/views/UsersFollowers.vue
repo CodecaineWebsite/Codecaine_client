@@ -84,9 +84,7 @@ onMounted(() => {
 watch(
   () => [route.params.username, page.value],
   () => {
-    setTimeout(() => {
-      fetchFollowers();
-    }, 600);
+    fetchFollowers();
   }
 );
 </script>
