@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="pt-4" v-if="userInfo">
+    <div
+      class="pt-4"
+      v-if="userInfo">
       <header class="profile-header">
         <div class="pt-[110px] pb-[75px]">
           <div class="text-center text-4xl pb-3">
@@ -17,8 +19,7 @@
         </div>
       </header>
       <div
-        class="min-h-14 bg-black relative flex items-center justify-between p-4"
-      >
+        class="min-h-14 bg-black relative flex items-center justify-between p-4">
         <div class="flex gap-4 text-gray-400">
           <a
             class="hover:text-white"
@@ -41,13 +42,11 @@
           >
         </div>
         <div
-          class="absolute left-1/2 -translate-x-1/2 bottom-0 w-[124px] h-[124px]"
-        >
+          class="absolute left-1/2 -translate-x-1/2 bottom-0 w-[124px] h-[124px]">
           <img
             :src="userInfo.profile_image_url || '/default-avatar.png'"
             alt="大頭貼"
-            class="bg-black h-full w-full border-gray-700 border-6"
-          />
+            class="bg-black h-full w-full border-gray-700 border-6" />
         </div>
         <div class="flex justify-center items-center gap-4 text-gray-400">
           <a
@@ -61,10 +60,13 @@
             ><span class="text-white">{{ userFollowers }}</span> Followers</a
           >
           <FollowBtn
-            v-if="userInfo.username != authStore.userProfile.username"
+            v-if="
+              userInfo &&
+              authStore.userProfile &&
+              userInfo.username !== authStore.userProfile.username
+            "
             :current-user="authStore.userProfile.id"
-            :target-user="userInfo.username"
-          />
+            :target-user="userInfo.username" />
         </div>
       </div>
       <div class="text-center py-4">
@@ -76,22 +78,19 @@
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="caines"
-            :class="route.path.includes('caines') ? 'text-white' : ''"
-          >
+            :class="route.path.includes('caines') ? 'text-white' : ''">
             Caines
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Following"
-            :class="route.name === 'Profilefollowing' ? 'text-white' : ''"
-          >
+            :class="route.name === 'Profilefollowing' ? 'text-white' : ''">
             Following
           </button>
           <button
             class="cursor-pointer hover:text-white p-2"
             @click="Followers"
-            :class="route.name === 'Profilefollowers' ? 'text-white' : ''"
-          >
+            :class="route.name === 'Profilefollowers' ? 'text-white' : ''">
             Followers
           </button>
         </div>
