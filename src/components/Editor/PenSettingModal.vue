@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue';
+import { inject, ref, watch, computed  } from 'vue';
 import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/useWorkStore'; 
 import { storeToRefs } from 'pinia'
@@ -43,6 +43,7 @@ const { currentWork } = storeToRefs(workStore)
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
+const tags = ref(currentWork.value.tags)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -52,9 +53,19 @@ watch(links, (newLinks) => {
   workStore.updateLinks(newLinks)
 }, { deep: true })
 
-const activeTab = ref(props.selectedTab)
+watch(tags, (newTags) => {
+  workStore.updateTags(newTags)
+}, { deep: true })
+
+
+
+const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
+const tagInput = ref('')
+
+
+const srcDoc = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
 const addCDN = () => {
@@ -78,7 +89,7 @@ const addLink = () => {
     alert('請輸入有效的 link URL（必須以 http 或 https 開頭）');
     return;
   }  if (links.value.includes(url)) {
-    alert("這個 link 已經加入了！");
+    alert("This link has already been added!");
     return;
   }
   links.value.push(url);
@@ -86,6 +97,24 @@ const addLink = () => {
 }
 const removeLink = (index) => {
   links.value.splice(index, 1)
+}
+const addTag = async() => {
+  if (!tagInput.value.trim()) return;
+  const tag = tagInput.value.trim();
+  if (tags.value.includes(tag)) {
+    alert("This tag has already been added!");
+    return;
+  }
+  tags.value.push(tag);
+  tagInput.value = '';
+  await workStore.saveCurrentWork();
+  
+}
+console.log(currentWork.value.tags)
+
+const removeTag = async(index) => {
+  tags.value.splice(index, 1)
+  await workStore.saveCurrentWork();
 }
 
 </script>
@@ -105,10 +134,11 @@ const removeLink = (index) => {
         </div>
         <div class="w-full h-0.5 bg-gray-600 mb-4"></div>
       </div>
-      <div class="md:flex h-full px-4 block overflow-y-auto ">
-        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative -left-4 before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
-            {{ tab.label }}
+
+      <div class="md:flex h-full pr-4 block overflow-y-auto ">
+        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 before:top-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
+            {{  tab.label }}
             <ProTag v-if="tab.key === 'privacy'"/>
           </li>
         </ul>
@@ -295,7 +325,19 @@ const removeLink = (index) => {
                 <span class="text-xs align-text-bottom">comma separated, max of five</span>
               </div>
               <div class="relative">
-                <input type="text" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
+                <input type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
+              </div>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="(tag, index) in tags"
+                  :key="`${tag}-${index}`"
+                  class="flex items-center bg-green-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full"
+                >
+                  {{ tag }}
+                  <button @click="removeTag(index)" class="ml-1 text-gray-500 hover:text-red-500">
+                    ✕
+                  </button>
+                </span>
               </div>
             </div>
           </div>
