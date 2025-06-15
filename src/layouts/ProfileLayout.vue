@@ -132,7 +132,7 @@ const countFollowers = async () => {
     );
     if (res) {
       const { data } = res;
-      userFollowers.value = data.followers.length;
+      userFollowers.value = data.total || 0;
     }
   } catch (e) {
     return 0;
@@ -145,7 +145,7 @@ const countFollowing = async () => {
     );
     if (res) {
       const { data } = res;
-      userFollowings.value = data.followings.length;
+      userFollowings.value = data.total || 0;
     }
   } catch (e) {
     return 0;
