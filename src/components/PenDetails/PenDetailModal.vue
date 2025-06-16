@@ -5,7 +5,7 @@
   >
     <div
       @click.stop
-      class="mx-auto mt-16 mb-10  w-[90%] max-w-4xl bg-cc-16 p-1 rounded shadow-lg relative"
+      class="mx-auto mt-16 mb-10  w-[90%] max-w-[800px] bg-cc-16 p-1 rounded shadow-lg relative"
     >
       <button class="absolute top-2 right-2" @click="$emit('close')">✕</button>
 

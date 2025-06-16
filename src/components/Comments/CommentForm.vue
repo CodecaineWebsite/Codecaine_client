@@ -65,42 +65,44 @@ defineExpose({
     <!-- 未登入 -->
     <div
       v-if="!authStore.user"
-      class="p-4 border rounded text-sm text-center space-y-2 bg-amber-200"
+      class="p-4 my-1.5 rounded text-sm text-center space-y-2 bg-cc-17"
     >
-      <p>Want to leave a comment or start your own work?</p>
-      <div class="flex justify-center pag-4">
+      <p class="text-cc-1 font-bold mb-4">Want to leave a comment or start your own work?</p>
+      <div class="flex justify-center gap-2">
         <button
           @click="goSignup"
-          class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition"
+          class=" bg-cc-green text-cc-20 text-sm px-4 py-2 rounded hover:bg-cc-green-dark hover:text-cc-1 transition"
         >
           Sign Up for Codecaine
         </button>
         <button
           @click="goLogin"
-          class="border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-blue-100 transition"
+          class="bg-cc-13 text-white text-sm px-4 py-2 rounded hover:bg-cc-12 transition"
         >
-          Login
+          Log in
         </button>
       </div>
     </div>
     <!-- 已登入 -->
-    <div v-else class="flex flex-col items-center gap-2 p-4 rounded bg-cc-14 shadow-xl">
+    <div v-else class="flex flex-col items-center gap-2 rounded">
       <textarea
         ref="commentInput"
         v-model="newComment"
         placeholder="Leave a comment..."
         rows="3"
-        class="w-full resize-none bg-cc-4 flex-1 px-3 py-2 rounded focus:outline-none focus:bg-cc-2"
+        class="w-full resize-none bg-cc-4 flex-1 px-3 py-2 rounded focus:outline-none focus:bg-cc-2 text-sm"
         @input="autoResize"
         style="overflow:hidden; min-height:3rem;"
       ></textarea>
       <button
         @click="submit"
         :disabled="sending || !newComment.trim()"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
+        class="ml-auto bg-cc-13 text-white text-sm px-4 py-2 rounded hover:bg-cc-12 transition disabled:text-cc-8 disabled:cursor-not-allowed disabled:bg-cc-10 disabled:hover:bg-cc-10"
       >
-        {{ sending ? "發送中..." : "發送" }}
+        {{ sending ? "Sending..." : "Comment" }}
       </button>
     </div>
   </div>
 </template>
+
+

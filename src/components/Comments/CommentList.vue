@@ -37,34 +37,12 @@ async function insertMention(username) {
   const mentionText = `@${username}`;
   const form = commentFormRef.value;
 
-  if (!authStore.user) {
-    error.value = "請先登入後再提及其他用戶";
-    return;
-  }
   if (!form?.newComment.includes(mentionText)) {
     form.newComment += form.newComment ? `\n${mentionText}` : `${mentionText} `;
   }
   nextTick(() => {
     form.commentInput?.focus();
   });
-}
-
-async function deleteComment(comment) {
-  if (!authStore.user || authStore.user.uid !== comment.user.id) {
-    error.value = "你沒有權限刪除這條留言";
-    return;
-  }
-  if (!confirm("確定要刪除這條留言嗎？")) return;
-
-  try {
-    await api.delete(`/api/comments/${comment.id}`);
-    comments.value = comments.value.filter((c) => c.id !== comment.id);
-    error.value = ""; // 清除錯誤訊息
-  } catch (err) {
-    error.value = "刪除留言失敗，請稍後再試";
-    console.error("刪除留言失敗：", err);
-    alert("刪除留言失敗，請稍後再試");
-  }
 }
 
 const fetchComments = async () => {
@@ -126,7 +104,7 @@ watch(() => props.penId, fetchComments); // 若 penId 有變也重新撈
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4 p-4 rounded bg-cc-14 shadow-xl">
     <!-- 留言輸入欄 -->
     <CommentForm
       :sending="sending"
@@ -135,8 +113,9 @@ watch(() => props.penId, fetchComments); // 若 penId 有變也重新撈
       @close="emit('close')"
       ref="commentFormRef"
     />
-    <p v-if="loading">載入留言中...</p>
-    <p v-if="error" class="text-red-500">{{ error }}</p>
+    <p v-if="loading">Loading...</p>
+    <p v-if="error" class="text-cc-red font-bold text-sm">{{ error }}</p>
+    <p v-if="!loading" class="text-cc-1 font-bold uppercase">{{ comments.length }} COMMENTS</p>
     <!-- 顯示留言卡 -->
     <CommentCard
       v-for="comment in comments"
@@ -150,8 +129,7 @@ watch(() => props.penId, fetchComments); // 若 penId 有變也重新撈
         }
       "
       @mention="insertMention"
+      @close="emit('close')"
     />
-    <!-- 如果沒有留言 -->
-    <p v-if="comments.length === 0 && !loading">目前尚無留言</p>
   </div>
 </template>
