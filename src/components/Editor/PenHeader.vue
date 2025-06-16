@@ -7,6 +7,7 @@
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
   import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
+  import ProTag from './ProTag.vue';
   import Icon from '@/assets/icon.svg';
   import Edit from '@/assets/edit.vue';
   import Like from '@/assets/like.vue';
@@ -32,21 +33,54 @@
   const { userProfile } = storeToRefs(authStore);
   const { currentWork } = storeToRefs(workStore); //放資料
 
-  const isAuthor = ref(false);
   const isAutoPreview = ref(true);
-  const userName = ref(currentWork.value.userName || userProfile.value.username);
-  isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
+  const userName = ref('');
+  const isPro = ref(true);
+  const isEdited = ref(false);
 
+  // 判斷是否為作者（computed 自動反應）
+  const isAuthor = computed(() => {
+    const userId = userProfile.value?.id;
+    const workUserId = currentWork.value?.user_id;
+    const isNewWork = !currentWork.value?.id;
+    return isNewWork || userId === workUserId;
+  });
+
+  // 初始化 userName
+  userName.value =
+    currentWork.value?.userName ??
+    userProfile.value?.username ??
+    '';
+
+  // 監聽 currentWork 更新 UI 狀態
   watch(currentWork, (newWork) => {
-    if (newWork) {
-      userName.value = newWork.userName;
-      isAutoPreview.value = newWork.isAutoPreview ?? true;
-    }
+    if (!newWork) return;
+    isPro.value = newWork.isPro ?? false;
+    isAutoPreview.value = newWork.isAutoPreview ?? true;
+    userName.value = newWork.userName ?? '';
   }, { deep: true });
+
+  watch( () => [
+      currentWork.value.title,
+      currentWork.value.description,
+      currentWork.value.html,
+      currentWork.value.css,
+      currentWork.value.javascript,
+      currentWork.value.cdns,
+      currentWork.value.links,
+      currentWork.value.view_mode,
+      currentWork.value.isAutoSave,
+      currentWork.value.isAutoPreview,
+      currentWork.value.is_private,
+      currentWork.value.tags,
+    ],
+    () => {
+      isEdited.value = true
+    }
+  )
   
-	const isLoggedIn = !!authStore.idToken;
+  const isLoggedIn = computed(() => !!authStore.idToken);
   const navListVisible = ref(false);
-  
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
   const isEditing = ref(false);
@@ -62,14 +96,21 @@
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
       handleSave()
+      isEdited.value = false;
     }
   };
 
+  const handleWorkAutoSave = async () => {
+    if (isLoggedIn.value) {
+      handleSave()
+      isEdited.value = false;
+    }
+  };
 
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
@@ -126,7 +167,7 @@
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
 
-  defineExpose({ toggleSetting });
+  defineExpose({ toggleSetting, handleWorkAutoSave });
 </script>
 
 <template>
@@ -182,8 +223,15 @@
           </div>
         </button>
         <div class="md:flex hidden" v-if="viewMode !== 'full' && isAuthor">
-          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
+          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer relative"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
+            <span  
+              class="h-1 bg-yellow-300 absolute mx-auto left-1 right-1 top-1 origin-center transition-all duration-500"
+              :class="{
+                'w-21': isEdited,
+                'w-0': !isEdited,
+              }">
+            </span>
             <div class="h-7 flex items-center gap-1 ">
               <Cloud class="w-4 text-white" alt="saveBtn"/>
               <span class="text-15">Save</span>
@@ -202,14 +250,30 @@
               v-if="saveOptionVisible" class="absolute z-50 flex flex-col rounded-sm top-12 right-0 bg-[#2C303A] text-white w-80 justify-around border-4 border-gray-800 px-5"
             >
               <label class="flex py-2  justify-between border-b border-gray-600 hover:cursor-pointer">
-                <span>Private</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer">
+                <span>Private <ProTag/> </span>
+                <div class="flex items-center">
+                  <div class="relative inline-block w-[52px] h-7">
+                    <input
+                      type="checkbox"
+                      class="opacity-0 w-0 h-0 peer"
+                      :disabled="!isPro"
+                      v-model="currentWork.isPrivate"
+                    />
                     <span
-                      class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
+                      class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl 
+                            peer-checked:bg-green-400 transition 
+                            before:content-[''] before:h-8 before:w-8 before:left-0 before:-bottom-0.5 
+                            before:bg-white before:transition before:absolute before:rounded-4xl 
+                            peer-checked:before:translate-x-5
+
+                            peer-disabled:bg-gray-200
+                            peer-disabled:before:bg-gray-400
+                      "
+                    ></span>
                   </div>
-                  <span class="ml-2">off</span>  
+                  <span class="ml-2 text-cc-1 peer-disabled:text-gray-400 peer-disabled:opacity-50">
+                    <span class="">{{ currentWork.isPrivate ? 'On' : 'Off' }}</span> 
+                  </span>
                 </div>
               </label>
               <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer">
