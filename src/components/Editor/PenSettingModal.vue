@@ -305,7 +305,7 @@ const removeTag = async(index) => {
           <div v-show="activeTab === 'detail'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
-                <label for="CSS Preprocessor">CSS Preprocessor</label>
+                <label for="Pen Title">Pen Title</label>
               </div>
               <div class="relative">
                 <input type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
