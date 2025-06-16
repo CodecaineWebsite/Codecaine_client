@@ -7,6 +7,7 @@
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
   import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
+  import ProTag from './ProTag.vue';
   import Icon from '@/assets/icon.svg';
   import Edit from '@/assets/edit.vue';
   import Like from '@/assets/like.vue';
@@ -35,12 +36,14 @@
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
   const userName = ref(currentWork.value.userName || userProfile.value.username);
-  isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
+  const isPro = ref(true);
 
   watch(currentWork, (newWork) => {
     if (newWork) {
+      isPro.value = newWork.isPro;
       userName.value = newWork.userName;
       isAutoPreview.value = newWork.isAutoPreview ?? true;
+      isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
     }
   }, { deep: true });
   
@@ -202,14 +205,30 @@
               v-if="saveOptionVisible" class="absolute z-50 flex flex-col rounded-sm top-12 right-0 bg-[#2C303A] text-white w-80 justify-around border-4 border-gray-800 px-5"
             >
               <label class="flex py-2  justify-between border-b border-gray-600 hover:cursor-pointer">
-                <span>Private</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer">
+                <span>Private <ProTag/> </span>
+                <div class="flex items-center">
+                  <div class="relative inline-block w-[52px] h-7">
+                    <input
+                      type="checkbox"
+                      class="opacity-0 w-0 h-0 peer"
+                      :disabled="!isPro"
+                      v-model="currentWork.isPrivate"
+                    />
                     <span
-                      class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
+                      class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl 
+                            peer-checked:bg-green-400 transition 
+                            before:content-[''] before:h-8 before:w-8 before:left-0 before:-bottom-0.5 
+                            before:bg-white before:transition before:absolute before:rounded-4xl 
+                            peer-checked:before:translate-x-5
+
+                            peer-disabled:bg-gray-200
+                            peer-disabled:before:bg-gray-400
+                      "
+                    ></span>
                   </div>
-                  <span class="ml-2">off</span>  
+                  <span class="ml-2 text-cc-1 peer-disabled:text-gray-400 peer-disabled:opacity-50">
+                    <span class="">{{ currentWork.isPrivate ? 'On' : 'Off' }}</span> 
+                  </span>
                 </div>
               </label>
               <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer">
