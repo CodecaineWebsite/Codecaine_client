@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -12,6 +12,21 @@ const router = useRouter();
 const authStore = useAuthStore();
 const newComment = ref("");
 const commentInput = ref(null);
+
+function autoResize() {
+  const el = commentInput.value;
+  console.log(el)
+  if (el) {
+    el.style.height = "auto"; // reset
+    console.log(el.scrollHeight)
+    el.style.height = el.scrollHeight + "px"; // set to scrollHeight
+    // autoResize目前不管用
+  }
+}
+
+onMounted(() => {
+  autoResize(); // 初始時也調整一次
+});
 
 const goSignup = () => {
   emit("close");
@@ -69,18 +84,15 @@ defineExpose({
       </div>
     </div>
     <!-- 已登入 -->
-    <div v-else class="flex items-center gap-2 p-4 border rounded bg-red-100">
-      <img
-        :src="authStore.userProfile?.profile_image_url || '/default-avatar.png'"
-        alt="avatar"
-        class="w-8 h-8 rounded-full object-cover"
-      />
+    <div v-else class="flex flex-col items-center gap-2 p-4 rounded bg-cc-14 shadow-xl">
       <textarea
         ref="commentInput"
         v-model="newComment"
-        placeholder="寫下你的留言..."
+        placeholder="Leave a comment..."
         rows="3"
-        class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full resize-none bg-cc-4 flex-1 px-3 py-2 rounded focus:outline-none focus:bg-cc-2"
+        @input="autoResize"
+        style="overflow:hidden; min-height:3rem;"
       ></textarea>
       <button
         @click="submit"

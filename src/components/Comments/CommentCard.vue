@@ -132,7 +132,7 @@ const deleteComment = async () => {
     <!-- <p v-else class="text-sm whitespace-pre-line">{{ comment.content }}</p> -->
     <div
       v-else
-      class="prose prose-sm max-w-none text-sm"
+      class="prose prose-invert prose-sm max-w-none text-sm"
       v-html="parsedContent"
     ></div>
   </div>

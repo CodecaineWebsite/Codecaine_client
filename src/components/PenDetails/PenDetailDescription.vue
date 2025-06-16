@@ -3,10 +3,10 @@
     <div
       v-if="pen.description"
       v-html="renderedDescription"
-      class="prose dark:prose-invert"
+      class="prose prose-invert prose-sm"
     />
-    <p v-else-if="isOwner" class="text-sm text-cc-7">
-      No description. Pens with descriptions are more helpful and easier to
+    <p v-else-if="isOwner" class="text-sm text-cc-3 font-bold p-2 border border-dashed border-cc-12 rounded-lg mb-4">
+      <span class="italic">No description.</span> Pens with descriptions are more helpful and easier to
       find.
     </p>
   </div>
