@@ -35,17 +35,14 @@
 
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
-<<<<<<< HEAD
   const userName = ref(
     currentWork.value.userName ||
     (userProfile.value && userProfile.value.username) ||
     ''
   );
   isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
-=======
-  const userName = ref(currentWork.value.userName || userProfile.value.username);
   const isPro = ref(true);
->>>>>>> dev
+
 
   const isEdited = ref(false)
   watch(currentWork, (newWork) => {
