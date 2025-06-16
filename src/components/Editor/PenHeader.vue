@@ -33,26 +33,33 @@
   const { userProfile } = storeToRefs(authStore);
   const { currentWork } = storeToRefs(workStore); //放資料
 
-  const isAuthor = ref(false);
   const isAutoPreview = ref(true);
-  const userName = ref(
-    currentWork.value.userName ||
-    (userProfile.value && userProfile.value.username) ||
-    ''
-  );
-  isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
+  const userName = ref('');
   const isPro = ref(true);
+  const isEdited = ref(false);
 
+  // 判斷是否為作者（computed 自動反應）
+  const isAuthor = computed(() => {
+    const userId = userProfile.value?.id;
+    const workUserId = currentWork.value?.user_id;
+    const isNewWork = !currentWork.value?.id;
+    return isNewWork || userId === workUserId;
+  });
 
-  const isEdited = ref(false)
+  // 初始化 userName
+  userName.value =
+    currentWork.value?.userName ??
+    userProfile.value?.username ??
+    '';
+
+  // 監聽 currentWork 更新 UI 狀態
   watch(currentWork, (newWork) => {
-    if (newWork) {
-      isPro.value = newWork.isPro;
-      userName.value = newWork.userName;
-      isAutoPreview.value = newWork.isAutoPreview ?? true;
-      isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
-    }
+    if (!newWork) return;
+    isPro.value = newWork.isPro ?? false;
+    isAutoPreview.value = newWork.isAutoPreview ?? true;
+    userName.value = newWork.userName ?? '';
   }, { deep: true });
+
   watch( () => [
       currentWork.value.title,
       currentWork.value.description,
