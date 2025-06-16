@@ -27,7 +27,7 @@ const page = ref(Number(route.query.page) || 1);
 const pageSize = 6;
 const totalPages = ref(0);
 
-const fetchCaienes = async () => {
+const fetchCaines = async () => {
   try {
     const res = await api.get(
       `/api/usersCaines/${route.params.username}/public`,
@@ -50,7 +50,7 @@ watch(page, (newPage) => {
   router.replace({
     query: { ...route.query, page: newPage },
   });
-  fetchCaienes();
+  fetchCaines();
 });
 
 watch(
@@ -61,5 +61,9 @@ watch(
   }
 );
 
-onMounted(fetchCaienes);
+onMounted(() => {
+  setTimeout(() => {
+    fetchCaines();
+  }, 600);
+});
 </script>

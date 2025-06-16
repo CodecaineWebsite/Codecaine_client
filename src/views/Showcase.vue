@@ -53,6 +53,8 @@ watch(
 );
 
 onMounted(() => {
-  fetchCaines();
+  setTimeout(() => {
+    fetchCaines();
+  }, 600);
 });
 </script>
