@@ -192,9 +192,9 @@
           <div class="relative">
             <div v-if="saveOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleSave"></div>
             <button v-if="isLoggedIn" @click.prevent="toggleSave" type="button"
-              class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-5 editorSmallButton-hover-bgc  hover:cursor-pointer">
+              class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-6.5 editorSmallButton-hover-bgc  hover:cursor-pointer">
               <div class="h-7 flex justify-center items-center">
-                <Arrow class="w-3 h-3 fill-current"/>
+                <Arrow class="w-2.5 h-2.5 fill-current text-gray-400"/>
               </div>
             </button>
             <div v-if="saveOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleSave"></div>
