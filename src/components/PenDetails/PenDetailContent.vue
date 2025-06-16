@@ -19,8 +19,8 @@ const isAuthor = computed(() => authStore.user?.uid === props.pen.user_id);
   >
     <!-- 描述與標籤區塊 -->
     <div class="description-section col-span-1 row-span-2 space-y-4">
-      <PenDetailDescription :pen="pen" :current-user-id="authStore.user?.uid" />
-      <PenDetailTags :pen="pen" :current-user-id="authStore.user?.uid" />
+      <PenDetailDescription :pen="pen" :currentUserId="authStore.user?.uid" />
+      <PenDetailTags :pen="pen" :currentUserId="authStore.user?.uid" />
     </div>
     <!-- aside：右側 meta 區 -->
     <aside class="meta-section lg:col-start-2 lg:row-span-3 space-y-4">

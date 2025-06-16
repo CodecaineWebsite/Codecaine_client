@@ -22,7 +22,7 @@ const props = defineProps({
   currentUserId: String,
 });
 
-const isOwner = computed(() => props.pen.user?.id === props.currentUserId);
+const isOwner = computed(() => props.pen.user_id === props.currentUserId);
 const shouldShow = computed(() => props.pen.description || isOwner);
 const renderedDescription = computed(() => {
   const rawHtml = marked.parse(props.pen.description || "");

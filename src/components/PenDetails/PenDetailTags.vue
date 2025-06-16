@@ -24,6 +24,6 @@ const props = defineProps({
 });
 
 const tags = computed(() => props.pen.tags || []);
-const isOwner = computed(() => props.pen.user?.id === props.currentUserId);
+const isOwner = computed(() => props.pen.user_id === props.currentUserId);
 const shouldShow = computed(() => tags.value.length > 0 || isOwner.value);
 </script>
