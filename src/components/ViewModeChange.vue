@@ -34,8 +34,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { defineEmits } from "vue";
+import { ref, defineEmits } from "vue";
 import GridIcon from "@/components/icons/GridIcon.vue";
 import ListIcon from "@/components/icons/ListIcon.vue";
 
