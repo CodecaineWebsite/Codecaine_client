@@ -9,6 +9,7 @@ import PenDetailDescription from "@/components/PenDetails/PenDetailDescription.v
 import PenDetailTags from "@/components/PenDetails/PenDetailTags.vue";
 import PenShareBox from "@/components/PenDetails/PenShareBox.vue";
 import PenTimestamps from "@/components/PenDetails/PenTimeStamp.vue";
+import PenStats from "@/components/PenDetails/PenStats.vue";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -33,6 +34,7 @@ const props = defineProps({
     <aside class="meta-section lg:col-start-2 lg:row-span-3 space-y-4">
       <PenShareBox :pen-id="pen.id" :username="pen.username" />
       <PenTimestamps :pen="pen" />
+      <PenStats :likes="pen.favorites" :views="pen.views_count" />
     </aside>
   </div>
 </template>

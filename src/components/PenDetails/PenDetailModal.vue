@@ -5,7 +5,7 @@
   >
     <div
       @click.stop
-      class="mx-auto mt-16 mb-10  w-[90%] max-w-4xl bg-white p-6 rounded shadow-lg relative"
+      class="mx-auto mt-16 mb-10  w-[90%] max-w-4xl bg-cc-16 p-6 rounded shadow-lg relative"
     >
       <button class="absolute top-2 right-2" @click="$emit('close')">✕</button>
 
@@ -25,7 +25,7 @@ import  api  from "@/config/api.js";
 import { useModalStore } from '@/stores/useModalStore.js'
 import PenDetailModalHeader from "@/components/PenDetails/PenDetailModalHeader.vue";
 import PenDetailPreviewIframe from "@/components/PenDetails/PenDetailPreviewIframe.vue";
-import PenDetailContent from "@/components/PenDetails/PenDetailContent.vue"; 
+import PenDetailContent from "@/components/PenDetails/PenContent.vue"; 
 const props = defineProps({
   penId: Number,
   from: String, // 'card' | 'editor'
