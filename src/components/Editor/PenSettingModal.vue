@@ -105,10 +105,10 @@ const removeLink = (index) => {
         </div>
         <div class="w-full h-0.5 bg-gray-600 mb-4"></div>
       </div>
-      <div class="md:flex h-full px-4 block overflow-y-auto ">
-        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative -left-4 before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
-            {{ tab.label }}
+      <div class="md:flex h-full pr-4 block overflow-y-auto ">
+        <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 before:top-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-gray-600': activeTab === tab.key}">
+            {{  tab.label }}
             <ProTag v-if="tab.key === 'privacy'"/>
           </li>
         </ul>
