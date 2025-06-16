@@ -34,7 +34,7 @@ const sending = ref(false); // 是否正在發送留言
 const commentInput = ref(null);
 
 async function insertMention(username) {
-  const mentionText = `@${username}`;
+  const mentionText = `${username}`;
   const form = commentFormRef.value;
 
   if (!form?.newComment.includes(mentionText)) {
