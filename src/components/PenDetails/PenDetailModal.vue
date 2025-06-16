@@ -23,9 +23,9 @@
 import { ref, onMounted } from "vue";
 import  api  from "@/config/api.js"; 
 import { useModalStore } from '@/stores/useModalStore.js'
-import PenDetailModalHeader from "@/components/PenDetailModalHeader.vue";
-import PenDetailPreviewIframe from "@/components/PenDetailPreviewIframe.vue";
-import PenDetailContent from "@/components/PenDetailContent.vue"; 
+import PenDetailModalHeader from "@/components/PenDetails/PenDetailModalHeader.vue";
+import PenDetailPreviewIframe from "@/components/PenDetails/PenDetailPreviewIframe.vue";
+import PenDetailContent from "@/components/PenDetails/PenDetailContent.vue"; 
 const props = defineProps({
   penId: Number,
   from: String, // 'card' | 'editor'

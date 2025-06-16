@@ -28,7 +28,7 @@ import { computed, ref, watch } from "vue";
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "@/components/MainSidebar.vue";
-import PenDetailModal from "@/components/PenDetailModal.vue";
+import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
 
 const modalStore = useModalStore()
 
