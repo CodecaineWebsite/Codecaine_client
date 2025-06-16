@@ -34,7 +34,11 @@
 
   const isAuthor = ref(false);
   const isAutoPreview = ref(true);
-  const userName = ref(currentWork.value.userName || userProfile.value.username);
+  const userName = ref(
+    currentWork.value.userName ||
+    (userProfile.value && userProfile.value.username) ||
+    ''
+  );
   isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
 
   const isEdited = ref(false)
@@ -63,9 +67,8 @@
     }
   )
   
-	const isLoggedIn = !!authStore.idToken;
+  const isLoggedIn = computed(() => !!authStore.idToken);
   const navListVisible = ref(false);
-  
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
   const isEditing = ref(false);
@@ -79,11 +82,19 @@
 
   const isLoginModalShow = ref(false)
   const { handleSave } = useHandleSave();
+
   const handleWorkSave = async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
+      handleSave()
+      isEdited.value = false;
+    }
+  };
+
+  const handleWorkAutoSave = async () => {
+    if (isLoggedIn.value) {
       handleSave()
       isEdited.value = false;
     }
@@ -144,7 +155,7 @@
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
 
-  defineExpose({ toggleSetting });
+  defineExpose({ toggleSetting, handleWorkAutoSave });
 </script>
 
 <template>
