@@ -17,7 +17,7 @@ export const useWorkStore = defineStore('work', () => {
     view_mode: "center",
     isAutoSave: true,
     isAutoPreview: true,
-    is_private: false,
+    isPrivate: false,
     tags:[],
   }
   const currentId = ref('');
@@ -35,6 +35,14 @@ export const useWorkStore = defineStore('work', () => {
 
   const currentWork = ref(workTemplate)
 
+  const handleInitWork = (user) => {
+    currentWork.value = {
+      ...currentWork.value,
+      ...user
+    }
+    console.log(currentWork.value);
+  }
+
   // 改變currentId function
   const handleCurrentIdChange = async(id) => {
     if(id) {
@@ -44,6 +52,8 @@ export const useWorkStore = defineStore('work', () => {
         ...data,
         userName: data.username,
         userId: data.user_id,
+        isPro: data.is_pro,
+        isPrivate: data.is_private,
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
@@ -302,6 +312,7 @@ export const useWorkStore = defineStore('work', () => {
     works,
     currentWork,
     currentId,
+    handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,
     toggleAutoSave,
