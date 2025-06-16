@@ -14,6 +14,7 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     links:[],
     cdns: [], 
+    views_count: "",
     view_mode: "center",
     isAutoSave: true,
     isAutoPreview: true,
@@ -40,7 +41,6 @@ export const useWorkStore = defineStore('work', () => {
       ...currentWork.value,
       ...user
     }
-    console.log(currentWork.value);
   }
 
   // 改變currentId function
@@ -48,6 +48,12 @@ export const useWorkStore = defineStore('work', () => {
     if(id) {
       currentId.value = id
       const data = await fetchWorkFromId(id)
+      
+      console.log(`Pen ${id} viewed`);
+      api.put(`/api/pens/${id}/view`).catch(err => {
+      console.warn('Failed to increase views count:', err)
+    });
+
       currentWork.value = {
         ...data,
         userName: data.username,
