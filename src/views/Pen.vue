@@ -12,6 +12,7 @@
   import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
+  import { debounce } from '@/utils/debounce';
 
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
@@ -73,6 +74,7 @@
 
   watch(currentWork, (newWork) => {
     if (newWork) {
+      console.log(newWork);
       htmlCode.value = newWork.html || '';
       cssCode.value = newWork.css || '';
       javascriptCode.value = newWork.javascript || '';
@@ -81,7 +83,33 @@
     }
   }, { deep: true });
 
-  const layoutOptionVisible = ref(false);
+  let isFirstRun = true;
+  const debouncedAutoSave = debounce(() => {
+    penHeader.value?.handleWorkAutoSave()
+  }, 2000)
+  watch( () => [
+      currentWork.value.title,
+      currentWork.value.description,
+      currentWork.value.html,
+      currentWork.value.css,
+      currentWork.value.javascript,
+      currentWork.value.cdns,
+      currentWork.value.links,
+      currentWork.value.view_mode,
+      currentWork.value.isAutoSave,
+      currentWork.value.isAutoPreview,
+      currentWork.value.is_private,
+      currentWork.value.tags,
+    ],
+    () => {
+      if(isFirstRun) {
+        isFirstRun = false;
+        return
+      }
+      debouncedAutoSave()
+    }
+  )
+
   const isConsoleShow = ref(false);
   const consoleRef = ref(null)
 
@@ -125,8 +153,6 @@
   const currentColumnIndex = ref(null)
   const dragElement = ref(null)
   const mainRef = ref(null);
-
-  // const MIN_SIZE = 0
 
   // 啟動 / 停止拖曳時禁用選取文字
   function enableNoSelect() {
