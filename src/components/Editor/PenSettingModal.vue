@@ -116,7 +116,7 @@ const removeTag = async(index) => {
 </script>
 <template>
   <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
-    <div class=" flex flex-col rounded-sm bg-cc-17 text-white border-3 border-cc-21 h-full w-full " >
+    <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-21 h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
           <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Pen Settings</span>
@@ -132,7 +132,7 @@ const removeTag = async(index) => {
       </div>
       <div class="md:flex h-full pr-4 block overflow-y-auto ">
         <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 before:top-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-cc-14': activeTab === tab.key}">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-cc-14': activeTab === tab.key}">
             {{  tab.label }}
           </li>
         </ul>
@@ -370,7 +370,7 @@ const removeTag = async(index) => {
         </div>
       </div>
     </div>
-    <div class="bg-cc-15 w-full flex flex-col py-4 px-2 ">
+    <div class="bg-cc-15 rounded-b-md shadow-lg  w-full flex flex-col py-4 px-2 ">
     <button type="submit" @click.prevent="emit('close')" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
     </div>
   </div>
