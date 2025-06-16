@@ -3,14 +3,22 @@
     class="layout transition-all duration-400 ease-in-out"
     :style="{ gridTemplateColumns: layoutColumns }"
   >
-    <MainSidebar class="sidebar" @toggle="toggleSidebar" />
+    <!-- Sidebar：830px 以下隱藏 -->
+    <MainSidebar
+      class="sidebar"
+      v-if="!isCompactScreen"
+      @toggle="toggleSidebar"
+    />
+
     <SubHeader class="header" />
+
     <RouterView v-slot="{ Component }">
       <component :is="Component" class="content" />
     </RouterView>
+
     <SubFooter class="footer" />
 
-    <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
+        <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
     <PenDetailModal
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
@@ -18,64 +26,74 @@
       @close="modalStore.closeModal"
     />
   </div>
-  <!--routerview 內容一定要寫在div class="content"裡面!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 不然會跑掉-->
 </template>
 
 <script setup>
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
-import { computed, ref, watch } from "vue";
-
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "@/components/MainSidebar.vue";
 import PenDetailModal from "@/components/PenDetailModal.vue";
 
-const modalStore = useModalStore()
+const modalStore = useModalStore();
 
+// Sidebar 顯示開關狀態
 const isSidebarOpen = ref(
-	localStorage.getItem("sidebarOpen") === "false" ? false : true
+  localStorage.getItem("sidebarOpen") === "false" ? false : true
 );
-
 const layoutColumns = computed(() =>
-	isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
+  isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
 );
 
 function toggleSidebar() {
-	//切換true or false
-	isSidebarOpen.value = !isSidebarOpen.value;
+  isSidebarOpen.value = !isSidebarOpen.value;
 }
-
 watch(isSidebarOpen, (val) => {
-	localStorage.setItem("sidebarOpen", val);
+  localStorage.setItem("sidebarOpen", val);
+});
+
+const screenWidth = ref(window.innerWidth);
+const isCompactScreen = computed(() => screenWidth.value <= 830);
+
+const handleResize = () => {
+  screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", handleResize);
+});
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 
 <style scoped>
 .layout {
-	display: grid;
-	grid-template-areas:
-		"sidebar header"
-		"sidebar content"
-		"sidebar footer";
-	grid-template-rows: 75px 1fr auto; /* 先寫死表示大概畫面 再自行修正*/
-	min-height: 100vh; /* 讓畫面高度至少是100vh */
-	overflow: hidden;
+  display: grid;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar content"
+    "sidebar footer";
+  grid-template-rows: 75px 1fr auto;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
-	grid-area: sidebar;
+  grid-area: sidebar;
 }
 
 .header {
-	grid-area: header;
+  grid-area: header;
 }
 
 .content {
-	grid-area: content;
-	overflow-y: auto;
+  grid-area: content;
+  overflow-y: auto;
 }
 
 .footer {
-	grid-area: footer;
+  grid-area: footer;
 }
 </style>
