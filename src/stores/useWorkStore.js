@@ -70,11 +70,6 @@ export const useWorkStore = defineStore('work', () => {
       if (autoSaveTimeout.value) {
         clearTimeout(autoSaveTimeout.value);
       }
-
-      // 設定新的 debounce
-      autoSaveTimeout.value = setTimeout(() => {
-        saveCurrentWork();
-      }, 30000); // 自動儲存延遲 1 秒，可調整
     }
   };
 
