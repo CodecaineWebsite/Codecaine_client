@@ -71,7 +71,7 @@
             type="button"
             class="rounded bg-[#05DF72] text-black px-4 py-2 font-bold hover:bg-[#04c862] transition self-end cursor-pointer mt-2"
           >
-            Savw Avatar
+            Save Avatar
           </button>
         </div>
       </div>
