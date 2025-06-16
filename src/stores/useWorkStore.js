@@ -100,25 +100,25 @@ export const useWorkStore = defineStore('work', () => {
 
   }
 
-  // 更新作品Preview function
+  // 更新作品Preview
   const updatePreviewSrc = () => {
     const jsCode = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"><\/script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}"><\/link>`).join('\n')
+    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
     const previewData = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8" />
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https:;">
+      ${cdnTags}
       ${linkTags}
       <style>${cssCode}</style>
     </head>
     <body>
       ${htmlCode}
-      ${cdnTags}
-      <script>
+      <script type="module">
         // Override console methods to send logs to parent
         const originalConsole = {
           log: console.log,
@@ -169,7 +169,7 @@ export const useWorkStore = defineStore('work', () => {
   
         const script = document.createElement('script');
         script.src = blobUrl;
-  
+        script.type = 'module';
         script.onload = () => {
           URL.revokeObjectURL(blobUrl);
         };
@@ -187,7 +187,10 @@ export const useWorkStore = defineStore('work', () => {
     </body>
     </html>
     `;
-    return previewData
+    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    window.currentPreviewBlob = blobUrl;
+    return blobUrl;
   };
 
   const fetchWorks = async () => {
