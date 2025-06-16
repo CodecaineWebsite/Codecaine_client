@@ -1,13 +1,20 @@
 <script setup>
-import { ref, watch, onMounted, defineExpose } from 'vue'
+import { ref, watch, onMounted, defineExpose, onUnmounted } from 'vue'
 
-// 從 parent 傳入的 props
 const props = defineProps({
   currentWork: Object,
   updatePreviewSrc: Function
 })
 
-const previewFrame = ref(null)
+const iframeSrc = ref('')
+let currentBlobUrl = null
+
+function revokeOldUrl() {
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+}
 
 function debounce(fn, wait = 2000) {
   let timeout
@@ -16,10 +23,11 @@ function debounce(fn, wait = 2000) {
     timeout = setTimeout(() => fn(...args), wait)
   }
 }
-
 const updateIframe = debounce(() => {
-  if (!previewFrame.value) return
-  previewFrame.value.srcdoc = props.updatePreviewSrc()
+  revokeOldUrl()
+  const newBlobUrl = props.updatePreviewSrc()
+  iframeSrc.value = newBlobUrl
+  currentBlobUrl = newBlobUrl
 }, 2000)
 
 function runPreview() {
@@ -32,6 +40,7 @@ onMounted(() => {
     updateIframe()
   }
 })
+
 watch(
   () => props.currentWork,
   (newVal) => {
@@ -42,8 +51,12 @@ watch(
   { deep: true }
 )
 
+onUnmounted(() => {
+  revokeOldUrl()
+})
+
 </script>
 
 <template>
-  <iframe ref="previewFrame" sandbox="allow-scripts" class="h-full w-full"></iframe>
+  <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame"></iframe>
 </template>

@@ -105,20 +105,21 @@ export const useWorkStore = defineStore('work', () => {
     const jsCode = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"><\/script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}"><\/link>`).join('\n')
+    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
+
     const previewData = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8" />
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https:;">
       ${linkTags}
+      ${cdnTags}
       <style>${cssCode}</style>
     </head>
     <body>
       ${htmlCode}
-      ${cdnTags}
-      <script>
+      <script type="module">
         // Override console methods to send logs to parent
         const originalConsole = {
           log: console.log,
@@ -166,8 +167,8 @@ export const useWorkStore = defineStore('work', () => {
         const code = ${JSON.stringify(jsCode)};
         const blob = new Blob([code], { type: 'application/javascript' });
         const blobUrl = URL.createObjectURL(blob);
-  
         const script = document.createElement('script');
+        script.type = 'module';
         script.src = blobUrl;
   
         script.onload = () => {
@@ -187,9 +188,15 @@ export const useWorkStore = defineStore('work', () => {
     </body>
     </html>
     `;
-    return previewData
+
+    console.log(previewData, 'preview');
+    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    window.currentPreviewBlob = blobUrl;
+    return blobUrl;
   };
 
+  // return previewData
   const fetchWorks = async () => {
     try {
       const res = await api.get(`/api/pens`);
