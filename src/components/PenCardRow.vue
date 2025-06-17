@@ -1,7 +1,7 @@
 <template>
   <tr class="group border-b border-gray-300 hover:bg-gray-900">
     <td class="py-2 px-4">
-      <a :href="editorPageLink">{{ pen.title }}</a>
+      <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
     </td>
     <td class="py-2 px-4">
       <button
