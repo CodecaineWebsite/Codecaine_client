@@ -5,7 +5,8 @@
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          :src="previewIframeUrl"
+          :src="iframeSrc"
+          sandbox="allow-scripts"
           class="w-full h-full border-0"
           loading="lazy"
         ></iframe>
@@ -132,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
@@ -142,9 +143,12 @@ import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import { useModalStore } from "@/stores/useModalStore";
+import { useWorkStore } from "@/stores/useWorkStore";
 
 const router = useRouter();
 const modalStore = useModalStore();
+const workStore = useWorkStore();
+const { updateCardPreviewSrc } = workStore;
 
 const props = defineProps({
   pen: {
@@ -164,7 +168,19 @@ const userProfileImage = props.pen.profile_image || "https://assets.codepen.io/t
 const isPro = props.pen.isPro || false;
 // 作品預覽
 const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
-const previewIframeUrl = `${import.meta.env.VITE_URL_BASE}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
+
+const iframeSrc = ref('')
+const code = {
+  html: props.pen.html_code || "",
+  css: props.pen.css_code || "",
+  javascript: props.pen.js_code || "",
+  cdns: props.resources_js || [],
+  links: props.resources_css || []
+}
+onMounted(async () => {
+  const newBlobUrl = updateCardPreviewSrc(code);
+  iframeSrc.value = newBlobUrl
+})
 
 // 統計資料
 const likes = props.pen.favorites_count;
