@@ -12,9 +12,9 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import PenDetailPageHeader from '@/components/PenDetailPageHeader.vue'
-import PenDetailPreviewIframe from '@/components/PenDetailPreviewIframe.vue'
-import PenDetailContent from '@/components/PenDetailContent.vue'
+import PenDetailPageHeader from '@/components/PenDetails/PenDetailPageHeader.vue'
+import PenDetailPreviewIframe from '@/components/PenDetails/PenDetailPreviewIframe.vue'
+import PenDetailContent from '@/components/PenDetails/PenDetailContent.vue'
 
 const route = useRoute()
 const penId = route.params.pen_id

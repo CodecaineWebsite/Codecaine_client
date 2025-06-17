@@ -56,7 +56,7 @@
   const selectedTab = ref('html')
   const isMobile = ref(false)
   const checkMobile = () => {
-    isMobile.value = window.innerWidth < 640
+    isMobile.value = window.innerWidth < 768
   }
   onMounted(() => {
     window.addEventListener('resize', checkMobile)
