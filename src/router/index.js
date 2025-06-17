@@ -89,6 +89,7 @@ const router = createRouter({
                   path: "private",
                   name: "cainesPrivate",
                   component: () => import("../views/Private.vue"),
+                  meta: { requiresPrivate: true },
                 },
                 {
                   path: "loved",
@@ -163,9 +164,19 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiresGuest && authStore.idToken) {
-    // 已登入就導回首頁
     return next("/");
   }
   next();
-}); //進入signup後 codepne是500頁面 可以再做調整
+});
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresPrivate) {
+    const currentUser = authStore.userProfile?.username;
+    const routeUser = to.params.username;
+    if (currentUser !== routeUser) {
+      return next(`/${to.params.username}/caines`);
+    }
+  }
+  next();
+});
 export default router;
