@@ -14,8 +14,8 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     links:[],
     cdns: [], 
-    views_count: "",
-    view_mode: "center",
+    viewsCount: "",
+    viewMode: "center",
     isAutoSave: true,
     isAutoPreview: true,
     isPrivate: false,
@@ -24,10 +24,10 @@ export const useWorkStore = defineStore('work', () => {
   const currentId = ref('');
   const works = ref([])
   const updateCDNs = (newCDNs) => {
-    currentWork.value.resources_js = newCDNs
+    currentWork.value.cdns = newCDNs
   }
   const updateLinks = (newLinks) => {
-  currentWork.value.resources_css = newLinks
+  currentWork.value.links = newLinks
   }
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
@@ -256,7 +256,7 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
-        view_mode: currentWork.value.view_mode,
+        view_mode: currentWork.value.viewMode,
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
         resources_css: currentWork.value.links || [],
