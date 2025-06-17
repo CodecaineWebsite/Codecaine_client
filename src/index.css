@@ -29,7 +29,6 @@
   --color-cc-18: #0a0a0c;
   --color-cc-19: #010101;
   --color-cc-20: black;
-  --color-cc-21: #252830;
   --color-cc-green: #47cf73;
   --color-cc-green-light: #d3ffe1;
   --color-cc-green-dark: #248c46;
@@ -64,6 +63,10 @@
   --color-cc-editor-column-title: #b2b8c5;
   --color-cc-editor-column-tab-bg: #1c1e22;
   --color-cc-editor-column-tab-text: #abaebd;
+  
+  /* PenSettingModal */
+  --color-cc-pensettingmodal-border: #252830;
+
 }
 
 .editor-bgc {
