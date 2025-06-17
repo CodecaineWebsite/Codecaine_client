@@ -18,7 +18,7 @@
 
     <SubFooter class="footer" />
 
-        <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
+    <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
     <PenDetailModal
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
@@ -38,10 +38,12 @@ import PenDetailModal from "@/components/PenDetailModal.vue";
 
 const modalStore = useModalStore();
 
-// Sidebar 顯示開關狀態
 const isSidebarOpen = ref(
   localStorage.getItem("sidebarOpen") === "false" ? false : true
 );
+const screenWidth = ref(window.innerWidth);
+const isCompactScreen = computed(() => screenWidth.value <= 830);
+
 const layoutColumns = computed(() =>
   isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
 );
@@ -49,20 +51,34 @@ const layoutColumns = computed(() =>
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
-watch(isSidebarOpen, (val) => {
-  localStorage.setItem("sidebarOpen", val);
-});
 
-const screenWidth = ref(window.innerWidth);
-const isCompactScreen = computed(() => screenWidth.value <= 830);
+watch(isSidebarOpen, (val) => {
+  if (screenWidth.value > 830) {
+    localStorage.setItem("sidebarOpen", val);
+  }
+});
 
 const handleResize = () => {
   screenWidth.value = window.innerWidth;
+  if (screenWidth.value <= 830) {
+    isSidebarOpen.value = false;
+  } else {
+    isSidebarOpen.value = true;
+  }
 };
+
+watchEffect(() => {
+  if (screenWidth.value <= 830) {
+    isSidebarOpen.value = false;
+  } else {
+    isSidebarOpen.value = true;
+  }
+});
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
 });
+
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
 });
