@@ -33,23 +33,54 @@
   const { userProfile } = storeToRefs(authStore);
   const { currentWork } = storeToRefs(workStore); //放資料
 
-  const isAuthor = ref(false);
   const isAutoPreview = ref(true);
-  const userName = ref(currentWork.value.userName || userProfile.value.username);
+  const userName = ref('');
   const isPro = ref(true);
+  const isEdited = ref(false);
 
+  // 判斷是否為作者（computed 自動反應）
+  const isAuthor = computed(() => {
+    const userId = userProfile.value?.id;
+    const workUserId = currentWork.value?.user_id;
+    const isNewWork = !currentWork.value?.id;
+    return isNewWork || userId === workUserId;
+  });
+
+  // 初始化 userName
+  userName.value =
+    currentWork.value?.userName ??
+    userProfile.value?.username ??
+    '';
+
+  // 監聽 currentWork 更新 UI 狀態
   watch(currentWork, (newWork) => {
-    if (newWork) {
-      isPro.value = newWork.isPro;
-      userName.value = newWork.userName;
-      isAutoPreview.value = newWork.isAutoPreview ?? true;
-      isAuthor.value = !currentWork.value.id ? true : userProfile.value.id === currentWork.value.user_id;
-    }
+    if (!newWork) return;
+    isPro.value = newWork.isPro ?? false;
+    isAutoPreview.value = newWork.isAutoPreview ?? true;
+    userName.value = newWork.userName ?? '';
   }, { deep: true });
+
+  watch( () => [
+      currentWork.value.title,
+      currentWork.value.description,
+      currentWork.value.html,
+      currentWork.value.css,
+      currentWork.value.javascript,
+      currentWork.value.cdns,
+      currentWork.value.links,
+      currentWork.value.view_mode,
+      currentWork.value.isAutoSave,
+      currentWork.value.isAutoPreview,
+      currentWork.value.is_private,
+      currentWork.value.tags,
+    ],
+    () => {
+      isEdited.value = true
+    }
+  )
   
-	const isLoggedIn = !!authStore.idToken;
+  const isLoggedIn = computed(() => !!authStore.idToken);
   const navListVisible = ref(false);
-  
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
   const isEditing = ref(false);
@@ -65,14 +96,21 @@
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
       handleSave()
+      isEdited.value = false;
     }
   };
 
+  const handleWorkAutoSave = async () => {
+    if (isLoggedIn.value) {
+      handleSave()
+      isEdited.value = false;
+    }
+  };
 
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
@@ -129,7 +167,7 @@
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
 
-  defineExpose({ toggleSetting });
+  defineExpose({ toggleSetting, handleWorkAutoSave });
 </script>
 
 <template>
@@ -185,8 +223,15 @@
           </div>
         </button>
         <div class="md:flex hidden" v-if="viewMode !== 'full' && isAuthor">
-          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer"
+          <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer relative"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
+            <span  
+              class="h-1 bg-yellow-300 absolute mx-auto left-1 right-1 top-1 origin-center transition-all duration-500"
+              :class="{
+                'w-21': isEdited,
+                'w-0': !isEdited,
+              }">
+            </span>
             <div class="h-7 flex items-center gap-1 ">
               <Cloud class="w-4 text-white" alt="saveBtn"/>
               <span class="text-15">Save</span>
@@ -195,9 +240,9 @@
           <div class="relative">
             <div v-if="saveOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleSave"></div>
             <button v-if="isLoggedIn" @click.prevent="toggleSave" type="button"
-              class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-5 editorSmallButton-hover-bgc  hover:cursor-pointer">
+              class="relative text-[aliceblue] rounded-r  py-2 bg-[#444857] flex justify-center items-center w-6.5 editorSmallButton-hover-bgc  hover:cursor-pointer">
               <div class="h-7 flex justify-center items-center">
-                <Arrow class="w-3 h-3 fill-current"/>
+                <Arrow class="w-2.5 h-2.5 fill-current text-gray-400"/>
               </div>
             </button>
             <div v-if="saveOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleSave"></div>

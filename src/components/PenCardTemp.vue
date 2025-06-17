@@ -168,7 +168,7 @@ const views = props.pen.views_count;
 
 // 連結
 const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
-const userPageLink = `/profile/${userName}`;
+const userPageLink = `/${userName}`;
 const detailPageLink = `/${userName}/details/${workId}`;
 const fullPageLink = `/${userName}/full/${workId}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro

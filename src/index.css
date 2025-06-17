@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* 字體 */
@@ -29,6 +30,7 @@
   --color-cc-18: #0a0a0c;
   --color-cc-19: #010101;
   --color-cc-20: black;
+  --color-cc-21: #252830;
   --color-cc-green: #47cf73;
   --color-cc-green-light: #d3ffe1;
   --color-cc-green-dark: #248c46;
@@ -73,7 +75,7 @@
 }
 
 .editorSettingCard-linear-bgc {
-  @apply bg-gradient-to-l from-[#252730] to-[#424655];
+  @apply bg-gradient-to-l from-[#131417] to-[#252830];
 }
 
 .editorSmallButton-hover-bgc:hover {
