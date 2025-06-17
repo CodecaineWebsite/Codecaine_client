@@ -4,12 +4,10 @@
       v-if="!isLoading && pens.length > 0"
       :pens="pens"
       mode="grid"
-      @pen-clicked="modalStore.openPenDetailModal($event)"
-    />
+      @pen-clicked="modalStore.openPenDetailModal($event)" />
     <div
       v-else-if="!isLoading && pens.length === 0"
-      class="justify-center flex mt-12"
-    >
+      class="justify-center flex mt-12">
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
         ⚠️ No Loved Caines found.
       </p>
@@ -18,8 +16,7 @@
       :currentPage="page"
       :totalPages="totalPages"
       @prev="page--"
-      @next="page++"
-    />
+      @next="page++" />
   </div>
 </template>
 
@@ -41,7 +38,7 @@ const fetchCaines = async () => {
   isLoading.value = true;
   try {
     const res = await api.get(`/api/favorites/${route.params.username}`, {
-      params: { page: page.value, pageSize },
+      params: { page: page.value, pageSize, view: viewMode.value },
     });
     pens.value = res.data.results || [];
     totalPages.value = Math.ceil(res.data.total / pageSize);
