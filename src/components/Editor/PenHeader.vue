@@ -348,12 +348,12 @@
             </div>
           </button>
           <div v-if="layoutOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleLayout"></div>
-          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 py-3 rounded-lg border-4 border-gray-800">
+          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 pt-3 pb-1 rounded-lg border-4 border-gray-800">
             <div class="px-3 text-white">
               <span>Change View</span>
             </div>
-            <div class="flex justify-center align-middle py-3">
-              <div class="flex justify-center align-middle py-3 ">
+            <div class="flex justify-center align-middle py-2">
+              <div class="flex justify-center align-middle py-1">
                 <label
                   v-for="option in layoutOptions" :key="option.id" class="border-2 border-[#444857] w-20 flex justify-center h-12 editorSmallButton-hover-bgc   hover:cursor-pointer" :class="{ 'rounded-l-sm': option.id === 'left', 'rounded-r-sm': option.id === 'right', 'bg-[#444857]': selectedLayout.id === option.id }"
                 >
