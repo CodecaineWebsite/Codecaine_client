@@ -68,8 +68,6 @@ export const useWorkStore = defineStore('work', () => {
       currentId.value = ""
       currentWork.value = workTemplate
     }
-    console.log('Loaded tags:', currentWork.value.tags)
-
   }
   
   // 更新CurrentCode 
@@ -125,7 +123,13 @@ export const useWorkStore = defineStore('work', () => {
         ">
         ${cdnTags}
         ${linkTags}
-        <style>${cssCode}</style>
+        <style>
+          body {
+            background-color: white;
+            margin: 0;
+          }
+          ${cssCode}
+        </style>
         <script type="module">
           const originalConsole = {
             log: console.log,
@@ -197,6 +201,69 @@ export const useWorkStore = defineStore('work', () => {
     if (window.currentPreviewBlob) {
       URL.revokeObjectURL(window.currentPreviewBlob);
     }
+    window.currentPreviewBlob = blobUrl;
+    return blobUrl;
+  };
+
+  const updateCardPreviewSrc = (code) => {
+    console.log(code);
+    const rawJS = code.javascript + '\n//# sourceURL=user-code.js';
+    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
+    const cssCode = code.css;
+    const htmlCode = code.html;
+    const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+    const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
+  
+    const previewData = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="
+          default-src 'self';
+          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
+          style-src 'self' 'unsafe-inline' https:;
+          img-src 'self' data: blob: https:;
+          font-src 'self' https: data:;
+          connect-src 'self' https:;
+          frame-src https:;
+        ">
+        ${cdnTags}
+        ${linkTags}
+        <style>
+          body {
+            background-color: white;
+            margin: 0;
+          }
+          ${cssCode}
+        </style>
+        <script type="module">
+          window.console = {
+            log: () => {},
+            error: () => {},
+            warn: () => {},
+            info: () => {}
+          };
+        
+          const code = ${JSON.stringify(safeJS)};
+          const blob = new Blob([code], { type: 'application/javascript' });
+          const blobUrl = URL.createObjectURL(blob);
+        
+          const script = document.createElement('script');
+          script.type = 'module';
+          script.src = blobUrl;
+          script.onload = () => URL.revokeObjectURL(blobUrl);
+          document.head.appendChild(script);
+        <\/script>
+      </head>
+      <body>
+        ${htmlCode}
+      </body>
+      </html>
+    `.trim();
+  
+    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
     window.currentPreviewBlob = blobUrl;
     return blobUrl;
   };
@@ -324,6 +391,7 @@ export const useWorkStore = defineStore('work', () => {
     toggleAutoSave,
     toggleAutoPreview,
     updatePreviewSrc,
+    updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
     updateTags,

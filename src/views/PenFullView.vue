@@ -15,9 +15,6 @@
     return route.query.mode
   })
   
-  if(viewModeType.value === 'onlyPreview') {
-    isHeaderShow.value = false
-  }
   const { handleCurrentIdChange, updatePreviewSrc }= workStore; //放function
   const { currentWork } = storeToRefs(workStore); //放資料
   handleCurrentIdChange(route.params.id)
