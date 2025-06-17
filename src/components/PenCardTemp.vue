@@ -1,8 +1,6 @@
 <template>
   <div class="group w-full bg-card-text text-white rounded-lg relative">
-    <!-- 預覽 -->
     <div class="relative aspect-video overflow-hidden rounded-md bg-black">
-      <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
           :src="iframeSrc"

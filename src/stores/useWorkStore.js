@@ -206,7 +206,6 @@ export const useWorkStore = defineStore('work', () => {
   };
 
   const updateCardPreviewSrc = (code) => {
-    console.log(code);
     const rawJS = code.javascript + '\n//# sourceURL=user-code.js';
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
@@ -281,7 +280,6 @@ export const useWorkStore = defineStore('work', () => {
     try {
       const res = await api.get(`/api/pens/${id}`);
       return res.data;
-      // currentWork.value = res.data;
     } catch (err) {
       console.error('Failed to fetch work', err);
     }
