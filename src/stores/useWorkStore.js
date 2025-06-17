@@ -14,6 +14,7 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     links:[],
     cdns: [], 
+    views_count: "",
     view_mode: "center",
     isAutoSave: true,
     isAutoPreview: true,
@@ -22,7 +23,6 @@ export const useWorkStore = defineStore('work', () => {
   }
   const currentId = ref('');
   const works = ref([])
-
   const updateCDNs = (newCDNs) => {
     currentWork.value.resources_js = newCDNs
   }
@@ -32,15 +32,12 @@ export const useWorkStore = defineStore('work', () => {
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
   }
-
   const currentWork = ref(workTemplate)
-
   const handleInitWork = (user) => {
     currentWork.value = {
       ...currentWork.value,
       ...user
     }
-    console.log(currentWork.value);
   }
 
   // 改變currentId function
@@ -48,6 +45,9 @@ export const useWorkStore = defineStore('work', () => {
     if(id) {
       currentId.value = id
       const data = await fetchWorkFromId(id)
+      api.put(`/api/pens/${id}/view`).catch(err => {
+      console.warn('Failed to increase views count:', err)
+    });
       currentWork.value = {
         ...data,
         userName: data.username,
@@ -63,21 +63,17 @@ export const useWorkStore = defineStore('work', () => {
         links: data.resources_css || [],
         tags: data.tags || [],
       }
-      
     } else {
       currentId.value = ""
       currentWork.value = workTemplate
     }
   }
-  
   // 更新CurrentCode 
   // todo: 改v-model綁定
   const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
     if (!currentWork.value) return;
-
     currentWork.value[language] = newCode;
-
     if (currentWork.value.isAutoSave) {
       // 清掉前一個 debounce
       if (autoSaveTimeout.value) {
@@ -90,16 +86,13 @@ export const useWorkStore = defineStore('work', () => {
   const toggleAutoSave = () => {
     currentWork.value.isAutoSave = !currentWork.value.isAutoSave
     console.log(currentWork.value.isAutoSave);
-    
   }
   // 開關自動更新狀態
   const toggleAutoPreview = () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
-
   }
-
   // 更新作品Preview
-  const updatePreviewSrc = () => {
+    const updatePreviewSrc = () => {
     const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
@@ -300,7 +293,6 @@ export const useWorkStore = defineStore('work', () => {
       resources_js: newWorkData.cdns || [],
       tags: newWorkData.tags || [],
     };
-
     const res = await api.post('/api/pens', payload);
     const createdWork = res.data.data;
     works.value.unshift(res.data.data);
@@ -313,7 +305,6 @@ export const useWorkStore = defineStore('work', () => {
     return null;
   }
   };
-
     const saveCurrentWork = async () => {
     try {
       const payload = {

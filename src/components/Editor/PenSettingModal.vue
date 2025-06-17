@@ -116,11 +116,10 @@ const removeTag = async(index) => {
   tags.value.splice(index, 1)
   await workStore.saveCurrentWork();
 }
-
 </script>
 <template>
   <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
-    <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-21 h-full w-full " >
+    <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-pensettingmodal-border h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
           <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Pen Settings</span>
@@ -137,7 +136,7 @@ const removeTag = async(index) => {
 
       <div class="md:flex h-full pr-4 block overflow-y-auto ">
         <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore,  'bg-cc-14': activeTab === tab.key}">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore, 'bg-cc-14': activeTab === tab.key}">
             {{  tab.label }}
             <ProTag v-if="tab.key === 'privacy'"/>
           </li>
@@ -146,12 +145,13 @@ const removeTag = async(index) => {
         <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
 
           <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="HTML Preprocessor">HTML Preprocessor</label>
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div>
+                <label for="htmlPreprocessor">HTML Preprocessor</label>
               </div>
               <div class="relative">
                 <select
+                  id="htmlPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
                   <option value="" disabled selected>None</option>
                   <option value="Haml">Haml</option>
@@ -167,20 +167,23 @@ const removeTag = async(index) => {
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
-                <label for="Add Class(es) to <html>">Add Class(es) to &lt;html&gt;</label>
+                <label for="addClassToHtml">Add Class(es) to &lt;html&gt;</label>
               </div>
               <div class="relative">
                 <input
+                  id="addClassToHtml"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
                   placeholder="e.g. single post post-1234"/>
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
-                <label for="Add Class(es) to <html>">Stuff for &lt;head&gt;</label>
+                <label for="stuffForHead">Stuff for &lt;head&gt;</label>
               </div>
               <div class="relative">
-                <textarea type="area"
+                <textarea
+                  id="stuffForHead"
+                  type="area"
                   class="appearance-none w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
                   placeholder="e.g. <meta>, <link>, <script>"></textarea>
               </div>
@@ -190,10 +193,11 @@ const removeTag = async(index) => {
           <div v-show="activeTab === 'css'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
-                <label for="CSS Preprocessor">CSS Preprocessor</label>
+                <label for="cssPreprocessor">CSS Preprocessor</label>
               </div>
               <div class="relative">
                 <select
+                  id="cssPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
                   <option value="" disabled selected>None</option>
                   <option value="Less">Less</option>
@@ -203,14 +207,14 @@ const removeTag = async(index) => {
                   <option value="PostCSS">PostCSS</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
-                  <img :src="Arrow" class="w-3 rotate-180" alt="">
-                  <img :src="Arrow" class="w-3" alt="">
+                  <Arrow class="w-3 h-3 fill-current rotate-180"/>
+                  <Arrow class="w-3 h-3 fill-current"/>
                 </div>
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
-                <label for="CSS Base">CSS Base</label>
+                <label for="cssBase">CSS Base</label>
               </div>
               <div class="flex flex-col">
                 <label>
@@ -222,37 +226,38 @@ const removeTag = async(index) => {
                   Reset
                 </label>
                 <label>
-                <input type="radio" name="CSS Base" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                <input checked type="radio" name="CSS Base" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
                   Neither
                 </label>
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
+              <div>
                 <label for="Vender Prefixing">Vender Prefixing</label>
               </div>
               <div class="flex flex-col">
                 <label>
-                <input type="radio" name="Vender Prefixing" value="Autoprefixer" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                  <input type="radio" name="Vender Prefixing" value="Autoprefixer" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
                   Autoprefixer
                 </label>
                 <label>
-                <input type="radio" name="Vender Prefixing" value="Prefixfree" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
-                  Prefixfree
+                  <input type="radio" name="Vender Prefixing" value="Prefixfree" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                    Prefixfree
                 </label>
                 <label>
-                <input type="radio" name="Vender Prefixing" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
-                  Neither
+                  <input checked type="radio" name="Vender Prefixing" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                    Neither
                 </label>
               </div>
             </div>
+
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="Vender Prefixing">Add External Stylesheets/Pens</label>
+              <div>
+                <label for="addExternalStylesheets">Add External Stylesheets/Pens</label>
               </div>
               <div class="flex flex-col">
                 <label>
-                <input v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="w-full border px-2 py-1 mb-2"/>
                 </label>
                 <button @click="addLink" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
                 <ul class="mb-4 list-disc list-inside">
@@ -267,29 +272,30 @@ const removeTag = async(index) => {
 
           <div v-show="activeTab === 'js'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="JavaScript Preprocessor">JavaScript Preprocessor</label>
+              <div>
+                <label for="javaScriptPreprocessor">JavaScript Preprocessor</label>
               </div>
               <div class="relative">
                 <select
+                  id="javaScriptPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
                   <option value="" disabled selected>None</option>
                   <option value="Script">Script</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
-                  <img :src="Arrow" class="w-3 rotate-180" alt="">
-                  <img :src="Arrow" class="w-3" alt="">
+                  <Arrow class="w-3 h-3 fill-current rotate-180"/>
+                  <Arrow class="w-3 h-3 fill-current"/>
                 </div>
               </div>
             </div>
             
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="Vender Prefixing">Add External Scripts/Pens</label>
+              <div>
+                <label for="addExternalScripts">Add External Scripts/Pens</label>
               </div>
               <div class="flex flex-col">
                 <label>
-                <input v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="w-full border px-2 py-1 mb-2"/>
                 </label>
                 <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
                 <ul class="mb-4 list-disc list-inside">
@@ -304,28 +310,28 @@ const removeTag = async(index) => {
           
           <div v-show="activeTab === 'detail'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="CSS Preprocessor">CSS Preprocessor</label>
+              <div>
+                <label for="penTitle">Pen Title</label>
               </div>
               <div class="relative">
-                <input type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
+                <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div class="">
-                <label for="Pen Description">Pen Description</label>
+              <div>
+                <label for="penDescription">Pen Description</label>
               </div>
               <div class="relative">
-                <textarea class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
+                <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex justify-between">
-                <label for="Tags">Tags</label>
+                <label for="tags">Tags</label>
                 <span class="text-xs align-text-bottom">comma separated, max of five</span>
               </div>
               <div class="relative">
-                <input type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
+                <input id="tags" type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
               </div>
               <div class="mt-2 flex flex-wrap gap-2">
                 <span
