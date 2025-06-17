@@ -1,12 +1,11 @@
 <script setup>
-import { inject, ref, watch, computed  } from 'vue';
+import { inject, ref, watch } from 'vue';
 import Arrow from '../../assets/arrow.vue';
 import { useWorkStore } from '@/stores/useWorkStore'; 
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
 
-const route = useRoute();
 const router = useRouter();
 
 const props = defineProps({
@@ -34,8 +33,6 @@ const tabs = [
   { label: 'Privacy', key: 'privacy' },
   { label: 'Behavior', key: 'behavior' },
   { label: 'Editor', key: 'editor' },
-  { label: 'Template', key: 'template' },
-  { label: 'Screenshot', key: 'screenshot' },
 ]
 const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
@@ -57,14 +54,10 @@ watch(tags, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
 
-
-
 const activeTab = ref(props.selectedTab)
 const cdnInput = ref('')
 const linkInput = ref('')
 const tagInput = ref('')
-
-
 const srcDoc = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
@@ -98,6 +91,7 @@ const addLink = () => {
 const removeLink = (index) => {
   links.value.splice(index, 1)
 }
+
 const addTag = async() => {
   if (!tagInput.value.trim()) return;
   const tag = tagInput.value.trim();
@@ -108,9 +102,7 @@ const addTag = async() => {
   tags.value.push(tag);
   tagInput.value = '';
   await workStore.saveCurrentWork();
-  
 }
-console.log(currentWork.value.tags)
 
 const removeTag = async(index) => {
   tags.value.splice(index, 1)
