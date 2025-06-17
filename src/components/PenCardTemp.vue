@@ -11,7 +11,7 @@
         ></iframe>
       </div>
 
-      <!-- 圖片右上角的方塊小連結 應該連結至pen的detail page，按下後跳出小視窗 -->
+      <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <button
         @click="openDetailModal"
         class="detailPageLink absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
@@ -71,20 +71,6 @@
               v-if="menuOpen"
               class="absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
             >
-              <!-- <a
-                href="#"
-                class="block px-4 py-2 hover-bg-card-hover flex items-center gap-2"
-              >
-                <FolderIcon />
-                Add to Collection
-              </a> -->
-              <!-- <a
-                href="#"
-                class="block px-4 py-2 hover-bg-card-hover flex items-center gap-2"
-              >
-                <BookmarkIcon />
-                Add to Bookmarks
-              </a> -->
               <a
                 href="#"
                 class="block px-4 py-2 hover-bg-card-hover text-blue-400 flex items-center gap-2"
@@ -162,11 +148,9 @@ const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
 const userProfileImage =
   props.pen.profile_image ||
-  "https://assets.codepen.io/t-1/user-default-avatar.jpg";
+  "/default-avatar.png";
 const isPro = props.pen.isPro || false;
 // 作品預覽
-const previewImageUrl =
-  props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
 const previewIframeUrl = `${
   import.meta.env.VITE_URL_BASE
 }/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
@@ -177,7 +161,7 @@ const comments = props.pen.comments_count;
 const views = props.pen.views_count;
 
 // 連結
-const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
+const editorPageLink = `/${userName}/pen/${workId}`;
 const userPageLink = `/${userName}`;
 const detailPageLink = `/${userName}/details/${workId}`;
 const fullPageLink = `/${userName}/full/${workId}`;
@@ -188,12 +172,10 @@ const menuOpen = ref(false);
 const liked = ref(false);
 
 const goToDetailPage = () => {
-  // router.push({ name: 'PenDetail', params: { username: userName, id: workId } });
   router.push(detailPageLink);
 };
 
 const goToFullPage = () => {
-  // router.push({ name: 'PenFull', params: { username: userName, id: workId } });
   router.push(fullPageLink);
 };
 
@@ -203,12 +185,10 @@ const openDetailModal = () => {
 
 /**
  * TODO:
- * 1.檢查 PenDetail,與 PenFull 頁面建立起來了沒 (detail還沒)
- * 2.設定imageUrl 的 fallback image
- * 3.iframe 預覽的 src 用 /full/:pen_id
- *
+ * 1. 完成追蹤作者功能
+ * 2. 若作品卡為使用者的作品，則顯示刪除按鈕
  * API:
- * 按喜歡紐將作品加入收藏
  * 按追蹤將作者加入追蹤清單
+ * 按刪除將作品從使用者的作品清單中刪除
  */
 </script>
