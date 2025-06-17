@@ -14,15 +14,15 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     links:[],
     cdns: [], 
+    views_count: "",
     view_mode: "center",
     isAutoSave: true,
     isAutoPreview: true,
-    is_private: false,
+    isPrivate: false,
     tags:[],
   }
   const currentId = ref('');
   const works = ref([])
-
   const updateCDNs = (newCDNs) => {
     currentWork.value.resources_js = newCDNs
   }
@@ -32,18 +32,28 @@ export const useWorkStore = defineStore('work', () => {
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
   }
-
   const currentWork = ref(workTemplate)
+  const handleInitWork = (user) => {
+    currentWork.value = {
+      ...currentWork.value,
+      ...user
+    }
+  }
 
   // 改變currentId function
   const handleCurrentIdChange = async(id) => {
     if(id) {
       currentId.value = id
       const data = await fetchWorkFromId(id)
+      api.put(`/api/pens/${id}/view`).catch(err => {
+      console.warn('Failed to increase views count:', err)
+    });
       currentWork.value = {
         ...data,
         userName: data.username,
         userId: data.user_id,
+        isPro: data.is_pro,
+        isPrivate: data.is_private,
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
@@ -53,33 +63,22 @@ export const useWorkStore = defineStore('work', () => {
         links: data.resources_css || [],
         tags: data.tags || [],
       }
-      
     } else {
       currentId.value = ""
       currentWork.value = workTemplate
     }
-    console.log('Loaded tags:', currentWork.value.tags)
-
   }
-  
   // 更新CurrentCode 
   // todo: 改v-model綁定
   const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
     if (!currentWork.value) return;
-
     currentWork.value[language] = newCode;
-
     if (currentWork.value.isAutoSave) {
       // 清掉前一個 debounce
       if (autoSaveTimeout.value) {
         clearTimeout(autoSaveTimeout.value);
       }
-
-      // 設定新的 debounce
-      // autoSaveTimeout.value = setTimeout(() => {
-      //   saveCurrentWork();
-      // }, 1000); // 自動儲存延遲 1 秒，可調整
     }
   };
 
@@ -87,102 +86,110 @@ export const useWorkStore = defineStore('work', () => {
   const toggleAutoSave = () => {
     currentWork.value.isAutoSave = !currentWork.value.isAutoSave
     console.log(currentWork.value.isAutoSave);
-    
   }
   // 開關自動更新狀態
   const toggleAutoPreview = () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
-
   }
-
-  // 更新作品Preview function
-  const updatePreviewSrc = () => {
-    const jsCode = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
+  // 更新作品Preview
+    const updatePreviewSrc = () => {
+    const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
+    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"><\/script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}"><\/link>`).join('\n')
-    const previewData = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      ${linkTags}
-      <style>${cssCode}</style>
-    </head>
-    <body>
-      ${htmlCode}
-      ${cdnTags}
-      <script>
-        // Override console methods to send logs to parent
-        const originalConsole = {
-          log: console.log,
-          error: console.error,
-          warn: console.warn,
-          info: console.info
-        };
+    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
-        ['log', 'error', 'warn', 'info'].forEach(method => {
-          console[method] = (...args) => {
+    const previewData = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="
+          default-src 'self';
+          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
+          style-src 'self' 'unsafe-inline' https:;
+          img-src 'self' data: blob: https:;
+          font-src 'self' https: data:;
+          connect-src 'self' https:;
+          frame-src https:;
+        ">
+        ${cdnTags}
+        ${linkTags}
+        <style>${cssCode}</style>
+        <script type="module">
+          const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+          };
+  
+          ['log', 'error', 'warn', 'info'].forEach(method => {
+            console[method] = (...args) => {
+              window.parent.postMessage({
+                type: 'log',
+                message: args.map(arg =>
+                  typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                ).join(' '),
+                level: method
+              }, '*');
+              originalConsole[method](...args);
+            };
+          });
+  
+          window.onerror = function(message, source, lineno, colno, error) {
+            const errorMsg = error
+              ? \`\${error.name}: \${error.message}\`
+              : message;
             window.parent.postMessage({
               type: 'log',
-              message: args.map(arg =>
-                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-              ).join(' '),
-              level: method
+              message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
+              level: 'error'
             }, '*');
-            originalConsole[method](...args);
+            return true;
           };
-        });
   
-        // Global error handler
-        window.onerror = function(message, source, lineno, colno, error) {
-          const errorMsg = error
-            ? \`\${error.name}: \${error.message}\`
-            : message;
-          window.parent.postMessage({
-            type: 'log',
-            message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
-            level: 'error'
-          }, '*');
-          return true;
-        };
+          window.addEventListener('unhandledrejection', function(event) {
+            window.parent.postMessage({
+              type: 'log',
+              message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
+              level: 'error'
+            }, '*');
+          });
   
-        // Handle unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(event) {
-          window.parent.postMessage({
-            type: 'log',
-            message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
-            level: 'error'
-          }, '*');
-        });
+          const code = ${JSON.stringify(safeJS)};
+          const blob = new Blob([code], { type: 'application/javascript' });
+          const blobUrl = URL.createObjectURL(blob);
   
-        // Inject user code via Blob script
-        const code = ${JSON.stringify(jsCode)};
-        const blob = new Blob([code], { type: 'application/javascript' });
-        const blobUrl = URL.createObjectURL(blob);
+          const script = document.createElement('script');
+          script.type = 'module';
+          script.src = blobUrl;
+          script.onload = () => URL.revokeObjectURL(blobUrl);
+          script.onerror = () => {
+            window.parent.postMessage({
+              type: 'log',
+              message: 'Script loading error',
+              level: 'error'
+            }, '*');
+          };
   
-        const script = document.createElement('script');
-        script.src = blobUrl;
+          document.head.appendChild(script);
+        <\/script>
+      </head>
+      <body>
+        ${htmlCode}
+      </body>
+      </html>
+    `.trim();
   
-        script.onload = () => {
-          URL.revokeObjectURL(blobUrl);
-        };
-  
-        script.onerror = () => {
-          window.parent.postMessage({
-            type: 'log',
-            message: 'Script loading error',
-            level: 'error'
-          }, '*');
-        };
-  
-        document.head.appendChild(script);
-      <\/script>
-    </body>
-    </html>
-    `;
-    return previewData
+    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    if (window.currentPreviewBlob) {
+      URL.revokeObjectURL(window.currentPreviewBlob);
+    }
+    window.currentPreviewBlob = blobUrl;
+    return blobUrl;
   };
 
   const fetchWorks = async () => {
@@ -198,7 +205,6 @@ export const useWorkStore = defineStore('work', () => {
     try {
       const res = await api.get(`/api/pens/${id}`);
       return res.data;
-      // currentWork.value = res.data;
     } catch (err) {
       console.error('Failed to fetch work', err);
     }
@@ -219,7 +225,6 @@ export const useWorkStore = defineStore('work', () => {
       resources_js: newWorkData.cdns || [],
       tags: newWorkData.tags || [],
     };
-
     const res = await api.post('/api/pens', payload);
     const createdWork = res.data.data;
     works.value.unshift(res.data.data);
@@ -232,7 +237,6 @@ export const useWorkStore = defineStore('work', () => {
     return null;
   }
   };
-
     const saveCurrentWork = async () => {
     try {
       const payload = {
@@ -302,6 +306,7 @@ export const useWorkStore = defineStore('work', () => {
     works,
     currentWork,
     currentId,
+    handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,
     toggleAutoSave,
