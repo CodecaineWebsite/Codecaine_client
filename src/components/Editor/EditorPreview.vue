@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, defineExpose } from 'vue'
+import { debounce } from '@/utils/debounce'
 
 // 從 parent 傳入的 props
 const props = defineProps({
@@ -8,14 +9,6 @@ const props = defineProps({
 })
 
 const previewFrame = ref(null)
-
-function debounce(fn, wait = 2000) {
-  let timeout
-  return (...args) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => fn(...args), wait)
-  }
-}
 
 const updateIframe = debounce(() => {
   if (!previewFrame.value) return
