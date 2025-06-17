@@ -28,6 +28,17 @@
           >
             Account
           </li>
+          <li
+            class="cursor-pointer p-1 pl-5 transition-all hover:bg-[#2C303A] hover:border-l-4 hover:border-[#05DF72] hover:text-white"
+            :class="
+              route.path === '/settings/billing'
+                ? 'bg-[#2C303A] border-l-4 border-[#05DF72] text-white'
+                : ''
+            "
+            @click="bill"
+          >
+            Billing
+          </li>
         </ul>
       </nav>
     </div>
@@ -46,6 +57,8 @@ const profile = () => {
 const account = () => {
   router.push("/settings/account");
 };
-</script>
 
-<style scoped></style>
+const bill = () => {
+  router.push("/settings/billing");
+};
+</script>

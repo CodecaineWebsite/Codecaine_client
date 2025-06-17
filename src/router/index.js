@@ -127,6 +127,11 @@ const router = createRouter({
               name: "settingAccount",
               component: () => import("../views/SettingAccount.vue"),
             },
+            {
+              path: "billing",
+              name: "billing",
+              component: () => import("../views/Billing.vue"),
+            },
           ],
         },
       ],
