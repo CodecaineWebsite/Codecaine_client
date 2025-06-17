@@ -59,7 +59,7 @@ watch(tags, (newTags) => {
 
 
 
-const activeTab = ref('html')
+const activeTab = ref(props.selectedTab)
 const cdnInput = ref('')
 const linkInput = ref('')
 const tagInput = ref('')
