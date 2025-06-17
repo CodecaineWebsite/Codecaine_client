@@ -1,10 +1,22 @@
 <template>
   <div class="content mt-6">
     <PenCardLayout
+      v-if="!isLoading && pens.length > 0"
       :pens="pens"
       mode="grid"
       @pen-clicked="modalStore.openPenDetailModal($event)"
     />
+    <div
+      v-else-if="!isLoading && pens.length === 0"
+      class="justify-center flex mt-12"
+    >
+      <p class="text-4xl bg-gray-800 p-12 rounded-lg">
+        ⚠️ No Private Caines found.
+        <a href="/pen" class="text-blue-200 hover:text-blue-400">
+          Go create some first!
+        </a>
+      </p>
+    </div>
     <PaginationNav
       :currentPage="page"
       :totalPages="totalPages"
@@ -26,8 +38,10 @@ const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
 const pageSize = 6;
 const totalPages = ref(0);
+const isLoading = ref(true);
 
 const fetchCaines = async () => {
+  isLoading.value = true;
   try {
     const res = await api.get(
       `/api/usersCaines/${route.params.username}/private`,
@@ -37,12 +51,11 @@ const fetchCaines = async () => {
     );
     pens.value = res.data.results || [];
     totalPages.value = Math.ceil(res.data.total / pageSize);
-    if (pens.value.length === 0) {
-      console.warn("⚠️ No private Caines found.");
-    }
   } catch (error) {
     console.error("❌ Failed to load private Caines:", error);
     pens.value = [];
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -60,9 +73,8 @@ watch(
     fetchCaines();
   }
 );
+
 onMounted(() => {
-  setTimeout(() => {
-    fetchCaines();
-  }, 600);
+  fetchCaines();
 });
 </script>
