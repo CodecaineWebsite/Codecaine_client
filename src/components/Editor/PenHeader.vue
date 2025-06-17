@@ -340,16 +340,14 @@
           </div>
         </button>
         <div v-if="settingOptionVisible" class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-200" @click="toggleSetting('html')"></div>
-
         <PenSettingModal :selectedTab="selectedTab" v-if="settingOptionVisible" @close="toggleSetting('html')" class="z-50" />
-
         <div class="relative md:flex hidden" >
           <button  v-if="viewMode !== 'full'" type="button" @click.prevent="toggleLayout" class="text-[aliceblue] rounded px-4 py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
             <div class="h-7 flex items-center gap-1">
               <Layout class="w-3.5" :style="{ transform: `rotate(${selectedLayout.rotation}deg)` }"/>
             </div>
           </button>
-          <div v-if="layoutOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleLayout"></div>
+          <div v-if="layoutOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleLayout"></div>
           <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 py-3 rounded-lg border-4 border-gray-800">
             <div class="px-3 text-white">
               <span>Change View</span>
