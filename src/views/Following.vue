@@ -23,7 +23,9 @@
       </div>
     </div>
     <p
-      v-if="pages.length === 1 && Array.isArray(pages[0]) && pages[0].length === 0"
+      v-if="
+        pages.length === 1 && Array.isArray(pages[0]) && pages[0].length === 0
+      "
       class="text-center text-gray-400 mt-8 text-sm"
     >
       You're not following anyone yet.
@@ -95,14 +97,14 @@
 
 <script setup>
 import api from "../config/api.js";
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthStore } from "@/stores/useAuthStore";
 const authStore = useAuthStore();
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import PenCard from "@/components/PenCardTemp.vue";
+import PenCard from "@/components/PenCard.vue";
 
 const isTop = ref(false);
 

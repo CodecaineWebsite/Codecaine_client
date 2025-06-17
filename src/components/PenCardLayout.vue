@@ -4,7 +4,7 @@
     v-if="props.mode === 'grid'"
     class="grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
   >
-    <PenCardTemp v-for="pen in pens" :key="pen.id" :pen="pen" />
+    <PenCard v-for="pen in pens" :key="pen.id" :pen="pen" />
   </div>
   <!-- table layout -->
   <div v-else-if="props.mode === 'table'">
@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import PenCardRow from "./PenCardRow.vue";
-import PenCardTemp from "./PenCardTemp.vue";
+import PenCard from "./PenCard.vue";
 
 const menuOpen = ref(false);
 const openedDropdownId = ref(null);
