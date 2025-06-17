@@ -226,7 +226,7 @@
           <button type="button" class="text-[aliceblue] rounded-l px-5 py-2 bg-[#444857] mr-[1px] editorSmallButton-hover-bgc  hover:cursor-pointer relative"
             :class="{ 'rounded mr-[2px]': !isLoggedIn }" @click.prevent="handleWorkSave">
             <span  
-              class="h-1 bg-yellow-300 absolute mx-auto left-1 right-1 top-1 origin-center transition-all duration-500"
+              class="h-[3px] bg-yellow-300 absolute mx-auto left-1 right-1 top-0.5 origin-center rounded-t-md transition-all duration-500"
               :class="{
                 'w-21': isEdited,
                 'w-0': !isEdited,
