@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="isMounted"
     class="layout transition-all duration-400 ease-in-out"
     :style="{ gridTemplateColumns: layoutColumns }"
   >
@@ -18,7 +19,7 @@
 
     <SubFooter class="footer" />
 
-    <!-- 如果網址是 details 且 query.modal 存在，就顯示 modal -->
+    <!-- Modal 詳細頁 -->
     <PenDetailModal
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
@@ -29,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
@@ -38,11 +39,12 @@ import PenDetailModal from "@/components/PenDetailModal.vue";
 
 const modalStore = useModalStore();
 
-const isSidebarOpen = ref(
-  localStorage.getItem("sidebarOpen") === "false" ? false : true
-);
+const isMounted = ref(false); // 解決初始化樣式問題
 const screenWidth = ref(window.innerWidth);
 const isCompactScreen = computed(() => screenWidth.value <= 830);
+
+// Sidebar 狀態：預設一律為 true，並根據寬度調整
+const isSidebarOpen = ref(true);
 
 const layoutColumns = computed(() =>
   isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
@@ -50,13 +52,8 @@ const layoutColumns = computed(() =>
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
+  localStorage.setItem("sidebarOpen", isSidebarOpen.value);
 }
-
-watch(isSidebarOpen, (val) => {
-  if (screenWidth.value > 830) {
-    localStorage.setItem("sidebarOpen", val);
-  }
-});
 
 const handleResize = () => {
   screenWidth.value = window.innerWidth;
@@ -67,16 +64,14 @@ const handleResize = () => {
   }
 };
 
-watchEffect(() => {
-  if (screenWidth.value <= 830) {
-    isSidebarOpen.value = false;
-  } else {
-    isSidebarOpen.value = true;
-  }
-});
+watch(screenWidth, () => handleResize());
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
+
+  // 初始化：螢幕寬度超過 830 則預設開啟 sidebar
+  handleResize();
+  isMounted.value = true;
 });
 
 onUnmounted(() => {
@@ -99,16 +94,13 @@ onUnmounted(() => {
 .sidebar {
   grid-area: sidebar;
 }
-
 .header {
   grid-area: header;
 }
-
 .content {
   grid-area: content;
   overflow-y: auto;
 }
-
 .footer {
   grid-area: footer;
 }
