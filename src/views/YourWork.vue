@@ -172,42 +172,7 @@
           <!-- Right Controls -->
           <div class="flex items-stretch space-x-2">
             <!-- View Mode -->
-            <div class="inline-flex rounded overflow-hidden">
-              <button
-                :class="[
-                  'px-3 py-2',
-                  viewMode === 'grid'
-                    ? 'bg-grid-active'
-                    : 'bg-button bg-list-hover',
-                ]"
-                @click="viewMode = 'grid'"
-              >
-                <GridIcon
-                  class="fill-current w-4 h-4"
-                  :class="{
-                    'text-cc-1': viewMode === 'grid',
-                    'text-cc-10': viewMode !== 'grid',
-                  }"
-                />
-              </button>
-              <button
-                :class="[
-                  'px-3 py-2 border-l border-default',
-                  viewMode === 'table'
-                    ? 'bg-grid-active'
-                    : 'bg-button bg-list-hover',
-                ]"
-                @click="viewMode = 'table'"
-              >
-                <ListIcon
-                  class="fill-current w-4 h-4"
-                  :class="{
-                    'text-cc-1': viewMode === 'table',
-                    'text-cc-10': viewMode !== 'table',
-                  }"
-                />
-              </button>
-            </div>
+            <ViewModeChange @update:viewMode="viewMode = $event" />
 
             <!-- Sort Dropdown -->
             <select
@@ -351,7 +316,7 @@ import api from "@/config/api.js";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import DeletedPenCard from "@/components/DeletedPenCard.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
-
+import ViewModeChange from "@/components/ViewModeChange.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
 import TagsIcon from "@/components/icons/TagsIcon.vue";
@@ -399,7 +364,7 @@ function handleClickOutside(event) {
   ) {
     showTags.value = false;
   }
-  
+
   if (
     showFilters.value &&
     filtersDropdownRef.value &&
@@ -487,6 +452,7 @@ async function loadPens() {
     total.value = data.total;
     totalPages.value = data.totalPages;
     hasNextPage.value = data.hasNextPage;
+    console.log("🚀 載入我的 Pens 成功：", data);
   } catch (err) {
     alert("Failed to load pens. Please try again later.");
     // 可以加一個 toast 通知使用者

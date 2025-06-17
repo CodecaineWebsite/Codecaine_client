@@ -1,36 +1,42 @@
 <template>
   <div class="h-full w-full bg-[#131417] p-6 grid grid-rows-12">
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-3 flex-1 mb-8">
+      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-3 flex-1 mb-8"
+    >
       <div>
         <h3 class="text-xl font-bold mb-2">Profile Image</h3>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-row gap-4 p-6">
+        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-row gap-4 p-6"
+      >
         <img
           v-if="avatarUrl"
           :src="avatarUrl"
           alt="Avatar Preview"
-          class="w-40 h-40 object-cover border-2 border-gray-600 rounded" />
+          class="w-40 h-40 object-cover border-2 border-gray-600 rounded"
+        />
         <div
           v-else
-          class="w-40 h-40 bg-gray-700 flex items-center justify-center text-gray-400 rounded">
-          無預覽
+          class="w-40 h-40 bg-gray-700 flex items-center justify-center text-gray-400 rounded"
+        >
+          NO Image
         </div>
         <div>
           <label class="block">
             <button
               type="button"
               class="rounded bg-[#444857] text-white px-4 py-2 border-0 cursor-pointer hover:bg-[#5A5F73] transition-colors duration-200"
-              @click="fileInput && fileInput.click()">
-              選擇檔案
+              @click="fileInput && fileInput.click()"
+            >
+              Select File
             </button>
             <input
               ref="fileInput"
               type="file"
               accept="image/*"
               @change="onAvatarChange"
-              class="hidden" />
+              class="hidden"
+            />
           </label>
           <div class="mt-2 flex flex-col items-start gap-2 min-h-6">
             <div class="flex flex-row items-center gap-2 w-full">
@@ -38,15 +44,14 @@
                 v-if="fileName"
                 @click="clearFile"
                 type="button"
-                class="rounded bg-[#444857] text-white px-4 py-2 border-0 cursor-pointer hover:bg-[#5A5F73] transition-colors duration-200">
-                清除
-              </button>
-              <span v-if="fileName">{{ fileName }}</span>
-              <span
-                v-else
-                class="text-gray-400"
-                >未選擇檔案</span
+                class="rounded w-20 bg-[#444857] text-white px-4 py-2 border-0 cursor-pointer hover:bg-[#5A5F73] transition-colors duration-200"
               >
+                Clear
+              </button>
+              <span v-if="fileName" class="overflow-hidden">{{
+                fileName
+              }}</span>
+              <span v-else class="text-gray-400">No file selected</span>
             </div>
           </div>
           <div
@@ -56,21 +61,24 @@
               message.type === 'success'
                 ? 'bg-green-500 text-white'
                 : 'bg-red-500 text-white'
-            ">
+            "
+          >
             {{ message.text }}
           </div>
           <button
             v-if="fileName"
             @click="saveProfile('avatar')"
             type="button"
-            class="rounded bg-[#05DF72] text-black px-4 py-2 font-bold hover:bg-[#04c862] transition self-end cursor-pointer mt-2">
-            儲存大頭貼
+            class="rounded bg-[#05DF72] text-black px-4 py-2 font-bold hover:bg-[#04c862] transition self-end cursor-pointer mt-2"
+          >
+            Save Avatar
           </button>
         </div>
       </div>
     </section>
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-5 flex-1 mb-8">
+      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-5 flex-1 mb-8"
+    >
       <div>
         <h3 class="text-xl font-bold mb-2">About You</h3>
         <p class="text-sm text-gray-500">
@@ -78,14 +86,16 @@
         </p>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6">
+        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
+      >
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Username</label>
           <input
             v-model="userName"
             type="text"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
-            maxlength="50" />
+            maxlength="50"
+          />
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Display Name</label>
@@ -94,7 +104,8 @@
             placeholder="Optional"
             type="text"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
-            maxlength="50" />
+            maxlength="50"
+          />
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Location</label>
@@ -102,7 +113,8 @@
             v-model="location"
             type="text"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
-            maxlength="50" />
+            maxlength="50"
+          />
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Bio</label>
@@ -110,7 +122,8 @@
             v-model="bio"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition resize-none"
             maxlength="100"
-            rows="3"></textarea>
+            rows="3"
+          ></textarea>
           <div class="text-xs text-gray-400 text-right">
             {{ bio.length }}/100 characters used.
           </div>
@@ -122,18 +135,21 @@
             message.type === 'success'
               ? 'bg-green-500 text-white'
               : 'bg-red-500 text-white'
-          ">
+          "
+        >
           {{ message.text }}
         </div>
         <button
           @click="saveProfile('profile')"
-          class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
+          class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer"
+        >
           Save Profile
         </button>
       </div>
     </section>
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-4 flex-1 mb-8">
+      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-4 flex-1 mb-8"
+    >
       <div>
         <h3 class="text-xl font-bold mb-2">Profile Links</h3>
         <p class="text-sm text-gray-500">
@@ -142,18 +158,21 @@
         </p>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6">
+        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
+      >
         <div
           v-for="(link, idx) in profileLinks"
           :key="idx"
-          class="flex flex-col">
+          class="flex flex-col"
+        >
           <span class="text-white text-sm">Link #{{ idx + 1 }}</span>
           <input
             v-model="profileLinks[idx]"
             type="text"
             :placeholder="`連結 ${idx + 1}`"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
-            maxlength="100" />
+            maxlength="100"
+          />
         </div>
         <div
           v-if="message && message.target === 'links'"
@@ -162,12 +181,14 @@
             message.type === 'success'
               ? 'bg-green-500 text-white'
               : 'bg-red-500 text-white'
-          ">
+          "
+        >
           {{ message.text }}
         </div>
         <button
           @click="saveProfile('links')"
-          class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer">
+          class="mt-4 px-4 py-2 bg-[#05DF72] text-black rounded font-bold hover:bg-[#04c862] transition self-end cursor-pointer"
+        >
           Save Links
         </button>
       </div>

@@ -160,11 +160,16 @@ const title = props.pen.title || "Untitled";
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
-const userProfileImage = props.pen.profile_image || "https://assets.codepen.io/t-1/user-default-avatar.jpg";
+const userProfileImage =
+  props.pen.profile_image ||
+  "https://assets.codepen.io/t-1/user-default-avatar.jpg";
 const isPro = props.pen.isPro || false;
 // 作品預覽
-const previewImageUrl = props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
-const previewIframeUrl = `${import.meta.env.VITE_URL_BASE}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
+const previewImageUrl =
+  props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
+const previewIframeUrl = `${
+  import.meta.env.VITE_URL_BASE
+}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
 
 // 統計資料
 const likes = props.pen.favorites_count;
@@ -173,7 +178,7 @@ const views = props.pen.views_count;
 
 // 連結
 const editorPageLink = `/${userName}/pen/${workId}`; //:username/pen/:id
-const userPageLink = `/profile/${userName}`;
+const userPageLink = `/${userName}`;
 const detailPageLink = `/${userName}/details/${workId}`;
 const fullPageLink = `/${userName}/full/${workId}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
@@ -201,7 +206,7 @@ const openDetailModal = () => {
  * 1.檢查 PenDetail,與 PenFull 頁面建立起來了沒 (detail還沒)
  * 2.設定imageUrl 的 fallback image
  * 3.iframe 預覽的 src 用 /full/:pen_id
- * 
+ *
  * API:
  * 按喜歡紐將作品加入收藏
  * 按追蹤將作者加入追蹤清單
