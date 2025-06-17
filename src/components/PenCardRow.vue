@@ -1,8 +1,8 @@
 <template>
-  <tr
-    class="group border-b border-gray-300 hover:bg-gray-900"
-  >
-    <td class="py-2 px-4">{{ pen.title }}</td>
+  <tr class="group border-b border-gray-300 hover:bg-gray-900">
+    <td class="py-2 px-4">
+      <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
+    </td>
     <td class="py-2 px-4">
       <button
         @click="openDetailModal"
@@ -84,7 +84,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["toggle"]);
-
+const workId = props.pen.id;
+const userName = props.pen.username;
+const editorPageLink = `/${userName}/pen/${workId}`;
 // const menuOpen = ref(false);
 // const toggleMenu = () => {
 //   menuOpen.value = !menuOpen.value;

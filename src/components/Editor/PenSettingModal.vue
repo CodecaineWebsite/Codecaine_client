@@ -116,11 +116,10 @@ const removeTag = async(index) => {
   tags.value.splice(index, 1)
   await workStore.saveCurrentWork();
 }
-
 </script>
 <template>
   <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
-    <div class=" flex flex-col rounded-sm bg-cc-17 text-white border-3 border-gray-600 h-full w-full " >
+    <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-pensettingmodal-border h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
           <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Pen Settings</span>
@@ -137,13 +136,13 @@ const removeTag = async(index) => {
 
       <div class="md:flex h-full pr-4 block overflow-y-auto ">
         <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-gray-600 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-1 before:h-full before:left-0 before:top-0 focus:before:bg-green-500" :class="{ 'before:bg-green-500': activeTab === tab.key, 'md:mt-4': tab.gapBefore, 'bg-gray-600': activeTab === tab.key}">
-            {{ tab.label }}
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-['']  before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore, 'bg-cc-14': activeTab === tab.key}">
+            {{  tab.label }}
             <ProTag v-if="tab.key === 'privacy'"/>
           </li>
         </ul>
         <div class="md:hidden w-full flex mb-1 md:before:content-none before:content-[''] before:relative before:w-full before:h-0.5 before:bg-gray-700"></div>
-        <div class="md:w-3/4 w-full h-11/12 overflow-y-auto">
+        <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
 
           <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
@@ -166,8 +165,8 @@ const removeTag = async(index) => {
                 </div>
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div>
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="">
                 <label for="addClassToHtml">Add Class(es) to &lt;html&gt;</label>
               </div>
               <div class="relative">
@@ -177,8 +176,8 @@ const removeTag = async(index) => {
                   placeholder="e.g. single post post-1234"/>
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div>
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="">
                 <label for="stuffForHead">Stuff for &lt;head&gt;</label>
               </div>
               <div class="relative">
@@ -192,8 +191,8 @@ const removeTag = async(index) => {
           </div>
 
           <div v-show="activeTab === 'css'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div>
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="">
                 <label for="cssPreprocessor">CSS Preprocessor</label>
               </div>
               <div class="relative">
@@ -213,8 +212,8 @@ const removeTag = async(index) => {
                 </div>
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
-              <div>
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
+              <div class="">
                 <label for="cssBase">CSS Base</label>
               </div>
               <div class="flex flex-col">
@@ -232,26 +231,27 @@ const removeTag = async(index) => {
                 </label>
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="Vender Prefixing">Vender Prefixing</label>
               </div>
               <div class="flex flex-col">
                 <label>
-                <input type="radio" name="Vender Prefixing" value="Autoprefixer" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                  <input type="radio" name="Vender Prefixing" value="Autoprefixer" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
                   Autoprefixer
                 </label>
                 <label>
-                <input type="radio" name="Vender Prefixing" value="Prefixfree" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
-                  Prefixfree
+                  <input type="radio" name="Vender Prefixing" value="Prefixfree" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                    Prefixfree
                 </label>
                 <label>
-                <input checked type="radio" name="Vender Prefixing" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
-                  Neither
+                  <input checked type="radio" name="Vender Prefixing" value="Neither" class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"/>
+                    Neither
                 </label>
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="addExternalStylesheets">Add External Stylesheets/Pens</label>
               </div>
@@ -271,7 +271,7 @@ const removeTag = async(index) => {
           </div>
 
           <div v-show="activeTab === 'js'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="javaScriptPreprocessor">JavaScript Preprocessor</label>
               </div>
@@ -289,7 +289,7 @@ const removeTag = async(index) => {
               </div>
             </div>
             
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="addExternalScripts">Add External Scripts/Pens</label>
               </div>
@@ -309,7 +309,7 @@ const removeTag = async(index) => {
           </div>
           
           <div v-show="activeTab === 'detail'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="penTitle">Pen Title</label>
               </div>
@@ -317,7 +317,7 @@ const removeTag = async(index) => {
                 <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="penDescription">Pen Description</label>
               </div>
@@ -325,7 +325,7 @@ const removeTag = async(index) => {
                 <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex justify-between">
                 <label for="tags">Tags</label>
                 <span class="text-xs align-text-bottom">comma separated, max of five</span>
@@ -382,7 +382,7 @@ const removeTag = async(index) => {
           </div>
 
           <div v-show="activeTab === 'behavior'" class="md:w-3/4 w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
                 <label for="autoSave">Auto Save</label>
                 <span class="text-xs align-text-bottom mb-4 mt-1">If active, Pens will autosave every 30 seconds after being saved once.</span>
@@ -397,7 +397,7 @@ const removeTag = async(index) => {
               </label>
               <span class="ml-4">{{ currentWork.isAutoSave ? 'on' : 'off' }}</span>              
             </div>
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
               <label for="autoUpdatingPreview">Auto-Updating Preview</label>
               <span class="text-xs align-text-bottom mb-4 mt-1">If enabled, the preview panel updates automatically as you code. If disabled, use the "Run" button to update.</span>
@@ -416,7 +416,7 @@ const removeTag = async(index) => {
         </div>
       </div>
     </div>
-    <div class="bg-cc-15 w-full flex flex-col py-4 px-2 ">
+    <div class="bg-cc-15 rounded-b-md shadow-lg  w-full flex flex-col py-4 px-2 ">
     <button type="submit" @click.prevent="emit('close')" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
     </div>
   </div>
