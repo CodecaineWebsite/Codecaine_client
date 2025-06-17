@@ -54,7 +54,6 @@ const checkFavorite = async () => {
 };
 const countFavorite = async () => {
   const res = await api.get(`/api/favorites/count/${props.targetPen}/`);
-  console.log(res.data);
   favoritesCount.value = res.data.favoritesCount || 0;
 };
 
