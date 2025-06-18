@@ -224,7 +224,7 @@ watch(
 
 <style scoped>
 .profile-header {
-  background-image: url(https://cpwebassets.codepen.io/assets/packs/profile-bg-optimized-a5ca8f46aca292507f629c62b09630ad.svg);
+  background-image: url("/profile-bg.svg");
   background-size: cover;
 }
 </style>
