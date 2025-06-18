@@ -50,8 +50,6 @@
     return isNewWork || userId === authorId;
   });
 
-  console.log(isAuthor.value, 'au');
-
   // 初始化 userName
   userName.value =
     currentWork.value?.userName ??
