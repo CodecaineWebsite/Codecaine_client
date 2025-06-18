@@ -172,7 +172,7 @@
 
 <script setup>
 import { ref, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { auth } from "@/config/firebase";
 import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import {
@@ -199,6 +199,7 @@ const infoContent = ref(null);
 const resetOpen = ref(false);
 const resetBox = ref(null);
 const router = useRouter();
+const route = useRoute();
 const resetEmail = ref("");
 const resetError = ref("");
 const resetSuccess = ref("");
@@ -212,7 +213,7 @@ const login = async () => {
     authStore.setToken(token);
     await syncUser();
     alert("登入成功！");
-    router.push("/trending");
+    router.push(route.query.redirect || "/");
   } catch (e) {
     error.value = getLoginErrorMessage(e.code);
     console.error(e);
@@ -228,7 +229,7 @@ const socialSignIn = async (provider) => {
         provider.providerId.includes("google") ? "Google" : "GitHub"
       } sign in successful!`
     );
-    router.push("/trending");
+    router.push(route.query.redirect || "/");
   } catch (e) {
     alert(getSocialSignInErrorMessage(e.code, provider.providerId));
     console.error(e);
