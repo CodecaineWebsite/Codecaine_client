@@ -100,7 +100,7 @@ import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
-
+import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
 const workStore = useWorkStore();
 const { updateCardPreviewSrc } = workStore;
