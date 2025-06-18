@@ -46,7 +46,7 @@ import { useModalStore } from "@/stores/useModalStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
-import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "./PenCards/PenCommentButton.vue";
 import PenViewButton from "./PenCards/PenViewButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";

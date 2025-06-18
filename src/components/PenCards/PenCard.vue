@@ -93,7 +93,7 @@ import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作�
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
-import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
