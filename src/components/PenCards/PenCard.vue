@@ -98,7 +98,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import PenCardDropdown from "@/components/PenCardDropdown.vue"; // 作品卡下拉選單元件
+import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
 import BookmarkIcon from "@/components/icons/BookmarkIcon.vue";

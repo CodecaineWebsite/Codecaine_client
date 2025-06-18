@@ -67,7 +67,7 @@ const router = createRouter({
             {
               path: "caines",
               name: "Profilecaines",
-              component: () => import("../views/usersCaines.vue"),
+              component: () => import("../views/UsersCaines.vue"),
               children: [
                 {
                   path: "",
@@ -101,12 +101,12 @@ const router = createRouter({
             {
               path: "following",
               name: "Profilefollowing",
-              component: () => import("../views/usersFollowing.vue"),
+              component: () => import("../views/UsersFollowing.vue"),
             },
             {
               path: "followers",
               name: "Profilefollowers",
-              component: () => import("../views/usersFollowers.vue"),
+              component: () => import("../views/UsersFollowers.vue"),
             },
           ],
         },
