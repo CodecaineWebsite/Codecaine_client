@@ -41,9 +41,9 @@
   // 判斷是否為作者（computed 自動反應）
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
-    const workUserId = currentWork.value?.user_id;
+    const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
-    return isNewWork || userId === workUserId;
+    return isNewWork || userId === authorId;
   });
 
   // 初始化 userName
@@ -68,10 +68,10 @@
       currentWork.value.javascript,
       currentWork.value.cdns,
       currentWork.value.links,
-      currentWork.value.view_mode,
+      currentWork.value.viewMode,
       currentWork.value.isAutoSave,
       currentWork.value.isAutoPreview,
-      currentWork.value.is_private,
+      currentWork.value.isPrivate,
       currentWork.value.tags,
     ],
     () => {
@@ -136,7 +136,7 @@
   const selectedLayout = ref(layoutOptions[1]);
   const selectLayout = (layout) => {
     selectedLayout.value = layout
-    currentWork.value.view_mode = layout.id // 回寫 store
+    currentWork.value.viewMode = layout.id // 回寫 store
     layoutOptionVisible.value = false
   }
 
@@ -348,12 +348,12 @@
             </div>
           </button>
           <div v-if="layoutOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleLayout"></div>
-          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 py-3 rounded-lg border-4 border-gray-800">
+          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 pt-3 pb-1 rounded-lg border-4 border-gray-800">
             <div class="px-3 text-white">
               <span>Change View</span>
             </div>
-            <div class="flex justify-center align-middle py-3">
-              <div class="flex justify-center align-middle py-3 ">
+            <div class="flex justify-center align-middle py-2">
+              <div class="flex justify-center align-middle py-1">
                 <label
                   v-for="option in layoutOptions" :key="option.id" class="border-2 border-[#444857] w-20 flex justify-center h-12 editorSmallButton-hover-bgc   hover:cursor-pointer" :class="{ 'rounded-l-sm': option.id === 'left', 'rounded-r-sm': option.id === 'right', 'bg-[#444857]': selectedLayout.id === option.id }"
                 >
@@ -365,7 +365,7 @@
             </div>
             <ul
               class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65 justify-between text-sm p-1"
-              v-if="currentWork.user_id"
+              v-if="currentWork.id"
             >
               <li
                 class="flex py-1 px-5 justify-between transition duration-300"

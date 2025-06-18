@@ -14,8 +14,8 @@ export const useWorkStore = defineStore('work', () => {
     javascript: "",
     links:[],
     cdns: [], 
-    views_count: "",
-    view_mode: "center",
+    viewsCount: "",
+    viewMode: "center",
     isAutoSave: true,
     isAutoPreview: true,
     isPrivate: false,
@@ -24,10 +24,10 @@ export const useWorkStore = defineStore('work', () => {
   const currentId = ref('');
   const works = ref([])
   const updateCDNs = (newCDNs) => {
-    currentWork.value.resources_js = newCDNs
+    currentWork.value.cdns = newCDNs
   }
   const updateLinks = (newLinks) => {
-  currentWork.value.resources_css = newLinks
+  currentWork.value.links = newLinks
   }
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
@@ -41,15 +41,26 @@ export const useWorkStore = defineStore('work', () => {
   }
 
   // 改變currentId function
-  const handleCurrentIdChange = async(id) => {
-    if(id) {
-      currentId.value = id
-      const data = await fetchWorkFromId(id)
-      api.put(`/api/pens/${id}/view`).catch(err => {
-      console.warn('Failed to increase views count:', err)
-    });
+  const handleCurrentIdChange = async (id) => {
+    if (!id) {
+      currentId.value = "";
+      currentWork.value = workTemplate;
+      return;
+    }
+  
+    currentId.value = id;
+  
+    try {
+      const data = await fetchWorkFromId(id);
+
+      api.put(`/api/pens/${id}/view`).catch((err) => {
+        console.warn('Failed to increase views count:', err);
+      });
+
+      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, resources_js, resources_css, tags, ...rest } = data;
+
       currentWork.value = {
-        ...data,
+        ...rest,
         userName: data.username,
         userId: data.user_id,
         isPro: data.is_pro,
@@ -59,17 +70,17 @@ export const useWorkStore = defineStore('work', () => {
         javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
-        cdns: data.resources_js || [],
-        links: data.resources_css || [],
-        tags: data.tags || [],
-      }
-    } else {
-      currentId.value = ""
-      currentWork.value = workTemplate
+        cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
+        links: Array.isArray(data.resources_css) ? data.resources_css : [],
+        tags: Array.isArray(data.tags) ? data.tags : [],
+      };
+    } catch (err) {
+      console.error('Failed to fetch work by ID:', err);
+      // 可加入錯誤處理
     }
-  }
+  };
+  
   // 更新CurrentCode 
-  // todo: 改v-model綁定
   const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
     if (!currentWork.value) return;
@@ -85,14 +96,13 @@ export const useWorkStore = defineStore('work', () => {
   // 開關自動存檔狀態
   const toggleAutoSave = () => {
     currentWork.value.isAutoSave = !currentWork.value.isAutoSave
-    console.log(currentWork.value.isAutoSave);
   }
   // 開關自動更新狀態
   const toggleAutoPreview = () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
   }
   // 更新作品Preview
-    const updatePreviewSrc = () => {
+  const updatePreviewSrc = () => {
     const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
@@ -305,7 +315,8 @@ export const useWorkStore = defineStore('work', () => {
     return null;
   }
   };
-    const saveCurrentWork = async () => {
+
+  const saveCurrentWork = async () => {
     try {
       const payload = {
         title: currentWork.value.title,
@@ -313,7 +324,7 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
-        view_mode: currentWork.value.view_mode,
+        view_mode: currentWork.value.viewMode,
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
         resources_css: currentWork.value.links || [],
