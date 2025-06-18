@@ -12,6 +12,9 @@ export const useWorkStore = defineStore('work', () => {
     html: "",
     css: "",
     javascript: "",
+    htmlPreprocessor: "", // or "pug", "slim"
+    cssPreprocessor: "",  // or "sass", "scss"
+    jsPreprocessor: "",   // or "typescript"
     links:[],
     cdns: [], 
     views_count: "",
@@ -56,12 +59,16 @@ export const useWorkStore = defineStore('work', () => {
         isPrivate: data.is_private,
         html: data.html_code,
         css: data.css_code,
+        htmlPreprocessor: data.html_preprocessor || "none",
+        cssPreprocessor: data.css_preprocessor || "none",
+        jsPreprocessor: data.js_preprocessor || "none",
+        cdns: data.resources_js || [],
+        links: data.resources_css || [],
         javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
-        cdns: data.resources_js || [],
-        links: data.resources_css || [],
         tags: data.tags || [],
+        
       }
     } else {
       currentId.value = ""
@@ -92,14 +99,14 @@ export const useWorkStore = defineStore('work', () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
   }
   // 更新作品Preview
-    const updatePreviewSrc = () => {
-    const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
+  const updatePreviewSrc = () => {
+    const { htmlCode, cssCode, javascript, cdns, links, htmlPreprocessor, cssPreprocessor, jsPreprocessor } = currentWork.value;
+
+    const rawJS = javascript + '\n//# sourceURL=user-code.js';
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-    const cssCode = currentWork.value.css;
-    const htmlCode = currentWork.value.html;
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
-  
+    const escapeScript = (code) => code.replace(/<\/script>/gi, '<\\/script>');
+    const cdnTags = (cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+    const linkTags = (links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
     const previewData = `
       <!DOCTYPE html>
       <html lang="en">
@@ -113,78 +120,116 @@ export const useWorkStore = defineStore('work', () => {
           font-src 'self' https: data:;
           connect-src 'self' https:;
           frame-src https:;
+          worker-src 'self' blob: https:;
         ">
         ${cdnTags}
         ${linkTags}
-        <style>
-          body {
-            background-color: white;
-            margin: 0;
-          }
-          ${cssCode}
-        </style>
+
+        ${htmlPreprocessor === 'pug' ? '<script src="https://cdn.jsdelivr.net/npm/pug@3.0.2/pug.min.js"></script>' : ''}
+        ${htmlPreprocessor === 'slim' ? '<script src="https://cdn.jsdelivr.net/npm/slim-wasm@latest/dist/index.umd.min.js"></script>' : ''}
+        ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss' ? '<script src="https://cdn.jsdelivr.net/npm/sass.js@latest/dist/sass.sync.js"></script>' : ''}
+        ${jsPreprocessor === 'typescript' ? '<script src="https://cdn.jsdelivr.net/npm/typescript@5.4.3/lib/typescript.min.js"></script>' : ''}
+
+        <style id="user-style">${cssPreprocessor === 'none' ? cssCode : ''}</style>
         <script type="module">
-          const originalConsole = {
-            log: console.log,
-            error: console.error,
-            warn: console.warn,
-            info: console.info
-          };
-  
-          ['log', 'error', 'warn', 'info'].forEach(method => {
-            console[method] = (...args) => {
+          const preprocess = async () => {
+            try {
+              // HTML Preprocessor
+              ${
+                htmlPreprocessor === 'pug'
+                  ? `document.getElementById("user-html").innerHTML = pug.render(${JSON.stringify(htmlCode)});`
+                  : htmlPreprocessor === 'slim'
+                  ? `const { renderSlim } = window.slimWASM;
+                  const slimResult = await renderSlim(${JSON.stringify(htmlCode)});
+                  document.getElementById("user-html").innerHTML = slimResult;`
+                  : ''
+              }
+
+              // CSS Preprocessor
+              ${
+                cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
+                  ? `Sass.compile(${JSON.stringify(cssCode)}, {
+                      indentedSyntax: ${cssPreprocessor === 'sass'}
+                    }, result => {
+                      if (result.status !== 0) {
+                        console.error('Sass Error:', result);
+                        return;
+                      }
+                      document.getElementById("user-style").textContent = result.text;
+                    });`
+                  : ''
+              }
+
+              
+              // JS Preprocessor
+              let scriptCode = '';
+              ${
+                jsPreprocessor === 'typescript'
+                  ? `scriptCode = ts.transpile(${JSON.stringify(safeJS)});`
+                  : `scriptCode = ${JSON.stringify(safeJS)};`
+              }
+              const blob = new Blob([scriptCode], { type: 'application/javascript' });
+              const script = document.createElement('script');
+              script.src = URL.createObjectURL(blob);
+              script.type = 'module';
+              script.onload = () => URL.revokeObjectURL(script.src);
+              script.onerror = () => {
+                window.parent.postMessage({
+                  type: 'log',
+                  message: 'Script loading error',
+                  level: 'error'
+                }, '*');
+              };
+              document.body.appendChild(script);
+            } catch (err) {
+              console.error('Preprocess error:', err);
+            }
+
+            const originalConsole = {
+              log: console.log,
+              error: console.error,
+              warn: console.warn,
+              info: console.info
+            };
+    
+            ['log', 'error', 'warn', 'info'].forEach(method => {
+              console[method] = (...args) => {
+                window.parent.postMessage({
+                  type: 'log',
+                  message: args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                  ).join(' '),
+                  level: method
+                }, '*');
+                originalConsole[method](...args);
+              };
+            });
+    
+            window.onerror = function(message, source, lineno, colno, error) {
+              const errorMsg = error
+                ? \`\${error.name}: \${error.message}\`
+                : message;
               window.parent.postMessage({
                 type: 'log',
-                message: args.map(arg =>
-                  typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' '),
-                level: method
+                message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
+                level: 'error'
               }, '*');
-              originalConsole[method](...args);
+              return true;
             };
+    
+            window.addEventListener('unhandledrejection', function(event) {
+              window.parent.postMessage({
+                type: 'log',
+                message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
+                level: 'error'
+              }, '*');
           });
-  
-          window.onerror = function(message, source, lineno, colno, error) {
-            const errorMsg = error
-              ? \`\${error.name}: \${error.message}\`
-              : message;
-            window.parent.postMessage({
-              type: 'log',
-              message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
-              level: 'error'
-            }, '*');
-            return true;
-          };
-  
-          window.addEventListener('unhandledrejection', function(event) {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
-              level: 'error'
-            }, '*');
-          });
-  
-          const code = ${JSON.stringify(safeJS)};
-          const blob = new Blob([code], { type: 'application/javascript' });
-          const blobUrl = URL.createObjectURL(blob);
-  
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = blobUrl;
-          script.onload = () => URL.revokeObjectURL(blobUrl);
-          script.onerror = () => {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Script loading error',
-              level: 'error'
-            }, '*');
-          };
-  
-          document.head.appendChild(script);
-        <\/script>
+          preprocess();
+
+        </script>
       </head>
       <body>
-        ${htmlCode}
+        <div id="user-html"></div>
       </body>
       </html>
     `.trim();
@@ -194,68 +239,6 @@ export const useWorkStore = defineStore('work', () => {
     if (window.currentPreviewBlob) {
       URL.revokeObjectURL(window.currentPreviewBlob);
     }
-    window.currentPreviewBlob = blobUrl;
-    return blobUrl;
-  };
-
-  const updateCardPreviewSrc = (code) => {
-    const rawJS = code.javascript + '\n//# sourceURL=user-code.js';
-    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-    const cssCode = code.css;
-    const htmlCode = code.html;
-    const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-    const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
-  
-    const previewData = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="
-          default-src 'self';
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
-          style-src 'self' 'unsafe-inline' https:;
-          img-src 'self' data: blob: https:;
-          font-src 'self' https: data:;
-          connect-src 'self' https:;
-          frame-src https:;
-        ">
-        ${cdnTags}
-        ${linkTags}
-        <style>
-          body {
-            background-color: white;
-            margin: 0;
-          }
-          ${cssCode}
-        </style>
-        <script type="module">
-          window.console = {
-            log: () => {},
-            error: () => {},
-            warn: () => {},
-            info: () => {}
-          };
-        
-          const code = ${JSON.stringify(safeJS)};
-          const blob = new Blob([code], { type: 'application/javascript' });
-          const blobUrl = URL.createObjectURL(blob);
-        
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = blobUrl;
-          script.onload = () => URL.revokeObjectURL(blobUrl);
-          document.head.appendChild(script);
-        <\/script>
-      </head>
-      <body>
-        ${htmlCode}
-      </body>
-      </html>
-    `.trim();
-  
-    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
     window.currentPreviewBlob = blobUrl;
     return blobUrl;
   };
@@ -286,6 +269,9 @@ export const useWorkStore = defineStore('work', () => {
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
+      htmlPreprocessor: newWorkData.htmlPreprocessor || '',
+      cssPreprocessor: newWorkData.cssPreprocessor || '',
+      jsPreprocessor: newWorkData.jsPreprocessor || '',
       view_mode: newWorkData.view_mode,
       is_autosave: newWorkData.isAutoSave ?? false,
       is_autopreview: newWorkData.isAutoPreview ?? true,
@@ -313,6 +299,9 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
+        htmlPreprocessor: currentWork.htmlPreprocessor || '',
+        cssPreprocessor: currentWork.cssPreprocessor || '',
+        jsPreprocessor: currentWork.jsPreprocessor || '',
         view_mode: currentWork.value.view_mode,
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
@@ -380,7 +369,6 @@ export const useWorkStore = defineStore('work', () => {
     toggleAutoSave,
     toggleAutoPreview,
     updatePreviewSrc,
-    updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
     updateTags,

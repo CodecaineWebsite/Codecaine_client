@@ -58,7 +58,6 @@ watch(tags, (newTags) => {
 }, { deep: true })
 
 
-
 const activeTab = ref('html')
 const cdnInput = ref('')
 const linkInput = ref('')
@@ -152,8 +151,9 @@ const removeTag = async(index) => {
               <div class="relative">
                 <select
                   id="htmlPreprocessor"
+                  v-model="currentWork.htmlPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="none" selected>None</option>
                   <option value="Haml">Haml</option>
                   <option value="Markdown">Markdown</option>
                   <option value="Slim">Slim</option>
@@ -198,13 +198,14 @@ const removeTag = async(index) => {
               <div class="relative">
                 <select
                   id="cssPreprocessor"
+                  v-model="currentWork.cssPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
-                  <option value="Less">Less</option>
+                  <option value="none" selected>None</option>
+                  <!-- <option value="Less">Less</option> -->
                   <option value="SCSS">SCSS</option>
                   <option value="Sass">Sass</option>
-                  <option value="Stylus">Stylus</option>
-                  <option value="PostCSS">PostCSS</option>
+                  <!-- <option value="Stylus">Stylus</option> -->
+                  <!-- <option value="PostCSS">PostCSS</option> -->
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
                   <Arrow class="w-3 h-3 fill-current rotate-180"/>
@@ -273,14 +274,15 @@ const removeTag = async(index) => {
           <div v-show="activeTab === 'js'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="javaScriptPreprocessor">JavaScript Preprocessor</label>
+                <label for="jsPreprocessor">JavaScript Preprocessor</label>
               </div>
               <div class="relative">
                 <select
-                  id="javaScriptPreprocessor"
+                  id="jsPreprocessor"
+                  v-model="currentWork.jsPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
-                  <option value="Script">Script</option>
+                  <option value="none" selected>None</option>
+                  <option value="typescript">TypeScript</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
                   <Arrow class="w-3 h-3 fill-current rotate-180"/>
