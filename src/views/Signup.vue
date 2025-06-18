@@ -127,7 +127,7 @@ const register = async () => {
   success.value = "";
   try {
     await registerWithEmail(auth, email.value, password.value);
-    success.value = " Registration successful！";
+    success.value = "Registration successful！";
     alert(success.value);
     await syncUser();
     router.push("/trending");

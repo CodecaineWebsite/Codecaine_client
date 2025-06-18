@@ -28,6 +28,7 @@
               v-if="userInfo.profile_link1"
               :href="userInfo.profile_link1"
               target="_blank"
+              rel="noopener noreferrer"
               >{{ userInfo.profile_link1.split("/")[2] }}</a
             >
             <a
@@ -35,6 +36,7 @@
               v-if="userInfo.profile_link2"
               :href="userInfo.profile_link2"
               target="_blank"
+              rel="noopener noreferrer"
               >{{ userInfo.profile_link2.split("/")[2] }}</a
             >
             <a
@@ -42,6 +44,7 @@
               v-if="userInfo.profile_link3"
               :href="userInfo.profile_link3"
               target="_blank"
+              rel="noopener noreferrer"
               >{{ userInfo.profile_link3.split("/")[2] }}</a
             >
             <span

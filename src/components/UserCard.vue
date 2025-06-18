@@ -6,6 +6,7 @@
       <div class="w-12 h-12 overflow-hidden p-1 rounded-lg">
         <img
           :src="props.profileImage ? props.profileImage : '/default-avatar.png'"
+          :alt="`Profile image of ${props.username}`"
           class="w-full object-cover h-full rounded"
         />
       </div>
