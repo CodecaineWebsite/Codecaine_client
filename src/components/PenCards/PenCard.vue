@@ -63,6 +63,7 @@
             :is-pro="isPro"
             :is-private="isPrivate"
             :is-following="isFollowing"
+            :is-logged-in="authStore.user !== null"
             :user-name="userName"
             @follow="handleFollow"
             @togglePrivacy="togglePrivacy"
@@ -117,12 +118,12 @@ const props = defineProps({
 // 作品資訊
 const workId = props.pen.id;
 const title = props.pen.title || "Untitled";
-
+console.log("PenCard props", props.pen);
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
 const userProfileImage = props.pen.profile_image || "/default-avatar.png";
-const isPro = authStore.userProfile.is_pro || false;
+const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
@@ -131,7 +132,6 @@ const previewIframeUrl = `${
 }/${userName}/full/${workId}?mode=onlyPreview`;
 
 // 統計資料
-const likes = props.pen.favorites_count;
 const comments = props.pen.comments_count;
 const views = props.pen.views_count;
 
@@ -173,7 +173,6 @@ const handleDelete = async () => {
     await api.put(`/api/pens/${workId}/trash`);
     emit("delete", workId);
     console.log("Deleted successfully");
-    menuOpen.value = false;
   } catch (error) {
     console.error("Delete failed", error);
     alert("Delete failed, please try again later");
@@ -191,7 +190,6 @@ const togglePrivacy = async () => {
       is_private: newPrivacy,
     });
     isPrivate.value = newPrivacy;
-    menuOpen.value = false;
     emit("privacy-changed", { id: workId, is_private: newPrivacy });
   } catch (err) {
     console.error("Toggle privacy failed, please try again later", err);

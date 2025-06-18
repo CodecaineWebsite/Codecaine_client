@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" ref="dropdownRef">
+  <div v-if="isLoggedIn" class="relative" ref="dropdownRef" >
     <button
       class="dropdown-toggle text-white text-xl font-bold hover:text-gray-300"
       @click.stop="$emit('toggle')"
@@ -14,7 +14,7 @@
       <button
         v-if="!isOwner"
         @click="handleFollow"
-        class="block w-full px-4 py-2 hover:bg-card-13 flex items-center gap-2"
+        class="block w-full px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
       >
         <CheckIcon />
         <span v-if="!isFollowing">Follow @{{ userName }}</span>
@@ -44,7 +44,7 @@
       <button
         v-if="isOwner"
         @click="handleDelete"
-        class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
+        class="block w-full text-left px-4 py-2 hover:bg-cc-red flex items-center gap-2"
       >
         <TrashCanIcon class="w-4 fill-current" />
         Delete
@@ -68,6 +68,7 @@ const props = defineProps({
   isFollowing: Boolean,
   userName: String,
   isOpen: Boolean,
+  isLoggedIn: Boolean,
 });
 
 // emits

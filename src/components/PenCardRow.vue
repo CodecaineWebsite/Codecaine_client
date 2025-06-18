@@ -30,6 +30,7 @@
           :is-pro="isPro"
           :is-private="isPrivate"
           :is-following="isFollowing"
+          :is-logged-in="authStore.user !== null"
           :user-name="userName"
           @follow="handleFollow"
           @togglePrivacy="handleTogglePrivacy"
