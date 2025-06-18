@@ -15,20 +15,11 @@
     <td class="py-2 px-4">{{ formatDate(pen.updated_at) }}</td>
     <td class="py-2 px-4 flex">
       <div class="flex gap-2 mt-3">
-        <button
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <span>
-            <HeartIcon class="w-4 fill-current" />
-          </span>
-          <span>{{ pen.favorites_count || 0 }}</span>
-        </button>
-        <button
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <ChatBubbleIcon class="w-4 fill-current" />
-          <span>{{ pen.comments_count || 0 }}</span>
-        </button>
+        <FavoriteBtn :target-pen="workId" />
+        <PenCommentButton
+          :work-id="workId"
+          :comments="pen.comments_count || 0"
+          @openDetailModal="openDetailModal" />
         <button
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
         >
@@ -58,6 +49,8 @@ import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import PenCommentButton from "./PenCards/PenCommentButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
 import ExternalLinkIcon from "./icons/ExternalLinkIcon.vue";
 import ChatBubbleIcon from "./icons/ChatBubbleIcon.vue";

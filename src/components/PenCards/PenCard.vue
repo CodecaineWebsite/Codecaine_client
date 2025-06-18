@@ -75,14 +75,10 @@
       <!-- 底部統計按鈕 -->
       <div class="flex gap-2 mt-3">
         <FavoriteBtn :target-pen="workId" />
-        <!-- 改成開modal -->
-        <button
-          @click="openDetailModal"
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <ChatBubbleIcon class="w-4 fill-current" />
-          <span>{{ comments }}</span>
-        </button>
+        <PenCommentButton
+          :work-id="workId"
+          :comments="comments"
+          @openDetailModal="openDetailModal" />
         <button
           @click="goToFullPage"
           class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
@@ -105,6 +101,7 @@ import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import PenCommentButton from "@/components/PenCards/PenCommentButton.vue"; // 作品卡評論按鈕元件
 import { useModalStore } from "@/stores/useModalStore";
 import api from "@/config/api"; // API 請求配置
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
@@ -213,9 +210,6 @@ const togglePrivacy = async () => {
 onMounted(() => {
   checkFollow();
 });
-const goToDetailPage = () => {
-  router.push(detailPageLink);
-};
 
 const goToFullPage = () => {
   router.push(fullPageLink);
