@@ -10,10 +10,6 @@
 <script setup>
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 defineProps({
-  workId: {
-    type: String,
-    required: true
-  },
   comments: {
     type: Number,
     default: 0

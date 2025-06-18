@@ -78,14 +78,9 @@
         <PenCommentButton
           :work-id="workId"
           :comments="comments"
-          @openDetailModal="openDetailModal" />
-        <button
-          @click="goToFullPage"
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <EyeIcon class="w-4 fill-current" />
-          <span>{{ views }}</span>
-        </button>
+          @openDetailModal="openDetailModal"
+        />
+        <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </div>
   </div>
@@ -97,11 +92,9 @@ import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
-import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
-import EyeIcon from "@/components/icons/EyeIcon.vue";
-
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
-import PenCommentButton from "@/components/PenCards/PenCommentButton.vue"; // 作品卡評論按鈕元件
+import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
+import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
 import api from "@/config/api"; // API 請求配置
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
