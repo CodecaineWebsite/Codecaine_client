@@ -5,7 +5,8 @@
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          :src="previewIframeUrl"
+          :src="iframeSrc"
+          sandbox="allow-scripts"
           class="w-full h-full border-0"
           loading="lazy"
         ></iframe>
@@ -88,6 +89,7 @@
 </template>
 
 <script setup>
+import api from "@/config/api"; // API 請求配置
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
@@ -98,8 +100,10 @@ import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
-import api from "@/config/api"; // API 請求配置
+
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
+const workStore = useWorkStore();
+const { updateCardPreviewSrc } = workStore;
 const authStore = useAuthStore();
 
 const router = useRouter();
@@ -127,9 +131,18 @@ const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
-const previewIframeUrl = `${
-  import.meta.env.VITE_URL_BASE
-}/${userName}/full/${workId}?mode=onlyPreview`;
+const iframeSrc = ref('')
+const code = {
+  html: props.pen.html_code || "",
+  css: props.pen.css_code || "",
+  javascript: props.pen.js_code || "",
+  cdns: props.resources_js || [],
+  links: props.resources_css || []
+}
+onMounted(async () => {
+  const newBlobUrl = updateCardPreviewSrc(code);
+  iframeSrc.value = newBlobUrl
+})
 
 // 統計資料
 const comments = props.pen.comments_count;
