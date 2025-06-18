@@ -85,7 +85,6 @@ const handleFollow = async () => {
       const res = await api.delete(`/api/follows/${props.pen.username}`);
       isFollowing.value = false;
     }
-    menuOpen.value = false;
   } catch (error) {
     console.error("follow/unfollow error", error);
   }
@@ -102,7 +101,6 @@ const handleTogglePrivacy = async () => {
       is_private: newPrivacy,
     });
     isPrivate.value = newPrivacy;
-    menuOpen.value = false;
     emit("privacy-changed", { id: workId, is_private: newPrivacy });
   } catch (err) {
     console.error("Toggle privacy failed, please try again later", err);
@@ -116,7 +114,6 @@ const handleDelete = async () => {
     await api.put(`/api/pens/${workId}/trash`);
     emit("delete", workId);
     console.log("Deleted successfully");
-    menuOpen.value = false;
   } catch (error) {
     console.error("Delete failed", error);
     alert("Delete failed, please try again later");
