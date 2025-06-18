@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, defineExpose, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { debounce } from '@/utils/debounce'
 
 // 從 parent 傳入的 props
