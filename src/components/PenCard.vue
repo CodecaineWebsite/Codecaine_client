@@ -14,7 +14,7 @@
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <button
         @click="openDetailModal"
-        class="detailPageLink absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
+        class="absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
       >
         <ExternalLinkIcon class="w-4 fill-current" />
       </button>
@@ -25,7 +25,7 @@
       <div class="flex items-center justify-between w-full">
         <div class="flex items-center gap-3">
           <!-- 左：頭像 -->
-          <a :href="userPageLink" class="userPageLink shrink-0">
+          <a :href="userPageLink" class="shrink-0">
             <img
               :src="userProfileImage"
               class="w-10 h-10 rounded-sm"
@@ -71,13 +71,41 @@
               v-if="menuOpen"
               class="absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
             >
-              <a
-                href="#"
-                class="block px-4 py-2 hover-bg-card-hover text-blue-400 flex items-center gap-2"
+              <button
+                v-if="!isOwner"
+                @click="handleFollow"
+                class="block w-full px-4 py-2 hover:bg-card-13 flex items-center gap-2"
               >
                 <CheckIcon />
-                Follow {{ "@" + userName }}
-              </a>
+                <span v-if="!isFollowing"> Follow {{ "@" + userName }}</span>
+                <span v-else>Unfollow {{ "@" + userName }}</span>
+              </button>
+              <button
+                v-if="isOwner"
+                @click="togglePrivacy"
+                class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
+              >
+                <component
+                  :is="isPrivate ? UnlockIcon : LockClosedIcon"
+                  class="w-4 fill-current"
+                />
+                {{ isPrivate ? "Make Public" : "Make Private" }}
+                <span
+                  v-if="!isPro"
+                  class="ml-1 bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded transition inline-flex items-center justify-center"
+                >
+                  PRO
+                </span>
+              </button>
+
+              <button
+                v-if="isOwner"
+                @click="handleDelete"
+                class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
+              >
+                <TrashCanIcon class="w-4 fill-current" />
+                Delete
+              </button>
             </div>
           </div>
         </div>
@@ -107,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
@@ -116,11 +144,19 @@ import CheckIcon from "@/components/icons/CheckIcon.vue";
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
+import LockClosedIcon from "@/components/icons/LockClosedIcon.vue";
+import UnlockIcon from "@/components/icons/UnlockIcon.vue";
+import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { useModalStore } from "@/stores/useModalStore";
+import api from "@/config/api"; // API 請求配置
+import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
+const authStore = useAuthStore();
 
 const router = useRouter();
 const modalStore = useModalStore();
+
+const emit = defineEmits(["delete","privacy-changed","toggle"]);
 
 const props = defineProps({
   pen: {
@@ -136,10 +172,10 @@ const title = props.pen.title || "Untitled";
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
-const userProfileImage =
-  props.pen.profile_image ||
-  "/default-avatar.png";
-const isPro = props.pen.isPro || false;
+const userProfileImage = props.pen.profile_image || "/default-avatar.png";
+const isPro = authStore.userProfile.is_pro || false;
+const isPrivate =  ref(props.pen.is_private === true)
+const isFollowing = ref(false);
 // 作品預覽
 const previewIframeUrl = `${
   import.meta.env.VITE_URL_BASE
@@ -160,6 +196,69 @@ const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫�
 // 元件狀態
 const menuOpen = ref(false);
 
+
+
+const isOwner = computed(() => authStore.userProfile?.username === userName);
+
+const checkFollow = async () => {
+  try {
+    const res = await api.get(`/api/follows/check/${userName}`);
+    isFollowing.value = res.data.isFollowing;
+  } catch (error) {
+    console.error("check follow error", error);
+  }
+};
+const handleFollow = async () => {
+  try {
+    if (!isFollowing.value) {
+      const res = await api.post(`/api/follows/${props.pen.username}`);
+      isFollowing.value = true;
+    } else {
+      const res = await api.delete(`/api/follows/${props.pen.username}`);
+      isFollowing.value = false;
+    }
+    menuOpen.value = false;
+  } catch (error) {
+    console.error("follow/unfollow error", error);
+  }
+};
+
+
+const handleDelete = async () => {
+  if (!confirm("Are you sure you want to delete this dose?")) return;
+
+  try {
+    await api.put(`/api/pens/${workId}/trash`);
+    emit("delete", workId);
+    console.log("Deleted successfully");
+    menuOpen.value = false;
+  } catch (error) {
+    console.error("Delete failed", error);
+    alert("Delete failed, please try again later");
+  }
+};
+
+const togglePrivacy = async () => {
+  if (!isPro && isPrivate.value === false) {
+    alert("Only Pro members can make doses private.");
+    return;
+  }
+  try {
+    const newPrivacy = !isPrivate.value;
+    await api.patch(`/api/pens/${workId}/privacy`, {
+      is_private: newPrivacy,
+    });
+    isPrivate.value = newPrivacy;
+    menuOpen.value = false;
+    emit("privacy-changed", { id: workId, is_private: newPrivacy });
+  } catch (err) {
+    console.error("Toggle privacy failed, please try again later", err);
+  }
+};
+
+onMounted(() => {
+  checkFollow();
+});
 const goToDetailPage = () => {
   router.push(detailPageLink);
 };
