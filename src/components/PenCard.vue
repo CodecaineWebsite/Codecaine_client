@@ -59,55 +59,16 @@
         </div>
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
-          <div class="relative">
-            <button
-              class="text-white text-xl font-bold hover:text-gray-300"
-              @click="menuOpen = !menuOpen"
-            >
-              •••
-            </button>
-            <!-- 下拉選單 -->
-            <div
-              v-if="menuOpen"
-              class="absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
-            >
-              <button
-                v-if="!isOwner"
-                @click="handleFollow"
-                class="block w-full px-4 py-2 hover:bg-card-13 flex items-center gap-2"
-              >
-                <CheckIcon />
-                <span v-if="!isFollowing"> Follow {{ "@" + userName }}</span>
-                <span v-else>Unfollow {{ "@" + userName }}</span>
-              </button>
-              <button
-                v-if="isOwner"
-                @click="togglePrivacy"
-                class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
-              >
-                <component
-                  :is="isPrivate ? UnlockIcon : LockClosedIcon"
-                  class="w-4 fill-current"
-                />
-                {{ isPrivate ? "Make Public" : "Make Private" }}
-                <span
-                  v-if="!isPro"
-                  class="ml-1 bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded transition inline-flex items-center justify-center"
-                >
-                  PRO
-                </span>
-              </button>
-
-              <button
-                v-if="isOwner"
-                @click="handleDelete"
-                class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
-              >
-                <TrashCanIcon class="w-4 fill-current" />
-                Delete
-              </button>
-            </div>
-          </div>
+          <PenCardDropdown
+            :is-owner="isOwner"
+            :is-pro="isPro"
+            :is-private="isPrivate"
+            :is-following="isFollowing"
+            :user-name="userName"
+            @follow="handleFollow"
+            @togglePrivacy="togglePrivacy"
+            @delete="handleDelete"
+          />
         </div>
       </div>
 
@@ -137,6 +98,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import PenCardDropdown from "@/components/PenCardDropdown.vue"; // 作品卡下拉選單元件
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
 import BookmarkIcon from "@/components/icons/BookmarkIcon.vue";
@@ -156,7 +118,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 const modalStore = useModalStore();
 
-const emit = defineEmits(["delete","privacy-changed","toggle"]);
+const emit = defineEmits(["delete", "privacy-changed", "toggle"]);
 
 const props = defineProps({
   pen: {
@@ -174,7 +136,7 @@ const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
 const userProfileImage = props.pen.profile_image || "/default-avatar.png";
 const isPro = authStore.userProfile.is_pro || false;
-const isPrivate =  ref(props.pen.is_private === true)
+const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
 const previewIframeUrl = `${
@@ -195,8 +157,6 @@ const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫�
 
 // 元件狀態
 const menuOpen = ref(false);
-
-
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
@@ -222,7 +182,6 @@ const handleFollow = async () => {
     console.error("follow/unfollow error", error);
   }
 };
-
 
 const handleDelete = async () => {
   if (!confirm("Are you sure you want to delete this dose?")) return;
