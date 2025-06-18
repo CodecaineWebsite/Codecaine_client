@@ -173,7 +173,6 @@ const handleFollow = async () => {
       const res = await api.delete(`/api/follows/${props.pen.username}`);
       isFollowing.value = false;
     }
-    menuOpen.value = false;
   } catch (error) {
     console.error("follow/unfollow error", error);
   }
