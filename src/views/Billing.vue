@@ -1,55 +1,107 @@
 <template>
-  <div class="h-full w-full p-6">
-    <div class="max-w-md mx-auto mt-10 p-6 rounded-xl shadow bg-white">
-      <h2 class="text-2xl font-bold mb-4">高級會員方案</h2>
-      <p class="mb-4 text-gray-700">
-        每月只需 <span class="font-semibold text-blue-600">$10</span>
-      </p>
+  <div class="w-1/2">
+    <div
+      ref="cardElement"
+      style="border: 1px solid #ccc; padding: 12px; border-radius: 6px"
+    ></div>
+    <p style="color: red">{{ errorMessage }}</p>
 
-      <!-- PayPal 按鈕掛載區 -->
-      <div id="paypal-button-container"></div>
-    </div>
+    <button :disabled="processing" @click="handleSubmit">
+      {{ processing ? "付款中..." : "刷卡付款" }}
+    </button>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
+import { loadStripe } from "@stripe/stripe-js";
+import api from "../config/api";
 
-const clientId = ""; // 替換為你的 Sandbox Client ID
+const stripePromise = loadStripe(
+  import.meta.env.VITE_STRIPE_PUBLIC_KEY // 替換成你的 Stripe 公鑰
+);
+const cardElement = ref(null);
+const errorMessage = ref("");
+const processing = ref(false);
 
-const renderPaypalButton = () => {
-  window.paypal
-    .Buttons({
-      createSubscription: (data, actions) => {
-        return actions.subscription.create({
-          plan_id: planId,
-        });
+let stripe;
+let elements;
+let card;
+
+const clientSecret = ref(""); // 後端取得的 clientSecret
+
+async function createPaymentIntent() {
+  try {
+    const res = await api.post("api/stripe/create-payment-intent", {
+      amount: 10000, // 例如 1000 = 1000分 = 1000台幣（你改成想要的金額）
+    });
+    clientSecret.value = res.data.clientSecret;
+  } catch (err) {
+    errorMessage.value = "建立付款意向失敗：" + err.message;
+  }
+}
+
+async function setupStripeElements() {
+  stripe = await stripePromise;
+  elements = stripe.elements();
+
+  const style = {
+    base: {
+      color: "#ffffff", // 白字
+      fontSize: "16px",
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      "::placeholder": {
+        color: "#cccccc", // 淺灰 placeholder
       },
-      onApprove: async (data, actions) => {
-        console.log("訂閱成功", data.subscriptionID);
+    },
+    invalid: {
+      color: "#ff6b6b", // 錯誤紅色
+    },
+  };
 
-        // 呼叫後端 API 開通會員
-        await fetch("/api/user/upgrade-to-pro", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer yourUserToken", // 如果有登入驗證
-          },
-          body: JSON.stringify({
-            subscriptionId: data.subscriptionID,
-          }),
-        });
+  card = elements.create("card", { style: style });
+  card.mount(cardElement.value);
 
-        alert("你已成功訂閱成為高級會員！");
+  card.on("change", (event) => {
+    errorMessage.value = event.error ? event.error.message : "";
+  });
+}
+
+async function handleSubmit() {
+  processing.value = true;
+  errorMessage.value = "";
+
+  const { error, paymentIntent } = await stripe.confirmCardPayment(
+    clientSecret.value,
+    {
+      payment_method: {
+        card: card,
       },
-    })
-    .render("#paypal-button-container");
-};
+    }
+  );
 
-onMounted(() => {
-  const script = document.createElement("script");
-  script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription`;
-  script.addEventListener("load", renderPaypalButton);
-  document.body.appendChild(script);
+  if (error) {
+    errorMessage.value = error.message;
+    processing.value = false;
+  } else if (paymentIntent && paymentIntent.status === "succeeded") {
+    alert("付款成功！開始開通會員...");
+
+    // 這裡呼叫你的後端開通會員 API
+    try {
+      const rest = await api.post("/api/stripe/activate-pro", {
+        paymentIntentId: paymentIntent.id,
+      });
+      alert("已成為高級會員！");
+      console.log("會員開通成功：", rest.data);
+    } catch (err) {
+      alert("會員開通失敗：" + err.message);
+    }
+    processing.value = false;
+  }
+}
+
+onMounted(async () => {
+  await createPaymentIntent();
+  await setupStripeElements();
 });
 </script>
