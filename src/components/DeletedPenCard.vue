@@ -4,7 +4,7 @@
 
     <div class="text-cc-10 font-semibold flex">
       <PensIcon class="fill-current w-4 mr-2" />
-      <span class="text-cc-1 truncate">{{ pen.title || Untitled }}</span>
+      <span class="text-cc-1 truncate">{{ pen.title }}</span>
     </div>
 
     <!-- 右邊按鈕 -->
