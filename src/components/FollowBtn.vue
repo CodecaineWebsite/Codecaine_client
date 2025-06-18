@@ -23,22 +23,14 @@
 import { ref, onMounted } from "vue";
 import api from "@/config/api";
 
+const isHovering = ref(false);
+const isFollowing = ref(false);
 const props = defineProps({
-  currentUser: {
-    //可移除此prop留下targetUser就好
-    type: [String, Number],
-    required: true,
-  },
   targetUser: {
     type: [String, Number],
     required: true,
   },
 });
-
-console.log(props); //這是可重複利用元件 拿來提醒目前使用者是誰/及目標追蹤的使用者是誰 在你載入元件的頁面會提醒
-
-const isHovering = ref(false);
-const isFollowing = ref(false);
 
 const checkFollow = async () => {
   try {
@@ -61,6 +53,7 @@ const handleClick = async () => {
     console.error("fetch follow error ", error);
   }
 };
+
 onMounted(() => {
   checkFollow();
 });
