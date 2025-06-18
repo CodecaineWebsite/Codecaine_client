@@ -2,11 +2,13 @@
   <div class="content mt-6">
     <ul
       v-if="!isLoaded"
-      class="grid grid-cols-6 gap-5 mb-12">
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-5 mb-12"
+    >
       <li
         v-for="n in pageSize"
         :key="'skeleton-' + n"
-        class="bg-gray-700 h-[60px] rounded-md p-1 flex flex-row items-center gap-1 animate-pulse">
+        class="bg-gray-700 h-[60px] rounded-md p-1 flex flex-row items-center gap-1 animate-pulse"
+      >
         <div class="w-12 h-12 overflow-hidden p-1 rounded-lg">
           <div class="w-full h-full bg-gray-600 rounded"></div>
         </div>
@@ -17,20 +19,18 @@
       </li>
     </ul>
     <ul
-      class="grid grid-cols-6 gap-5 mb-12"
-      v-else-if="users.length">
-      <li
-        v-for="user in users"
-        :key="user.id">
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-5 mb-12"
+      v-else-if="users.length"
+    >
+      <li v-for="user in users" :key="user.id">
         <Usercard
           :username="user.username"
           :display-name="user.display_name"
-          :profile-image="user.profile_image" />
+          :profile-image="user.profile_image"
+        />
       </li>
     </ul>
-    <div
-      class="content justify-center flex mt-6"
-      v-else>
+    <div class="content justify-center flex mt-6" v-else>
       <div class="text-4xl bg-gray-800 p-12 rounded-lg">
         <p>You haven't followed anyone yet.</p>
       </div>
@@ -41,7 +41,8 @@
       :currentPage="page"
       :totalPages="totalPages"
       @prev="page--"
-      @next="page++" />
+      @next="page++"
+    />
   </div>
 </template>
 

@@ -4,13 +4,15 @@
       <button
         class="cursor-pointer hover:text-white"
         @click="showcase"
-        :class="route.name === 'cainesShowcase' ? 'text-white' : ''">
+        :class="route.name === 'cainesShowcase' ? 'text-white' : ''"
+      >
         Showcase
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="publicProfile"
-        :class="route.name === 'cainesPublic' ? 'text-white' : ''">
+        :class="route.name === 'cainesPublic' ? 'text-white' : ''"
+      >
         {{
           route.params.username === authStore.userProfile.username
             ? "Public"
@@ -21,13 +23,15 @@
         v-if="route.params.username === authStore.userProfile.username"
         class="cursor-pointer hover:text-white"
         @click="privateProfile"
-        :class="route.name === 'cainesPrivate' ? 'text-white' : ''">
+        :class="route.name === 'cainesPrivate' ? 'text-white' : ''"
+      >
         Private
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="loved"
-        :class="route.name === 'cainesLoved' ? 'text-white' : ''">
+        :class="route.name === 'cainesLoved' ? 'text-white' : ''"
+      >
         Loved
       </button>
     </div>
