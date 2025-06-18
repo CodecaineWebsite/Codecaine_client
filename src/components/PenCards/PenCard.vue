@@ -58,6 +58,7 @@
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
           <PenCardDropdown
+            :is-open="isOpen"
             :is-owner="isOwner"
             :is-pro="isPro"
             :is-private="isPrivate"
@@ -66,6 +67,7 @@
             @follow="handleFollow"
             @togglePrivacy="togglePrivacy"
             @delete="handleDelete"
+            @toggle="$emit('toggle', pen.id)"
           />
         </div>
       </div>
@@ -109,6 +111,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  isOpen: Boolean,
 });
 
 // 作品資訊
@@ -125,7 +128,7 @@ const isFollowing = ref(false);
 // 作品預覽
 const previewIframeUrl = `${
   import.meta.env.VITE_URL_BASE
-}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
+}/${userName}/full/${workId}?mode=onlyPreview`;
 
 // 統計資料
 const likes = props.pen.favorites_count;
@@ -137,8 +140,6 @@ const editorPageLink = `/${userName}/pen/${workId}`;
 const userPageLink = `/${userName}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
-// 元件狀態
-const menuOpen = ref(false);
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
@@ -198,7 +199,9 @@ const togglePrivacy = async () => {
 };
 
 onMounted(() => {
-  checkFollow();
+  if (!isOwner.value) {
+    checkFollow();
+  }
 });
 
 const goToFullPage = () => {

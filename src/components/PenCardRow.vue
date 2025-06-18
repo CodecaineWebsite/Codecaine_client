@@ -6,7 +6,8 @@
     <td class="py-2 px-4">
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="opacity-0 group-hover:opacity-100 transition"/>
+        class="opacity-0 group-hover:opacity-100 transition"
+      />
     </td>
     <td class="py-2 px-4">{{ formatDate(pen.created_at) }}</td>
     <td class="py-2 px-4">{{ formatDate(pen.updated_at) }}</td>
@@ -16,13 +17,15 @@
         <PenCommentButton
           :work-id="workId"
           :comments="pen.comments_count || 0"
-          @openDetailModal="openDetailModal" />
-          <PenViewButton :count="views" @goToFullPage="goToFullPage" />
+          @openDetailModal="openDetailModal"
+        />
+        <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </td>
     <td class="py-2 px-4">
       <div class="flex items-center gap-2">
         <PenCardDropdown
+          :is-open="isOpen"
           :is-owner="isOwner"
           :is-pro="isPro"
           :is-private="isPrivate"
@@ -31,6 +34,7 @@
           @follow="handleFollow"
           @togglePrivacy="handleTogglePrivacy"
           @delete="handleDelete"
+          @toggle="() => emit('toggle', pen.id)"
         />
       </div>
     </td>
@@ -46,7 +50,6 @@ import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import PenCommentButton from "./PenCards/PenCommentButton.vue";
 import PenViewButton from "./PenCards/PenViewButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
-
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -69,11 +72,8 @@ const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 const isPro = authStore.userProfile?.is_pro || false;
 const userName = props.pen.username;
-
+const views = props.pen.views_count;
 const editorPageLink = `/${userName}/pen/${workId}`;
-const menuOpen = ref(false);
-
-
 
 const handleFollow = async () => {
   try {
@@ -111,15 +111,15 @@ const handleTogglePrivacy = async () => {
 const handleDelete = async () => {
   if (!confirm("Are you sure you want to delete this dose?")) return;
 
-try {
-  await api.put(`/api/pens/${workId}/trash`);
-  emit("delete", workId);
-  console.log("Deleted successfully");
-  menuOpen.value = false;
-} catch (error) {
-  console.error("Delete failed", error);
-  alert("Delete failed, please try again later");
-}
+  try {
+    await api.put(`/api/pens/${workId}/trash`);
+    emit("delete", workId);
+    console.log("Deleted successfully");
+    menuOpen.value = false;
+  } catch (error) {
+    console.error("Delete failed", error);
+    alert("Delete failed, please try again later");
+  }
 };
 
 const goToFullPage = () => {

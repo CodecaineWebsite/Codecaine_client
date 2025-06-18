@@ -1,14 +1,14 @@
 <template>
   <div class="relative" ref="dropdownRef">
     <button
-      class="text-white text-xl font-bold hover:text-gray-300"
-      @click.stop="toggle"
+      class="dropdown-toggle text-white text-xl font-bold hover:text-gray-300"
+      @click.stop="$emit('toggle')"
     >
       •••
     </button>
     <div
-      v-if="menuOpen"
-      class="absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
+      v-if="isOpen"
+      class="dropdown-menu absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
     >
       <!-- 追蹤 -->
       <button
@@ -67,51 +67,29 @@ const props = defineProps({
   isPrivate: Boolean,
   isFollowing: Boolean,
   userName: String,
+  isOpen: Boolean,
 });
 
 // emits
 const emit = defineEmits([
   "follow",
   "togglePrivacy",
-  "delete"
+  "delete",
+  "toggle"
 ]);
 
-const menuOpen = ref(false);
-const dropdownRef = ref(null);
-
-const toggle = () => {
-  menuOpen.value = !menuOpen.value;
-};
-
-const close = () => {
-  menuOpen.value = false;
-};
-
-const handleClickOutside = (event) => {
-  if (menuOpen.value && dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    close();
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 
 const handleFollow = () => {
   emit("follow");
-  close();
+
 };
 
 const handleTogglePrivacy = () => {
   emit("togglePrivacy");
-  close();
+
 };
 
 const handleDelete = () => {
   emit("delete");
-  close();
 };
 </script>

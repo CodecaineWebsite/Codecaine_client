@@ -8,8 +8,10 @@
       v-for="pen in pens"
       :key="pen.id"
       :pen="pen"
+      :is-open="openedDropdownId === pen.id" 
       @delete="handleDeletePen"
       @privacy-changed="handlePrivacyChanged"
+      @toggle="toggleDropdown"
     />
   </div>
   <!-- table layout -->
@@ -43,7 +45,6 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import PenCardRow from "./PenCardRow.vue";
 import PenCard from "./PenCards/PenCard.vue";
 
-const menuOpen = ref(false);
 const openedDropdownId = ref(null);
 
 const props = defineProps({
@@ -93,8 +94,6 @@ function handlePrivacyChanged({ id, is_private }) {
     }
   }
 }
-
-function removePen(id) {}
 
 function toggleDropdown(id) {
   if (openedDropdownId.value === id) {
