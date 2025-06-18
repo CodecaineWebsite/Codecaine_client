@@ -100,15 +100,10 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
-import FolderIcon from "@/components/icons/FolderIcon.vue";
-import BookmarkIcon from "@/components/icons/BookmarkIcon.vue";
-import CheckIcon from "@/components/icons/CheckIcon.vue";
+
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
-import HeartIcon from "@/components/icons/HeartIcon.vue";
-import LockClosedIcon from "@/components/icons/LockClosedIcon.vue";
-import UnlockIcon from "@/components/icons/UnlockIcon.vue";
-import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
+
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { useModalStore } from "@/stores/useModalStore";
 import api from "@/config/api"; // API 請求配置
