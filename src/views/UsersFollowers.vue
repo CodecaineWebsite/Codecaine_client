@@ -76,16 +76,16 @@ const fetchFollowers = async () => {
   }
 };
 
-onMounted(() => {
-  setTimeout(() => {
-    fetchFollowers();
-  }, 600);
-});
-
 watch(
   () => [route.params.username, page.value],
   () => {
     fetchFollowers();
   }
 );
+
+onMounted(() => {
+  setTimeout(() => {
+    fetchFollowers();
+  }, 600);
+});
 </script>

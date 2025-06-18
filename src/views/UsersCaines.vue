@@ -43,9 +43,11 @@
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
+
 const showcase = () => {
   router.push(`/${route.params.username}/caines/showcase`);
 };
@@ -59,5 +61,3 @@ const privateProfile = () => {
   router.push(`/${route.params.username}/caines/private`);
 };
 </script>
-
-<style scoped></style>

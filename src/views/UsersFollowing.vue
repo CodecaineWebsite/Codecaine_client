@@ -52,6 +52,7 @@ import { useRoute } from "vue-router";
 import Usercard from "@/components/UserCard.vue";
 import api from "@/config/api";
 import PaginationNav from "@/components/PaginationNav.vue";
+
 const route = useRoute();
 const isLoaded = ref(false);
 const users = ref([]);
@@ -75,16 +76,16 @@ const fetchFollowings = async () => {
   }
 };
 
-onMounted(() => {
-  setTimeout(() => {
-    fetchFollowings();
-  }, 600);
-});
-
 watch(
   () => [route.params.username, page.value],
   () => {
     fetchFollowings();
   }
 );
+
+onMounted(() => {
+  setTimeout(() => {
+    fetchFollowings();
+  }, 600);
+});
 </script>
