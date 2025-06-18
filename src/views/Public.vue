@@ -77,7 +77,6 @@ watch(viewMode, (newViewMode) => {
     query: {
       ...route.query,
       page: 1,
-      totalPages: totalPages.value,
       viewMode: newViewMode,
     },
   });

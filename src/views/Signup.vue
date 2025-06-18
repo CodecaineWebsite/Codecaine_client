@@ -130,7 +130,7 @@ const register = async () => {
     success.value = " Registration successful！";
     alert(success.value);
     await syncUser();
-    router.push("/login");
+    router.push("/trending");
   } catch (e) {
     const msg = getRegisterErrorMessage(e.code);
     alert(msg);
