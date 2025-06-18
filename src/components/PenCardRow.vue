@@ -4,12 +4,9 @@
       <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
     </td>
     <td class="py-2 px-4">
-      <button
-        @click="openDetailModal"
-        class="bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
-      >
-        <ExternalLinkIcon class="w-4 fill-white" />
-      </button>
+      <PenDetailsButton
+        @open-detail-modal="openDetailModal"
+        class="opacity-0 group-hover:opacity-100 transition"/>
     </td>
     <td class="py-2 px-4">{{ formatDate(pen.created_at) }}</td>
     <td class="py-2 px-4">{{ formatDate(pen.updated_at) }}</td>
@@ -20,12 +17,7 @@
           :work-id="workId"
           :comments="pen.comments_count || 0"
           @openDetailModal="openDetailModal" />
-        <button
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <EyeIcon class="w-4 fill-current" />
-          <span>{{ pen.views_count || 0 }}</span>
-        </button>
+          <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </td>
     <td class="py-2 px-4">
@@ -49,14 +41,12 @@ import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
+import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import PenCommentButton from "./PenCards/PenCommentButton.vue";
+import PenViewButton from "./PenCards/PenViewButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
-import ExternalLinkIcon from "./icons/ExternalLinkIcon.vue";
-import ChatBubbleIcon from "./icons/ChatBubbleIcon.vue";
-import HeartIcon from "./icons/HeartIcon.vue";
-import EyeIcon from "./icons/EyeIcon.vue";
-import CheckIcon from "./icons/CheckIcon.vue";
+
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -130,6 +120,10 @@ try {
   console.error("Delete failed", error);
   alert("Delete failed, please try again later");
 }
+};
+
+const goToFullPage = () => {
+  router.push(`/${userName}/full/${workId}`);
 };
 
 function formatDate(datetime) {

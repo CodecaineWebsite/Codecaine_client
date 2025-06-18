@@ -12,12 +12,10 @@
       </div>
 
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
-      <button
-        @click="openDetailModal"
-        class="absolute top-2 right-2 bg-black/50 rounded p-1 opacity-0 group-hover:opacity-100 transition"
-      >
-        <ExternalLinkIcon class="w-4 fill-current" />
-      </button>
+      <PenDetailsButton
+        @open-detail-modal="openDetailModal"
+        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+      />
     </div>
 
     <!-- 卡片內容 -->
@@ -92,6 +90,7 @@ import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
+import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
@@ -136,8 +135,6 @@ const views = props.pen.views_count;
 // 連結
 const editorPageLink = `/${userName}/pen/${workId}`;
 const userPageLink = `/${userName}`;
-const detailPageLink = `/${userName}/details/${workId}`;
-const fullPageLink = `/${userName}/full/${workId}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
 // 元件狀態
@@ -205,7 +202,7 @@ onMounted(() => {
 });
 
 const goToFullPage = () => {
-  router.push(fullPageLink);
+  router.push(`/${userName}/full/${workId}`);
 };
 
 const openDetailModal = () => {
