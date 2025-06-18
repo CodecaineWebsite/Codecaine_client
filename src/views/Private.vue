@@ -34,6 +34,7 @@ import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
 import ViewModeChange from "@/components/ViewModeChange.vue";
 import api from "@/config/api";
+
 const router = useRouter();
 const route = useRoute();
 const viewMode = ref(localStorage.getItem("cainesViewMode") || "grid");

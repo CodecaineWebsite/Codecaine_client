@@ -31,6 +31,7 @@ import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
 import ViewModeChange from "@/components/ViewModeChange.vue";
 import api from "@/config/api";
+
 const router = useRouter();
 const route = useRoute();
 const viewMode = ref(localStorage.getItem("cainesViewMode") || "grid");
@@ -61,6 +62,7 @@ watch(page, (newPage) => {
   });
   fetchCaines();
 });
+
 watch(viewMode, (newViewMode) => {
   localStorage.setItem("cainesViewMode", newViewMode);
   page.value = 1;
@@ -74,6 +76,7 @@ watch(viewMode, (newViewMode) => {
   });
   fetchCaines();
 });
+
 watch(
   () => route.params.username,
   () => {
@@ -81,6 +84,7 @@ watch(
     fetchCaines();
   }
 );
+
 onMounted(() => {
   fetchCaines();
 });
