@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
@@ -54,7 +54,6 @@ const fetchCaines = async () => {
     );
     pens.value = res.data.results || [];
     totalPages.value = res.data.totalPages || 0;
-    console.log(res.data);
   } catch (error) {
     console.error("❌ Failed to load Caines:", error);
     pens.value = [];
