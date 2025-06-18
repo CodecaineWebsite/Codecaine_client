@@ -57,14 +57,14 @@ export const useWorkStore = defineStore('work', () => {
         userId: data.user_id,
         isPro: data.is_pro,
         isPrivate: data.is_private,
-        html: data.html_code,
-        css: data.css_code,
-        htmlPreprocessor: data.html_preprocessor || "none",
-        cssPreprocessor: data.css_preprocessor || "none",
-        jsPreprocessor: data.js_preprocessor || "none",
+        html: '<h1>Hello World</h1><p>This is raw HTML.</p>',
+        css: 'body { color: red; }',
+        javascript: 'console.log("Hello from JS");',
+        html_preprocessor: data.html_preprocessor || "none",
+        css_preprocessor: data.css_preprocessor || "none",
+        js_preprocessor: data.js_preprocessor || "none",
         cdns: data.resources_js || [],
         links: data.resources_css || [],
-        javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
         tags: data.tags || [],
@@ -100,7 +100,7 @@ export const useWorkStore = defineStore('work', () => {
   }
   // 更新作品Preview
   const updatePreviewSrc = () => {
-    const { htmlCode, cssCode, javascript, cdns, links, htmlPreprocessor, cssPreprocessor, jsPreprocessor } = currentWork.value;
+    const { html, css, javascript, cdns, links, htmlPreprocessor, cssPreprocessor, jsPreprocessor } = currentWork.value;
 
     const rawJS = javascript + '\n//# sourceURL=user-code.js';
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
@@ -130,17 +130,21 @@ export const useWorkStore = defineStore('work', () => {
         ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss' ? '<script src="https://cdn.jsdelivr.net/npm/sass.js@latest/dist/sass.sync.js"></script>' : ''}
         ${jsPreprocessor === 'typescript' ? '<script src="https://cdn.jsdelivr.net/npm/typescript@5.4.3/lib/typescript.min.js"></script>' : ''}
 
-        <style id="user-style">${cssPreprocessor === 'none' ? cssCode : ''}</style>
+        <style id="user-style">${cssPreprocessor === 'none' ? css : ''}</style>
         <script type="module">
           const preprocess = async () => {
             try {
               // HTML Preprocessor
+              console.log("htmlPreprocessor:", ${JSON.stringify(htmlPreprocessor)});
+              console.log("html:", ${JSON.stringify(html)});
+
+              
               ${
                 htmlPreprocessor === 'pug'
-                  ? `document.getElementById("user-html").innerHTML = pug.render(${JSON.stringify(htmlCode)});`
+                  ? `document.getElementById("user-html").innerHTML = pug.render(${JSON.stringify(html)});`
                   : htmlPreprocessor === 'slim'
                   ? `const { renderSlim } = window.slimWASM;
-                  const slimResult = await renderSlim(${JSON.stringify(htmlCode)});
+                  const slimResult = await renderSlim(${JSON.stringify(html)});
                   document.getElementById("user-html").innerHTML = slimResult;`
                   : ''
               }
@@ -148,7 +152,7 @@ export const useWorkStore = defineStore('work', () => {
               // CSS Preprocessor
               ${
                 cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
-                  ? `Sass.compile(${JSON.stringify(cssCode)}, {
+                  ? `Sass.compile(${JSON.stringify(css)}, {
                       indentedSyntax: ${cssPreprocessor === 'sass'}
                     }, result => {
                       if (result.status !== 0) {
@@ -171,7 +175,7 @@ export const useWorkStore = defineStore('work', () => {
               const blob = new Blob([scriptCode], { type: 'application/javascript' });
               const script = document.createElement('script');
               script.src = URL.createObjectURL(blob);
-              script.type = 'module';
+              script.type = 'text/javascript';
               script.onload = () => URL.revokeObjectURL(script.src);
               script.onerror = () => {
                 window.parent.postMessage({
@@ -216,15 +220,16 @@ export const useWorkStore = defineStore('work', () => {
               }, '*');
               return true;
             };
-    
+            
             window.addEventListener('unhandledrejection', function(event) {
               window.parent.postMessage({
                 type: 'log',
                 message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
                 level: 'error'
-              }, '*');
-          });
-          preprocess();
+                }, '*');
+              });
+            };
+            preprocess();
 
         </script>
       </head>
@@ -299,9 +304,9 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
-        htmlPreprocessor: currentWork.htmlPreprocessor || '',
-        cssPreprocessor: currentWork.cssPreprocessor || '',
-        jsPreprocessor: currentWork.jsPreprocessor || '',
+        htmlPreprocessor: currentWork.value.htmlPreprocessor || '',
+        cssPreprocessor: currentWork.value.cssPreprocessor || '',
+        jsPreprocessor: currentWork.value.jsPreprocessor || '',
         view_mode: currentWork.value.view_mode,
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
@@ -312,6 +317,8 @@ export const useWorkStore = defineStore('work', () => {
       await api.put(`/api/pens/${currentId.value}`, payload);
       currentWork.value.lastSavedTime = new Date();
       console.log('Work saved successfully');
+      console.log("要送出的資料:", payload)
+
       return true;
     } catch (err) {
       console.error('Failed to save work', err);
