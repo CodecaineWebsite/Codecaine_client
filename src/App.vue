@@ -43,10 +43,13 @@ onAuthStateChanged(auth, async (firebaseUser) => {
 });
 
 onIdTokenChanged(auth, async (firebaseUser) => {
-  const authStore = useAuthStore();
-  if (firebaseUser) {
-    const token = await firebaseUser.getIdToken();
-    authStore.setToken(token);
+  try {
+    if (firebaseUser) {
+      const token = await firebaseUser.getIdToken();
+      authStore.setToken(token);
+    }
+  } catch (err) {
+    console.error("onIdTokenChanged 發生錯誤：", err);
   }
 });
 </script>
