@@ -85,18 +85,7 @@
 
       <!-- 底部統計按鈕 -->
       <div class="flex gap-2 mt-3">
-        <button
-          @click="liked = !liked"
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <span>
-            <HeartIcon
-              class="w-4"
-              :class="liked ? 'fill-cc-red' : 'fill-current'"
-            />
-          </span>
-          <span>{{ liked ? likes + 1 : likes }}</span>
-        </button>
+        <FavoriteBtn :target-pen="workId" />
         <!-- 改成開modal -->
         <button
           @click="openDetailModal"
@@ -127,6 +116,7 @@ import CheckIcon from "@/components/icons/CheckIcon.vue";
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { useModalStore } from "@/stores/useModalStore";
 
 const router = useRouter();
@@ -169,7 +159,6 @@ const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫�
 
 // 元件狀態
 const menuOpen = ref(false);
-const liked = ref(false);
 
 const goToDetailPage = () => {
   router.push(detailPageLink);
