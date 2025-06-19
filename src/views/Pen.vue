@@ -95,10 +95,10 @@
       currentWork.value.javascript,
       currentWork.value.cdns,
       currentWork.value.links,
-      currentWork.value.view_mode,
+      currentWork.value.viewMode,
       currentWork.value.isAutoSave,
       currentWork.value.isAutoPreview,
-      currentWork.value.is_private,
+      currentWork.value.isPrivate,
       currentWork.value.tags,
     ],
     () => {
@@ -132,10 +132,10 @@
   ];
   
   const selectedLayout = ref(layoutOptions.find(
-    option => option.id === currentWork.value?.view_mode
+    option => option.id === currentWork.value?.viewMode
   ) || layoutOptions[1])
 
-  watch(() => currentWork.value?.view_mode, (newMode) => {
+  watch(() => currentWork.value?.viewMode, (newMode) => {
     const match = layoutOptions.find(option => option.id === newMode)
     if (match) selectedLayout.value = match
   }, { immediate: true })
