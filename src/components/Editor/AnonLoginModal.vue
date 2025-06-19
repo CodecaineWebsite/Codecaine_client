@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Close from '@/components/icons/Close.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -118,17 +118,33 @@ const handleToSignUp = () => {
   router.push({ path: route.path, query: { ...route.query, modal: 'signup' } })
 }
 
+const initModal = () => {
+  account.value = "";
+  password.value = "";
+  success.value = "";
+  error.value = "";
+  emailForResetPassword.value = "";
+  resetError.value = "";
+  resetSuccess.value = "";
+  isForgetPassword.value = false;
+}
+
+watch(showModal, (val) => {
+  if (val) {
+    initModal();
+  }
+});
 </script>
 
 <template>
   <div
     v-if="showModal"
-    class="fixed inset-0 bg-black/50 flex justify-center items-start z-50"
+    class="fixed inset-0 bg-black/50 flex justify-center items-start z-150"
     @mousedown="startClick" @mouseup="checkClose"
   >
     <div
       ref="modal"
-      class="relative bg-white rounded-xl mt-8 w-80 shadow-lg flex flex-col min-w-lg min-h-[70vh] max-h-[80vh] pt-7.5 px-15 overflow-y-auto"
+      class="relative bg-white rounded-xl mt-8 w-90 md:w-80 shadow-lg flex flex-col md:min-w-lg min-md-h-[70vh] max-h-[90vh] md:max-h-[80vh] pt-7.5 md:px-15 p-8 overflow-y-auto"
     >
       <div class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"></div>
       <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10" @click="close">
@@ -214,7 +230,7 @@ const handleToSignUp = () => {
         </form>
       </main>
 
-      <div class="relative w-full text-zinc-900 bg-white text-center p-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]">
+      <div class="relative w-full text-zinc-900 bg-white text-center pt-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]">
         <a v-if="modalType === 'login'" href="#" @click.prevent="handleToSignUp">
           Need to create an account?
           <span class="text-teal-700 text-sm">Sign Up for CodePen</span>

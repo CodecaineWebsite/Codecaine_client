@@ -4,7 +4,15 @@
     v-if="props.mode === 'grid'"
     class="grid [grid-template-columns:repeat(auto-fill,minmax(30%,1fr))] gap-12"
   >
-    <PenCardTemp v-for="pen in pens" :key="pen.id" :pen="pen" />
+    <PenCard
+      v-for="pen in pens"
+      :key="pen.id"
+      :pen="pen"
+      :is-open="openedDropdownId === pen.id" 
+      @delete="handleDeletePen"
+      @privacy-changed="handlePrivacyChanged"
+      @toggle="toggleDropdown"
+    />
   </div>
   <!-- table layout -->
   <div v-else-if="props.mode === 'table'">
@@ -35,9 +43,8 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import PenCardRow from "./PenCardRow.vue";
-import PenCardTemp from "./PenCardTemp.vue";
+import PenCard from "./PenCards/PenCard.vue";
 
-const menuOpen = ref(false);
 const openedDropdownId = ref(null);
 
 const props = defineProps({
@@ -49,7 +56,18 @@ const props = defineProps({
     type: String,
     default: "grid",
   },
+  filter: {
+    type: String,
+    default: "all",
+  },
 });
+
+function handleDeletePen(deletedId) {
+  const index = props.pens.findIndex((pen) => pen.id === deletedId);
+  if (index !== -1) {
+    props.pens.splice(index, 1);
+  }
+}
 
 function handleClickOutside(event) {
   // 點擊不是按鈕或選單內容時，關閉 dropdown
@@ -58,6 +76,22 @@ function handleClickOutside(event) {
     !event.target.closest(".dropdown-menu")
   ) {
     openedDropdownId.value = null;
+  }
+}
+
+function handlePrivacyChanged({ id, is_private }) {
+  console.log("handlePrivacyChanged", id, is_private);
+  if (props.filter === "private" && !is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
+  }
+  if (props.filter === "public" && is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
   }
 }
 

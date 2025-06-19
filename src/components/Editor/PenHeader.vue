@@ -1,9 +1,10 @@
 <script setup>
-	import { provide, ref, watch, nextTick, computed } from 'vue';
+	import { provide, ref, watch, nextTick, computed} from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
+  import api from "@/config/api";
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
   import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
@@ -38,11 +39,15 @@
   const isPro = ref(true);
   const isEdited = ref(false);
 
-  // 判斷是否為作者（computed 自動反應）
+  // 判斷是否為作者
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
     const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
+
+    // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
+    if (!authorId) return true;
+
     return isNewWork || userId === authorId;
   });
 
@@ -96,6 +101,7 @@
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
+    navListVisible.value = false;
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
@@ -168,6 +174,54 @@
   }
 
   defineExpose({ toggleSetting, handleWorkAutoSave });
+
+  // 收藏功能
+
+  const isLiked = ref(false);
+ 
+  const checkFavorite = async () => {
+    if(!isLoggedIn.value || !currentWork.value?.id) return;
+    try {
+      const res = await api.get(`/api/favorites/check/${currentWork.value.id}`);
+      isLiked.value = res.data.liked;
+    } catch (err) {
+      console.log.err("checkFavorite error", error)
+    }
+  }
+
+  const toggleFavorite = async () => {
+    if (!isLoggedIn.value) {
+      isLoginModalShow.value = true;
+      router.push({ path: route.path, query: { modal: "login"}})
+      return;
+    }
+
+    try {
+      if(!isLiked.value) {
+        const res = await api.post(`/api/favorites/`, {
+          pen_id:currentWork.value.id,
+        });
+        isLiked.value = true;
+      } else {
+        const res = await api.delete(`/api/favorites`,{
+          data: {
+            pen_id: currentWork.value.id,
+          }
+        });
+        isLiked.value = false;
+      }
+    } catch(err) {
+      console.error("toggleFavorite error", err);
+    }
+  }
+
+  watch(
+    () => currentWork.value?.id,
+    (newId) => {
+      if (newId) checkFavorite();
+    },
+    { immediate: true }
+  );
 </script>
 
 <template>
@@ -203,9 +257,12 @@
       </div>
 
       <div class="flex items-center gap-1 md:gap-2 mr-2 md:mr-3 ">
-        <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
-          <div class="h-7 flex">
-            <Like class="w-4 "/>
+        <button v-if="isLoggedIn"
+        @click="toggleFavorite" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
+          <div class="h-7 flex items-center">
+            <Like 
+            class="w-4" 
+            :class="isLiked ? 'fill-cc-red' : 'fill-current'"/>
           </div>
         </button>
 

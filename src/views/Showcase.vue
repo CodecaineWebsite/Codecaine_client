@@ -53,7 +53,7 @@ const fetchCaines = async () => {
     );
     pens.value = res.data.results || [];
   } catch (error) {
-    console.error("❌ Failed to load Caines:", error);
+    console.error("Failed to load Caines:", error);
     pens.value = [];
   } finally {
     isLoading.value = false;
