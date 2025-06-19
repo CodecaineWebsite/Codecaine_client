@@ -36,10 +36,10 @@ function copyLink() {
     .writeText(url)
     .then(() => {
       // 可換成 emit 或 toast
-      alert("連結已複製！");
+      alert("Link copied!");
     })
     .catch(() => {
-      alert("複製失敗，請手動複製連結");
+      alert("Copy failed, please manually copy the link.");
     });
 }
 </script>
