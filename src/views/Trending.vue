@@ -19,7 +19,15 @@
         :key="'group-' + index"
       >
         <div class="grid grid-cols-2 gap-6">
-          <PenCard v-for="card in group" :key="card.id" :pen="card" />
+          <PenCard
+            v-for="pen in group"
+            :key="pen.id"
+            :pen="pen"
+            :is-open="openedDropdownId === pen.id"
+            @delete="handleDeletePen"
+            @privacy-changed="handlePrivacyChanged"
+            @toggle="toggleDropdown"
+          />
         </div>
       </SwiperSlide>
     </Swiper>
@@ -67,13 +75,13 @@
 
 <script setup>
 import { nextTick } from "vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import api from "@/config/api";
-import PenCard from "@/components/PenCardTemp.vue";
+import PenCard from "@/components/PenCards/PenCard.vue";
 
 const swiperRef = ref(null);
 const pages = ref([]);
@@ -81,6 +89,8 @@ const loadedPages = ref(new Set()); // 防止重複載入
 const swiperInstance = ref(null);
 const hasMore = ref(true);
 const atLastPage = ref(false);
+
+const openedDropdownId = ref(null);
 
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
@@ -135,5 +145,56 @@ const chunkedCards = computed(() =>
 onMounted(async () => {
   await loadPage(1);
   await loadPage(2);
+});
+
+
+function handleDeletePen(deletedId) {
+  const index = props.pens.findIndex((pen) => pen.id === deletedId);
+  if (index !== -1) {
+    props.pens.splice(index, 1);
+  }
+}
+
+function handleClickOutside(event) {
+  // 點擊不是按鈕或選單內容時，關閉 dropdown
+  if (
+    !event.target.closest(".dropdown-toggle") &&
+    !event.target.closest(".dropdown-menu")
+  ) {
+    openedDropdownId.value = null;
+  }
+}
+
+function handlePrivacyChanged({ id, is_private }) {
+  console.log("handlePrivacyChanged", id, is_private);
+  if (props.filter === "private" && !is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
+  }
+  if (props.filter === "public" && is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
+  }
+}
+
+function toggleDropdown(id) {
+  if (openedDropdownId.value === id) {
+    // 如果點的是已經開啟的那一筆，就關掉
+    openedDropdownId.value = null;
+  } else {
+    // 否則就打開這一筆
+    openedDropdownId.value = id;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>

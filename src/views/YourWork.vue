@@ -275,7 +275,7 @@
 
         <div v-else class="w-full">
           <div v-if="pens.length > 0">
-            <PenCardLayout :pens="pens" :mode="viewMode" />
+            <PenCardLayout :pens="pens" :mode="viewMode" :filter="filters.privacy" />
             <PaginationNav
               :currentPage="page"
               :totalPages="totalPages"
