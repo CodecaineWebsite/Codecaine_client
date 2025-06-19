@@ -173,7 +173,7 @@
   // 收藏功能
 
   const isLiked = ref(false);
-  // 初始化：檢查這支作品是否已被收藏
+ 
   const checkFavorite = async () => {
     console.log("isLoggedIn.value",isLoggedIn.value)
     console.log("currentWork.value.id",currentWork.value.id)
@@ -187,13 +187,12 @@
       console.log.err("checkFavorite error", error)
     }
   }
-  // 切換收藏狀態
+
   const toggleFavorite = async () => {
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: "login"}})
       return;
-      // 或直接redirect到登入頁
     }
 
     try {
@@ -215,7 +214,6 @@
     }
   }
 
-  // 當 currentWork 有變化（換作品）就檢查是否已收藏
   watch(
     () => currentWork.value?.id,
     (newId) => {
