@@ -61,7 +61,7 @@
   textarea.iPadShowKeyboard[widgetid="editor.contrib.ShowKeyboardWidget"] {
     bottom: 0px !important;
     right: 0px !important;
-    z-index: 9999 !important;
+    z-index: 99 !important;
 
     background-color: transparent !important;
     background-size: 50% 50% !important;
