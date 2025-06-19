@@ -1,28 +1,61 @@
 <template>
-  <div class="w-1/2">
-    <div
-      ref="cardElement"
-      style="border: 1px solid #ccc; padding: 12px; border-radius: 6px"
-    ></div>
-    <p style="color: red">{{ errorMessage }}</p>
-
-    <button :disabled="processing" @click="handleSubmit">
-      {{ processing ? "付款中..." : "刷卡付款" }}
-    </button>
+  <div class="flex flex-col gap-4 mx-auto max-w-3xl p-4">
+    <div class="bg-gray-700 rounded-lg p-4">
+      <div>
+        <h2 class="text-2xl font-bold mb-4 text-center">Why subscribe us?</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <li>☑️No ads</li>
+          <li>☑️Unlimited public and private Pens</li>
+          <li>☑️Access to exclusive features</li>
+          <li>☑️Support the development of Codecaine</li>
+        </ul>
+        <div
+          class="flex justify-end items-center gap-3 mt-4 mb-2"
+          v-if="authStore.userProfile?.is_pro"
+        >
+          <div
+            class="text-lg font-extrabold text-yellow-400 drop-shadow bg-zinc-800 rounded px-3 py-1"
+            style="letter-spacing: 1px"
+          >
+            Only US$12 / month
+          </div>
+          <button
+            @click="showPaymentForm = true"
+            class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click"
+          >
+            Subscribe
+          </button>
+        </div>
+        <div v-else class="text-bold mt-6 text-green-300 text-center text-3xl">
+          You are currently subscribed to Codecaine.
+        </div>
+      </div>
+    </div>
+    <div v-show="showPaymentForm">
+      <div
+        ref="cardElement"
+        style="border: 1px solid #ccc; padding: 12px; border-radius: 6px"
+      ></div>
+      <p style="color: red">{{ errorMessage }}</p>
+      <button :disabled="processing" @click="handleSubmit">
+        {{ processing ? "付款中..." : "刷卡付款" }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { loadStripe } from "@stripe/stripe-js";
-import api from "../config/api";
+import { useAuthStore } from "@/stores/useAuthStore";
+import api from "@/config/api";
 
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLIC_KEY // 替換成你的 Stripe 公鑰
-);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const authStore = useAuthStore();
 const cardElement = ref(null);
 const errorMessage = ref("");
 const processing = ref(false);
+const showPaymentForm = ref(false);
 
 let stripe;
 let elements;
@@ -105,3 +138,10 @@ onMounted(async () => {
   await setupStripeElements();
 });
 </script>
+
+<style scoped>
+.shake-on-click:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+</style>
