@@ -175,14 +175,10 @@
   const isLiked = ref(false);
  
   const checkFavorite = async () => {
-    console.log("isLoggedIn.value",isLoggedIn.value)
-    console.log("currentWork.value.id",currentWork.value.id)
     if(!isLoggedIn.value || !currentWork.value?.id) return;
     try {
       const res = await api.get(`/api/favorites/check/${currentWork.value.id}`);
       isLiked.value = res.data.liked;
-      console.log("res.data",res.data)
-      console.log(isLiked.value);
     } catch (err) {
       console.log.err("checkFavorite error", error)
     }
