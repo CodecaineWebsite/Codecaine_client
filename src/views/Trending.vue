@@ -92,19 +92,19 @@ const loadPage = async (pageNum) => {
 
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("已載入到最後一頁");
+      console.log("Loaded the last page.");
     }
 
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`已載入第 ${pageNum} 頁`, newCards);
+    console.log(`Loaded page ${pageNum}`, newCards);
 
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
     alert("System error. Please try again later")
-    console.error(`無法取得第 ${pageNum} 頁資料`, err);
+    console.error(`Failed to retrieve data for page ${pageNum}`, err);
     hasMore.value = false; // 防止一直 retry
   }
 };

@@ -133,16 +133,16 @@ const loadPage = async (pageNum) => {
     const newCards = res.data.results || [];
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("已載入到最後一頁，不會再載入更多");
+      console.log("Loaded the last page.");
     }
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`已載入第 ${pageNum} 頁`, newCards);
+    console.log(`Loaded page ${pageNum}`, newCards);
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    console.error(`無法取得第 ${pageNum} 頁資料`, err);
+    console.error(`Failed to retrieve data for page ${pageNum}`, err);
     hasMore.value = false;
   }
 };
