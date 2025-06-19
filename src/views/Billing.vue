@@ -11,7 +11,7 @@
         </ul>
         <div
           class="flex justify-end items-center gap-3 mt-4 mb-2"
-          v-if="authStore.userProfile?.is_pro"
+          v-if="!authStore.userProfile.isPro"
         >
           <div
             class="text-lg font-extrabold text-yellow-400 drop-shadow bg-zinc-800 rounded px-3 py-1"
@@ -31,21 +31,36 @@
         </div>
       </div>
     </div>
-    <div v-show="showPaymentForm">
+    <div
+      v-show="showPaymentForm"
+      class="bg-gray-700 rounded-lg p-4 animate-fade-in-up shadow-lg transition-all duration-500"
+    >
       <div
         ref="cardElement"
-        style="border: 1px solid #ccc; padding: 12px; border-radius: 6px"
+        style="
+          border: 1px solid #ccc;
+          padding: 12px;
+          border-radius: 6px;
+          background: #23272f;
+        "
       ></div>
-      <p style="color: red">{{ errorMessage }}</p>
-      <button :disabled="processing" @click="handleSubmit">
-        {{ processing ? "付款中..." : "刷卡付款" }}
-      </button>
+      <p class="text-red-400 mt-2 min-h-[24px]">{{ errorMessage }}</p>
+      <div class="flex flex-row items-center justify-end mt-5 gap-4">
+        <p class="text-xl text-gray-100 m-0">Total Charge: $12</p>
+        <button
+          :disabled="processing"
+          @click="handleSubmit"
+          class="cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-black hover:text-white font-bold py-2 px-4 rounded transition-colors duration-300 shake-on-click disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {{ processing ? "付款中..." : "刷卡付款" }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuthStore } from "@/stores/useAuthStore";
 import api from "@/config/api";
@@ -67,34 +82,39 @@ async function createPaymentIntent() {
   try {
     const res = await api.post("api/stripe/create-payment-intent", {
       amount: 10000, // 例如 1000 = 1000分 = 1000台幣（你改成想要的金額）
+      userId: authStore.userProfile.id, // 把用戶ID帶給後端
     });
     clientSecret.value = res.data.clientSecret;
+    setupStripeElements(clientSecret.value);
   } catch (err) {
     errorMessage.value = "建立付款意向失敗：" + err.message;
   }
 }
 
-async function setupStripeElements() {
+async function setupStripeElements(clientSecret) {
   stripe = await stripePromise;
-  elements = stripe.elements();
 
-  const style = {
-    base: {
-      color: "#ffffff", // 白字
-      fontSize: "16px",
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-      "::placeholder": {
-        color: "#cccccc", // 淺灰 placeholder
-      },
-    },
-    invalid: {
-      color: "#ff6b6b", // 錯誤紅色
+  // 自訂 appearance 設定
+  const appearance = {
+    theme: "night",
+    labels: "floating",
+    variables: {
+      colorPrimary: "#00D1B2", // 主要顏色
+      colorBackground: "#1f1f1f", // 背景色
+      colorText: "#ffffff", // 字體顏色
+      borderRadius: "8px",
+      fontSizeBase: "16px",
     },
   };
 
-  card = elements.create("card", { style: style });
-  card.mount(cardElement.value);
+  // 將 appearance 與 clientSecret 一起傳入
+  elements = stripe.elements({ clientSecret, appearance });
 
+  // 建立卡片元件
+  card = elements.create("payment");
+  card.mount(cardElement.value); // Vue 的 ref 綁定 DOM 元素
+
+  // 錯誤監聽
   card.on("change", (event) => {
     errorMessage.value = event.error ? event.error.message : "";
   });
@@ -104,42 +124,43 @@ async function handleSubmit() {
   processing.value = true;
   errorMessage.value = "";
 
-  const { error, paymentIntent } = await stripe.confirmCardPayment(
-    clientSecret.value,
-    {
-      payment_method: {
-        card: card,
-      },
-    }
-  );
+  const { error } = await stripe.confirmPayment({
+    elements,
+    confirmParams: {
+      return_url: `http://localhost:5173/${encodeURIComponent(
+        authStore.userProfile.username
+      )}/caines/showcase`,
+    },
+  });
 
   if (error) {
     errorMessage.value = error.message;
     processing.value = false;
-  } else if (paymentIntent && paymentIntent.status === "succeeded") {
-    alert("付款成功！開始開通會員...");
-
-    // 這裡呼叫你的後端開通會員 API
-    try {
-      const rest = await api.post("/api/stripe/activate-pro", {
-        paymentIntentId: paymentIntent.id,
-      });
-      alert("已成為高級會員！");
-      console.log("會員開通成功：", rest.data);
-    } catch (err) {
-      alert("會員開通失敗：" + err.message);
-    }
-    processing.value = false;
   }
+  // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
 }
 
-onMounted(async () => {
-  await createPaymentIntent();
-  await setupStripeElements();
+watch(showPaymentForm, async (val) => {
+  if (val) {
+    await createPaymentIntent();
+  }
 });
 </script>
 
 <style scoped>
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
 .shake-on-click:active {
   transform: translateY(3px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
