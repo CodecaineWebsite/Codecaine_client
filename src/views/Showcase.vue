@@ -36,14 +36,15 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import api from "@/config/api";
+
 const router = useRouter();
 const route = useRoute();
-const goAllCaines = () => {
-  router.push({ name: "cainesPublic" });
-};
 const pens = ref([]);
 const isLoading = ref(true);
 
+const goAllCaines = () => {
+  router.push({ name: "cainesPublic" });
+};
 const fetchCaines = async () => {
   isLoading.value = true;
   try {
