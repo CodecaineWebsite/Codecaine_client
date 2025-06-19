@@ -39,11 +39,15 @@
   const isPro = ref(true);
   const isEdited = ref(false);
 
-  // 判斷是否為作者（computed 自動反應）
+  // 判斷是否為作者
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
     const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
+
+    // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
+    if (!authorId) return true;
+
     return isNewWork || userId === authorId;
   });
 
@@ -97,6 +101,7 @@
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
+    navListVisible.value = false;
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
