@@ -44,6 +44,7 @@ const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
 const tags = ref(currentWork.value.tags)
+// const htmlPreprocessor = ref(currentWork.value.htmlPreprocessor)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -54,6 +55,10 @@ watch(links, (newLinks) => {
 }, { deep: true })
 
 watch(tags, (newTags) => {
+  workStore.updateTags(newTags)
+}, { deep: true })
+
+watch(currentWork.htmlPreprocessor, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
 
@@ -109,7 +114,7 @@ const addTag = async() => {
   await workStore.saveCurrentWork();
   
 }
-console.log(currentWork.value.tags)
+console.log(currentWork.value, 'header')
 
 const removeTag = async(index) => {
   tags.value.splice(index, 1)
@@ -157,7 +162,7 @@ const removeTag = async(index) => {
                   <option value="Haml">Haml</option>
                   <option value="Markdown">Markdown</option>
                   <option value="Slim">Slim</option>
-                  <option value="Pug">Pug</option>
+                  <option value="pug">Pug</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
                   <Arrow class="w-3 h-3 fill-current rotate-180"/>

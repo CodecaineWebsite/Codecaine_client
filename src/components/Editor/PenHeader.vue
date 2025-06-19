@@ -98,6 +98,7 @@
   const handleWorkSave = async () => {
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
+      navListVisible.value = false;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
       handleSave()

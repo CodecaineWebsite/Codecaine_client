@@ -18,11 +18,15 @@ function revokeOldUrl() {
   }
 }
 
+// const updateIframe = debounce(() => {
+//   revokeOldUrl()
+//   const newBlobUrl = props.updatePreviewSrc()
+//   iframeSrc.value = newBlobUrl
+//   currentBlobUrl = newBlobUrl
+// }, 2000)
+
 const updateIframe = debounce(() => {
-  revokeOldUrl()
-  const newBlobUrl = props.updatePreviewSrc()
-  iframeSrc.value = newBlobUrl
-  currentBlobUrl = newBlobUrl
+  iframeSrc.value = props.updatePreviewSrc(props.currentWork)
 }, 2000)
 
 function runPreview() {
@@ -46,12 +50,14 @@ watch(
   { deep: true }
 )
 
-onUnmounted(() => {
-  revokeOldUrl()
-})
+// onUnmounted(() => {
+//   revokeOldUrl()
+// })
 
 </script>
 
 <template>
-  <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame"></iframe>
+  <!-- <iframe :srcdoc="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame"></iframe> -->
+  <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame" />
+
 </template>
