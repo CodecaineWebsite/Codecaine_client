@@ -14,7 +14,7 @@
           v-if="!authStore.userProfile?.is_pro"
         >
           <div
-            class="text-lg font-extrabold text-yellow-400 drop-shadow bg-zinc-800 rounded px-3 py-1"
+            class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-1"
             style="letter-spacing: 1px"
           >
             Only US$12 / month
@@ -72,15 +72,13 @@ const errorMessage = ref("");
 const processing = ref(false);
 const showPaymentForm = ref(false);
 const clientSecret = ref("");
-
 let stripe;
 let elements;
 let card;
-
 const createPaymentIntent = async () => {
   try {
     const res = await api.post("api/stripe/create-payment-intent", {
-      amount: 1200,
+      amount: 12000,
       userId: authStore.userProfile.id,
     });
     clientSecret.value = res.data.clientSecret;
