@@ -14,7 +14,7 @@
 import { useRoute } from 'vue-router'
 import PenDetailPageHeader from '@/components/PenDetails/PenDetailPageHeader.vue'
 import PenDetailPreviewIframe from '@/components/PenDetails/PenDetailPreviewIframe.vue'
-import PenDetailContent from '@/components/PenDetails/PenDetailContent.vue'
+import PenDetailContent from '@/components/PenDetails/PenContent.vue'
 
 const route = useRoute()
 const penId = route.params.pen_id
