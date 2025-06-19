@@ -25,6 +25,7 @@
           >
             Subscribe
           </button>
+          <button @click="subscribe">訂閱高級會員</button>
         </div>
         <div v-else class="text-bold mt-6 text-green-300 text-center text-3xl">
           You are currently subscribed to Codecaine.
@@ -138,6 +139,19 @@ async function handleSubmit() {
   }
   // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
 }
+
+const subscribe = async () => {
+  const res = await api.post("/api/stripe/create-subscription-session", {
+    userId: authStore.userProfile.id,
+    username: authStore.userProfile.username,
+  });
+
+  if (res.data.url) {
+    window.location.href = res.data.url; // 跳轉到 Stripe Checkout
+  } else {
+    alert("建立訂閱失敗");
+  }
+};
 
 watch(showPaymentForm, async (val) => {
   if (val) {

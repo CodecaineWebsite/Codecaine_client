@@ -151,13 +151,20 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
+const productSub = () => {
+  if (route.query.subscribed === "true") {
+    alert("訂閱成功！感謝支持 🎉");
+  } else if (route.query.subscribed === "false") {
+    alert("訂閱已取消或尚未完成");
+  }
+};
 const checkSubscription = () => {
   const status = route.query.redirect_status;
   if (status === "succeeded") {
-    alert("🎉 Subscription successful! Welcome to Pro features!");
-    // You can also show a toast, modal, or update the store here
+    alert("🎉 訂閱成功，歡迎使用 Pro 功能！");
+    // 你也可以顯示 toast、彈窗或寫入 store
   } else if (status === "failed") {
-    alert("❌ Payment failed, please try again later.");
+    alert("❌ 付款失敗，請稍後再試");
   }
 };
 const countFollowers = async () => {
@@ -219,6 +226,7 @@ const fetchUserInfo = async () => {
 };
 
 onMounted(() => {
+  productSub();
   checkSubscription();
   fetchUserInfo();
   countFollowers();
