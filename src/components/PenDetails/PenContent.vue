@@ -30,7 +30,7 @@ const props = defineProps({
       <PenDetailTags :pen="pen" :currentUserId="authStore.user?.uid" />
       <CommentList :penId="pen.id" @close="$emit('close')" />
     </div>
-    <!-- aside：右側 meta 區 -->
+    
     <aside class="meta-section lg:col-start-2 lg:row-span-3 space-y-4">
       <PenShareBox :pen-id="pen.id" :username="pen.username" />
       <PenTimestamps :pen="pen" />

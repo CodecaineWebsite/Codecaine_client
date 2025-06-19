@@ -1,7 +1,5 @@
 <template>
   <section class="px-6 py-4 relative group">
-    <!-- <h2 class="text-orange-500 font-bold mb-4">Trending</h2> -->
-
     <Swiper
       :modules="[Navigation]"
       :observer="true"
@@ -94,7 +92,6 @@ const openedDropdownId = ref(null);
 
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
-  console.log("Swiper instance 初始化完成：", swiper);
 };
 // 載入特定頁數資料
 const loadPage = async (pageNum) => {
@@ -105,18 +102,19 @@ const loadPage = async (pageNum) => {
 
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("🚧 已載入到最後一頁，不會再載入更多");
+      console.log("Loaded the last page.");
     }
 
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`📦 已載入第 ${pageNum} 頁`, newCards);
+    console.log(`Loaded page ${pageNum}`, newCards);
 
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    console.error(`❌ 無法取得第 ${pageNum} 頁資料`, err);
+    alert("System error. Please try again later")
+    console.error(`Failed to retrieve data for page ${pageNum}`, err);
     hasMore.value = false; // 防止一直 retry
   }
 };
@@ -146,6 +144,11 @@ onMounted(async () => {
   await loadPage(1);
   await loadPage(2);
 });
+
+
+// TODO
+// 空資料畫面
+// 載入中畫面
 
 
 function handleDeletePen(deletedId) {
@@ -197,4 +200,5 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
 </script>

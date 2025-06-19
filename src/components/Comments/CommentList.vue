@@ -29,8 +29,8 @@ const loading = ref(false);
 const error = ref("");
 const commentFormRef = ref(null);
 
-const newComment = ref(""); // 新增留言的內容
-const sending = ref(false); // 是否正在發送留言
+const newComment = ref(""); 
+const sending = ref(false); 
 const commentInput = ref(null);
 
 async function insertMention(username) {
@@ -54,9 +54,8 @@ const fetchComments = async () => {
       params: { pen_id: props.penId },
     });
     comments.value = res.data;
-    console.log("留言資料:", comments.value);
   } catch (err) {
-    error.value = "留言載入失敗，請稍後再試";
+    error.value = "Failed to load comments, please try again later.";
     console.error(err);
   } finally {
     loading.value = false;
@@ -65,11 +64,11 @@ const fetchComments = async () => {
 
 const submitComment = async (content) => {
   if (!authStore.user) {
-    error.value = "請先登入後再留言";
+    error.value = "Please log in before leaving a comment.";
     return;
   }
   if (!content.trim()) {
-    error.value = "留言內容不能為空";
+    error.value = "The comment content cannot be empty.";
     return;
   }
   sending.value = true;
@@ -84,11 +83,10 @@ const submitComment = async (content) => {
     error.value = "";
   } catch (err) {
     if (err.response?.status === 429) {
-      error.value = "你留言太快了，請稍後再試～";
+      error.value = "You are commenting too quickly, please try again later.";
     } else {
-      error.value = "留言失敗，請稍後再試";
+      error.value = "Failed to post the comment, please try again later.";
     }
-    console.error("留言失敗：", err);
   } finally {
     sending.value = false;
     setTimeout(() => {
