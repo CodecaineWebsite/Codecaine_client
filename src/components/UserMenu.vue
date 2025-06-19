@@ -54,7 +54,7 @@ onUnmounted(() => {
       @click="toggleMenu" />
     <div
       v-if="showMenu"
-      class="absolute right-0 mt-2 w-56 bg-cc-17 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 overflow-hidden">
+      class="absolute right-0 mt-2 w-56 bg-cc-17 text-cc-1 rounded-md shadow-lg z-50 overflow-hidden">
       <ul class="flex flex-col text-sm">
         <li>
           <button

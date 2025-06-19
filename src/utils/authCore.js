@@ -3,7 +3,6 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
   createUserWithEmailAndPassword,
-  signOut,
 } from "firebase/auth";
 
 export const registerWithEmail = async (auth, email, password) => {
@@ -13,7 +12,6 @@ export const registerWithEmail = async (auth, email, password) => {
     password
   );
   const token = await userCredential.user.getIdToken();
-  await signOut(auth);
   return { user: userCredential.user, token };
 };
 

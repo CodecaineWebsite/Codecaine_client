@@ -1,8 +1,7 @@
 <script setup>
-import { ref, watch, onMounted, defineExpose, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { debounce } from '@/utils/debounce'
 
-// 從 parent 傳入的 props
 const props = defineProps({
   currentWork: Object,
   updatePreviewSrc: Function
@@ -18,33 +17,53 @@ function revokeOldUrl() {
   }
 }
 
-const updateIframe = debounce(() => {
+const autoUpdateIframe = debounce(() => {
+  updateIframe();
+}, 2000)
+
+const updateIframe =() => {
   revokeOldUrl()
   const newBlobUrl = props.updatePreviewSrc()
   iframeSrc.value = newBlobUrl
   currentBlobUrl = newBlobUrl
-}, 2000)
+}
 
 function runPreview() {
   updateIframe()
 }
 defineExpose({ runPreview })
 
-onMounted(() => {
-  if (props.currentWork?.isAutoPreview) {
-    updateIframe()
-  }
-})
+const isFirstRenderDone = ref(false);
 
 watch(
   () => props.currentWork,
-  (newVal) => {
-    if (newVal?.isAutoPreview) {
-      updateIframe()
+  (work) => {
+    if (!work || isFirstRenderDone.value) return;
+
+    if (work.isAutoPreview && work.html) {
+      updateIframe();
+      isFirstRenderDone.value = true;
     }
   },
-  { deep: true }
-)
+  { immediate: true }
+);
+
+watch(
+  () => [
+    props.currentWork?.html,
+    props.currentWork?.css,
+    props.currentWork?.javascript,
+    JSON.stringify(props.currentWork?.cdns || []),
+    JSON.stringify(props.currentWork?.links || []),
+  ],
+  () => {
+    if (!isFirstRenderDone.value) return;
+
+    if (props.currentWork?.isAutoPreview) {
+      autoUpdateIframe();
+    }
+  }
+);
 
 onUnmounted(() => {
   revokeOldUrl()

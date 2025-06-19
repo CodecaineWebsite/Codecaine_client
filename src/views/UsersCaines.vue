@@ -13,9 +13,14 @@
         @click="publicProfile"
         :class="route.name === 'cainesPublic' ? 'text-white' : ''"
       >
-        Public
+        {{
+          route.params.username === authStore.userProfile.username
+            ? "Public"
+            : "All Caines"
+        }}
       </button>
       <button
+        v-if="route.params.username === authStore.userProfile.username"
         class="cursor-pointer hover:text-white"
         @click="privateProfile"
         :class="route.name === 'cainesPrivate' ? 'text-white' : ''"
@@ -37,9 +42,12 @@
 <script setup>
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/useAuthStore";
 
+const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
+
 const showcase = () => {
   router.push(`/${route.params.username}/caines/showcase`);
 };
@@ -53,5 +61,3 @@ const privateProfile = () => {
   router.push(`/${route.params.username}/caines/private`);
 };
 </script>
-
-<style scoped></style>

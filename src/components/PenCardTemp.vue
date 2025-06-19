@@ -1,11 +1,10 @@
 <template>
   <div class="group w-full bg-card-text text-white rounded-lg relative">
-    <!-- 預覽 -->
     <div class="relative aspect-video overflow-hidden rounded-md bg-black">
-      <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          :src="previewIframeUrl"
+          :src="iframeSrc"
+          sandbox="allow-scripts"
           class="w-full h-full border-0"
           loading="lazy"
         ></iframe>
@@ -99,18 +98,7 @@
 
       <!-- 底部統計按鈕 -->
       <div class="flex gap-2 mt-3">
-        <button
-          @click="liked = !liked"
-          class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none"
-        >
-          <span>
-            <HeartIcon
-              class="w-4"
-              :class="liked ? 'fill-cc-red' : 'fill-current'"
-            />
-          </span>
-          <span>{{ liked ? likes + 1 : likes }}</span>
-        </button>
+        <FavoriteBtn :target-pen="workId" />
         <!-- 改成開modal -->
         <button
           @click="openDetailModal"
@@ -132,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 import FolderIcon from "@/components/icons/FolderIcon.vue";
@@ -141,10 +129,14 @@ import CheckIcon from "@/components/icons/CheckIcon.vue";
 import ChatBubbleIcon from "@/components/icons/ChatBubbleIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { useModalStore } from "@/stores/useModalStore";
+import { useWorkStore } from "@/stores/useWorkStore";
 
 const router = useRouter();
 const modalStore = useModalStore();
+const workStore = useWorkStore();
+const { updateCardPreviewSrc } = workStore;
 
 const props = defineProps({
   pen: {
@@ -167,9 +159,18 @@ const isPro = props.pen.isPro || false;
 // 作品預覽
 const previewImageUrl =
   props.pen.imageUrl || "https://picsum.photos/id/684/600/400";
-const previewIframeUrl = `${
-  import.meta.env.VITE_URL_BASE
-}/${userName}/full/${workId}?mode=onlyPreview`; // iframe 的 src 位址範例
+const iframeSrc = ref('')
+const code = {
+  html: props.pen.html_code || "",
+  css: props.pen.css_code || "",
+  javascript: props.pen.js_code || "",
+  cdns: props.resources_js || [],
+  links: props.resources_css || []
+}
+onMounted(async () => {
+  const newBlobUrl = updateCardPreviewSrc(code);
+  iframeSrc.value = newBlobUrl
+})
 
 // 統計資料
 const likes = props.pen.favorites_count;
@@ -185,7 +186,6 @@ const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫�
 
 // 元件狀態
 const menuOpen = ref(false);
-const liked = ref(false);
 
 const goToDetailPage = () => {
   // router.push({ name: 'PenDetail', params: { username: userName, id: workId } });

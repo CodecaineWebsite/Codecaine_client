@@ -10,18 +10,20 @@ const router = createRouter({
       children: [
         {
           path: "",
-          name: "redirect", //沒有name vue會報錯 但可以用 先隨便加個name試試
+          name: "redirect",
           redirect: "/trending",
         },
         {
           path: "your-work",
           name: "your-work",
           component: () => import("../views/YourWork.vue"),
+          meta: { requiresAuth: true },
         },
         {
           path: "following",
           name: "following",
           component: () => import("../views/Following.vue"),
+          meta: { requiresAuth: true },
         },
         {
           path: "trending",
@@ -67,7 +69,7 @@ const router = createRouter({
             {
               path: "caines",
               name: "Profilecaines",
-              component: () => import("../views/usersCaines.vue"),
+              component: () => import("../views/UsersCaines.vue"),
               children: [
                 {
                   path: "",
@@ -89,6 +91,7 @@ const router = createRouter({
                   path: "private",
                   name: "cainesPrivate",
                   component: () => import("../views/Private.vue"),
+                  meta: { requiresPrivate: true },
                 },
                 {
                   path: "loved",
@@ -100,12 +103,12 @@ const router = createRouter({
             {
               path: "following",
               name: "Profilefollowing",
-              component: () => import("../views/usersFollowing.vue"),
+              component: () => import("../views/UsersFollowing.vue"),
             },
             {
               path: "followers",
               name: "Profilefollowers",
-              component: () => import("../views/usersFollowers.vue"),
+              component: () => import("../views/UsersFollowers.vue"),
             },
           ],
         },
@@ -121,11 +124,13 @@ const router = createRouter({
               path: "profile",
               name: "SettingProfile",
               component: () => import("../views/SettingProfile.vue"),
+              meta: { requiresAuth: true },
             },
             {
               path: "account",
               name: "settingAccount",
               component: () => import("../views/SettingAccount.vue"),
+              meta: { requiresAuth: true },
             },
             {
               path: "billing",
@@ -168,9 +173,22 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiresGuest && authStore.idToken) {
-    // 已登入就導回首頁
     return next("/");
   }
+  if (to.meta.requiresAuth && !authStore.idToken) {
+    return next({ path: "/login", query: { redirect: to.fullPath } });
+  }
   next();
-}); //進入signup後 codepne是500頁面 可以再做調整
+});
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresPrivate) {
+    const currentUser = authStore.userProfile?.username;
+    const routeUser = to.params.username;
+    if (currentUser !== routeUser) {
+      return next(`/${to.params.username}/caines`);
+    }
+  }
+  next();
+});
 export default router;
