@@ -56,15 +56,22 @@ const handleResize = () => {
   if (screenWidth.value <= 830) {
     isSidebarOpen.value = false;
   } else {
-    isSidebarOpen.value = true;
+    const stored = localStorage.getItem("sidebarOpen");
+    if (stored !== null) {
+      isSidebarOpen.value = stored === "true";
+    }
   }
 };
 
 watch(screenWidth, () => handleResize());
 
 onMounted(() => {
+  const storedSidebarOpen = localStorage.getItem("sidebarOpen");
+  if (storedSidebarOpen !== null) {
+    isSidebarOpen.value = storedSidebarOpen === "true";
+  }
+  screenWidth.value = window.innerWidth;
   window.addEventListener("resize", handleResize);
-  handleResize();
   isMounted.value = true;
 });
 
