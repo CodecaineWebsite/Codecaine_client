@@ -71,59 +71,47 @@ const cardElement = ref(null);
 const errorMessage = ref("");
 const processing = ref(false);
 const showPaymentForm = ref(false);
+const clientSecret = ref("");
 
 let stripe;
 let elements;
 let card;
 
-const clientSecret = ref(""); // 後端取得的 clientSecret
-
-async function createPaymentIntent() {
+const createPaymentIntent = async () => {
   try {
     const res = await api.post("api/stripe/create-payment-intent", {
-      amount: 10000, // 例如 1000 = 1000分 = 1000台幣（你改成想要的金額）
-      userId: authStore.userProfile.id, // 把用戶ID帶給後端
+      amount: 1200,
+      userId: authStore.userProfile.id,
     });
     clientSecret.value = res.data.clientSecret;
     setupStripeElements(clientSecret.value);
   } catch (err) {
     errorMessage.value = "建立付款意向失敗：" + err.message;
   }
-}
-
-async function setupStripeElements(clientSecret) {
+};
+const setupStripeElements = async (clientSecret) => {
   stripe = await stripePromise;
-
-  // 自訂 appearance 設定
   const appearance = {
     theme: "night",
     labels: "floating",
     variables: {
-      colorPrimary: "#00D1B2", // 主要顏色
-      colorBackground: "#1f1f1f", // 背景色
-      colorText: "#ffffff", // 字體顏色
+      colorPrimary: "#00D1B2",
+      colorBackground: "#1f1f1f",
+      colorText: "#ffffff",
       borderRadius: "8px",
       fontSizeBase: "16px",
     },
   };
-
-  // 將 appearance 與 clientSecret 一起傳入
   elements = stripe.elements({ clientSecret, appearance });
-
-  // 建立卡片元件
   card = elements.create("payment");
-  card.mount(cardElement.value); // Vue 的 ref 綁定 DOM 元素
-
-  // 錯誤監聽
+  card.mount(cardElement.value);
   card.on("change", (event) => {
     errorMessage.value = event.error ? event.error.message : "";
   });
-}
-
-async function handleSubmit() {
+};
+const handleSubmit = async () => {
   processing.value = true;
   errorMessage.value = "";
-
   const { error } = await stripe.confirmPayment({
     elements,
     confirmParams: {
@@ -132,13 +120,11 @@ async function handleSubmit() {
       )}/caines/showcase`,
     },
   });
-
   if (error) {
     errorMessage.value = error.message;
     processing.value = false;
   }
-  // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
-}
+};
 
 watch(showPaymentForm, async (val) => {
   if (val) {
