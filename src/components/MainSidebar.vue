@@ -23,7 +23,7 @@
       <div class="absolute top-4 -right-4 z-10 h-full">
         <div
           @click="toggleSidebar"
-          class="sidebar-dragger absolute w-3 right-[5px] -top-[15px] h-full opacity-25 -z-10 cursor-pointer text-zinc-950"
+          class="sidebar-dragger absolute w-3 right-[5px] -top-[15px] h-full opacity-25 -z-10 cursor-pointer text-zinc-950 animate-dragger-up"
           :class="{ hidden: isSidebarOpen }"
         ></div>
       </div>
@@ -259,5 +259,18 @@ h1 {
   100% {
     background-position: -200px 0;
   }
+}
+
+@keyframes dragger-up {
+  0% {
+    top: -15px;
+  }
+  100% {
+    top: -40px;
+  }
+}
+.animate-dragger-up {
+  animation: dragger-up 1.2s linear infinite;
+  position: absolute;
 }
 </style>
