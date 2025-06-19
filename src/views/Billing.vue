@@ -11,7 +11,7 @@
         </ul>
         <div
           class="flex justify-end items-center gap-3 mt-4 mb-2"
-          v-if="!authStore.userProfile.isPro"
+          v-if="!authStore.userProfile?.is_pro"
         >
           <div
             class="text-lg font-extrabold text-yellow-400 drop-shadow bg-zinc-800 rounded px-3 py-1"
