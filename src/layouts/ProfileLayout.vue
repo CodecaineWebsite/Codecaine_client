@@ -140,6 +140,7 @@ const userInfo = ref(null);
 const authStore = useAuthStore();
 const userFollowers = ref(0);
 const userFollowings = ref(0);
+
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -150,6 +151,15 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
+const checkSubscription = () => {
+  const status = route.query.redirect_status;
+  if (status === "succeeded") {
+    alert("🎉 Subscription successful! Welcome to Pro features!");
+    // You can also show a toast, modal, or update the store here
+  } else if (status === "failed") {
+    alert("❌ Payment failed, please try again later.");
+  }
+};
 const countFollowers = async () => {
   try {
     const res = await api.get(
@@ -176,7 +186,6 @@ const countFollowing = async () => {
     return 0;
   }
 };
-
 const fetchUserInfo = async () => {
   try {
     const res = await api.get(`/api/users/${route.params.username}`);
@@ -210,6 +219,7 @@ const fetchUserInfo = async () => {
 };
 
 onMounted(() => {
+  checkSubscription();
   fetchUserInfo();
   countFollowers();
   countFollowing();
