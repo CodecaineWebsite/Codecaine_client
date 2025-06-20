@@ -17,146 +17,120 @@
             class="text-lg font-extrabold text-yellow-400 drop-shadow bg-zinc-800 rounded px-3 py-1"
             style="letter-spacing: 1px"
           >
-            Only US$12 / month
+            Only NT$120 / month
           </div>
           <button
-            @click="showPaymentForm = true"
+            @click="subscribe"
             class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click"
           >
             Subscribe
           </button>
-          <button @click="subscribe">訂閱高級會員</button>
-        </div>
-        <div v-else class="text-bold mt-6 text-green-300 text-center text-3xl">
-          You are currently subscribed to Codecaine.
         </div>
       </div>
     </div>
     <div
-      v-show="showPaymentForm"
-      class="bg-gray-700 rounded-lg p-4 animate-fade-in-up shadow-lg transition-all duration-500"
+      v-if="authStore.userProfile?.is_pro && subscriptionInfo"
+      class="relative rounded-xl p-8 mt-6 mb-6 bg-gradient-to-br from-yellow-200 via-pink-200 to-purple-200 shadow-xl overflow-hidden animate-fade-in-up"
     >
+      <!-- Confetti Icon -->
       <div
-        ref="cardElement"
-        style="
-          border: 1px solid #ccc;
-          padding: 12px;
-          border-radius: 6px;
-          background: #23272f;
-        "
-      ></div>
-      <p class="text-red-400 mt-2 min-h-[24px]">{{ errorMessage }}</p>
-      <div class="flex flex-row items-center justify-end mt-5 gap-4">
-        <p class="text-xl text-gray-100 m-0">Total Charge: $12</p>
-        <button
-          :disabled="processing"
-          @click="handleSubmit"
-          class="cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-black hover:text-white font-bold py-2 px-4 rounded transition-colors duration-300 shake-on-click disabled:opacity-60 disabled:cursor-not-allowed"
+        class="absolute left-4 top-4 text-4xl pointer-events-none select-none"
+      >
+        🎉
+      </div>
+      <div
+        class="absolute right-4 top-4 text-4xl pointer-events-none select-none"
+      >
+        🎊
+      </div>
+      <h2
+        class="text-2xl font-bold mb-4 text-center text-purple-900 drop-shadow"
+      >
+        Payment
+      </h2>
+      <div>
+        <div
+          class="font-extrabold mt-6 text-green-700 text-center text-3xl drop-shadow animate-fade-in-up"
         >
-          {{ processing ? "付款中..." : "刷卡付款" }}
+          You are currently subscribed to Codecaine.
+        </div>
+        <div class="text-center mt-2 text-lg text-gray-800 font-semibold">
+          Start Date: {{ subscriptionInfo.subscribed_at || "—" }}<br />
+          <template v-if="subscriptionInfo.cancel_at_period_end">
+            Subscription will expire on
+            {{ subscriptionInfo.current_period_end || "—" }} (cancellation
+            requested)
+          </template>
+          <template v-else>
+            Next billing date: {{ subscriptionInfo.current_period_end || "—" }}
+          </template>
+        </div>
+        <button
+          v-if="!subscriptionInfo.cancel_at_period_end"
+          @click="unSubscribe"
+          class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click"
+        >
+          Cancel Subscription
         </button>
+        <div v-else class="mt-4 text-yellow-700 text-center font-bold">
+          You have requested cancellation. Your subscription will end on the
+          expiration date.
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-import { loadStripe } from "@stripe/stripe-js";
-import api from "../config/api";
+import { ref, onMounted } from "vue";
+import { useAuthStore } from "@/stores/useAuthStore";
+import api from "@/config/api";
 
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLIC_KEY // 替換成你的 Stripe 公鑰
-);
-const cardElement = ref(null);
-const errorMessage = ref("");
-const processing = ref(false);
+const authStore = useAuthStore();
 
-let stripe;
-let elements;
-let card;
+const subscriptionInfo = ref(null);
 
-const clientSecret = ref(""); // 後端取得的 clientSecret
-
-async function createPaymentIntent() {
+const checkPendingPayment = async () => {
   try {
-    const res = await api.post("api/stripe/create-payment-intent", {
-      amount: 10000, // 例如 1000 = 1000分 = 1000台幣（你改成想要的金額）
-      userId: authStore.userProfile.id, // 把用戶ID帶給後端
-    });
-    clientSecret.value = res.data.clientSecret;
-    setupStripeElements(clientSecret.value);
-  } catch (err) {
-    errorMessage.value = "建立付款意向失敗：" + err.message;
-  }
-}
-
-async function setupStripeElements(clientSecret) {
-  stripe = await stripePromise;
-
-  // 自訂 appearance 設定
-  const appearance = {
-    theme: "night",
-    labels: "floating",
-    variables: {
-      colorPrimary: "#00D1B2", // 主要顏色
-      colorBackground: "#1f1f1f", // 背景色
-      colorText: "#ffffff", // 字體顏色
-      borderRadius: "8px",
-      fontSizeBase: "16px",
-    },
-  };
-
-  // 將 appearance 與 clientSecret 一起傳入
-  elements = stripe.elements({ clientSecret, appearance });
-
-  // 建立卡片元件
-  card = elements.create("payment");
-  card.mount(cardElement.value); // Vue 的 ref 綁定 DOM 元素
-
-  // 錯誤監聽
-  card.on("change", (event) => {
-    errorMessage.value = event.error ? event.error.message : "";
-  });
-}
-
-async function handleSubmit() {
-  processing.value = true;
-  errorMessage.value = "";
-
-  const { error } = await stripe.confirmPayment({
-    elements,
-    confirmParams: {
-      return_url: `http://localhost:5173/${encodeURIComponent(
-        authStore.userProfile.username
-      )}/caines/showcase`,
-    },
-  });
-
-  if (error) {
-    errorMessage.value = error.message;
-    processing.value = false;
+    const res = await api.get("/api/stripe/subscription-status");
+    subscriptionInfo.value = res.data;
+  } catch (error) {
+    alert("Failed to fetch subscription status.");
+    subscriptionInfo.value = null;
   }
   // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
-}
+};
 
 const subscribe = async () => {
-  const res = await api.post("/api/stripe/create-subscription-session", {
-    userId: authStore.userProfile.id,
-    username: authStore.userProfile.username,
-  });
+  try {
+    const res = await api.post("/api/stripe/create-subscription-session", {
+      userId: authStore.userProfile.id,
+      username: authStore.userProfile.username,
+    });
 
-  if (res.data.url) {
-    window.location.href = res.data.url; // 跳轉到 Stripe Checkout
-  } else {
-    alert("建立訂閱失敗");
+    if (res.data.url) {
+      window.location.href = res.data.url;
+    } else {
+      alert("Failed to create subscription session.");
+    }
+  } catch (error) {
+    alert("Failed to create subscription session.");
   }
 };
 
-watch(showPaymentForm, async (val) => {
-  if (val) {
-    await createPaymentIntent();
+const unSubscribe = async () => {
+  try {
+    const res = await api.put("/api/stripe/cancel-subscription", {
+      userId: authStore.userProfile.id,
+    });
+    await checkPendingPayment();
+  } catch (error) {
+    alert("Failed to cancel subscription.");
   }
+};
+
+onMounted(() => {
+  checkPendingPayment();
 });
 </script>
 
