@@ -1,18 +1,18 @@
 <template>
-  <tr class="group border-b border-gray-300 hover:bg-gray-900">
-    <td class="py-2 px-4">
+  <tr class="group">
+    <td class="py-1 px-2 max-w-[50%] text-cc-link bg-cc-18">
       <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
     </td>
-    <td class="py-2 px-4">
+    <td class="py-1 px-2 bg-cc-18">
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="opacity-0 group-hover:opacity-100 transition"
+        class="opacity-0 group-hover:opacity-100 transition "
       />
     </td>
-    <td class="py-2 px-4">{{ formatDate(pen.created_at) }}</td>
-    <td class="py-2 px-4">{{ formatDate(pen.updated_at) }}</td>
-    <td class="py-2 px-4 flex">
-      <div class="flex gap-2 mt-3">
+    <td class="py-1 px-2 text-cc-9 bg-cc-18">{{ formatDate(pen.created_at) }}</td>
+    <td class="py-1 px-2 text-cc-9 bg-cc-18">{{ formatDate(pen.updated_at) }}</td>
+    <td class="py-1 px-2 bg-cc-18 align-middle">
+      <div class="flex gap-2 items-center justify-center">
         <FavoriteBtn :target-pen="workId" />
         <PenCommentButton
           :work-id="workId"
@@ -22,7 +22,7 @@
         <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </td>
-    <td class="py-2 px-4">
+    <td class="py-1 px-2 bg-cc-18">
       <div class="flex items-center gap-2">
         <PenCardDropdown
           :is-open="isOpen"

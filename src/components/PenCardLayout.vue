@@ -16,15 +16,15 @@
   </div>
   <!-- table layout -->
   <div v-else-if="props.mode === 'table'">
-    <table class="table-auto w-full border-collapse">
+    <table class="table-auto w-full border-collapse border-spacing-2 md:border-spacing-4 text-left">
       <thead>
-        <tr class="text-left border-b border-gray-400">
-          <th class="py-2 px-4">Title</th>
-          <th class="py-2 px-4"></th>
-          <th class="py-2 px-4">Created</th>
-          <th class="py-2 px-4">Last Updated</th>
-          <th class="py-2 px-4">Stats</th>
-          <th class="py-2 px-4"></th>
+        <tr class="text-left">
+          <th class="py-1 px-2 w-[45%]">Title</th>
+          <th class="py-1 px-2 w-[20px]"></th>
+          <th class="py-1 px-2">Created</th>
+          <th class="py-1 px-2">Last Updated</th>
+          <th class="py-1 px-2 text-center">Stats</th>
+          <th class="py-1 px-2"></th>
         </tr>
       </thead>
       <tbody>
