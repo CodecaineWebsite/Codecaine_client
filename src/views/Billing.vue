@@ -12,18 +12,15 @@
           </ul>
           <div
             class="flex justify-end items-center gap-3 mt-4 mb-2"
-            v-if="!authStore.userProfile?.is_pro"
-          >
+            v-if="!authStore.userProfile?.is_pro">
             <div
               class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-1"
-              style="letter-spacing: 1px"
-            >
+              style="letter-spacing: 1px">
               Only NT$120 / month
             </div>
             <button
               @click="subscribe"
-              class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click"
-            >
+              class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click">
               Subscribe
             </button>
           </div>
@@ -31,28 +28,23 @@
       </div>
       <div
         v-if="authStore.userProfile?.is_pro && subscriptionInfo"
-        class="relative rounded-xl p-8 mt-6 mb-6 bg-gradient-to-br from-yellow-200 via-pink-200 to-purple-200 shadow-xl overflow-hidden animate-fade-in-up"
-      >
+        class="relative rounded-xl p-8 mt-6 mb-6 bg-gradient-to-br from-yellow-200 via-pink-200 to-purple-200 shadow-xl overflow-hidden animate-fade-in-up">
         <!-- Confetti Icon -->
         <div
-          class="absolute left-4 top-4 text-4xl pointer-events-none select-none"
-        >
+          class="absolute left-4 top-4 text-4xl pointer-events-none select-none">
           🎉
         </div>
         <div
-          class="absolute right-4 top-4 text-4xl pointer-events-none select-none"
-        >
+          class="absolute right-4 top-4 text-4xl pointer-events-none select-none">
           🎊
         </div>
         <h2
-          class="text-2xl font-bold mb-4 text-center text-purple-900 drop-shadow"
-        >
+          class="text-2xl font-bold mb-4 text-center text-purple-900 drop-shadow">
           Payment
         </h2>
         <div>
           <div
-            class="font-extrabold mt-6 text-green-700 text-center text-3xl drop-shadow animate-fade-in-up"
-          >
+            class="font-extrabold mt-6 text-green-700 text-center text-3xl drop-shadow animate-fade-in-up">
             You are currently subscribed to Codecaine.
           </div>
           <div class="text-center mt-2 text-lg text-gray-800 font-semibold">
@@ -70,11 +62,12 @@
           <button
             v-if="!subscriptionInfo.cancel_at_period_end"
             @click="unSubscribe"
-            class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click"
-          >
+            class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
             Cancel Subscription
           </button>
-          <div v-else class="mt-4 text-yellow-700 text-center font-bold">
+          <div
+            v-else
+            class="mt-4 text-yellow-700 text-center font-bold">
             You have requested cancellation. Your subscription will end on the
             expiration date.
           </div>
@@ -107,7 +100,6 @@ const checkPendingPayment = async () => {
 const subscribe = async () => {
   try {
     const res = await api.post("/api/stripe/create-subscription-session", {
-      userId: authStore.userProfile.id,
       username: authStore.userProfile.username,
     });
 
@@ -123,9 +115,7 @@ const subscribe = async () => {
 
 const unSubscribe = async () => {
   try {
-    const res = await api.put("/api/stripe/cancel-subscription", {
-      userId: authStore.userProfile.id,
-    });
+    const res = await api.put("/api/stripe/cancel-subscription");
     await checkPendingPayment();
   } catch (error) {
     alert("Failed to cancel subscription.");
