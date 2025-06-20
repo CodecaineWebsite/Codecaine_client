@@ -153,18 +153,9 @@ const Followers = () => {
 
 const productSub = () => {
   if (route.query.subscribed === "true") {
-    alert("訂閱成功！感謝支持 🎉");
+    alert("Subscription successful! Thank you for your support 🎉");
   } else if (route.query.subscribed === "false") {
-    alert("訂閱已取消或尚未完成");
-  }
-};
-const checkSubscription = () => {
-  const status = route.query.redirect_status;
-  if (status === "succeeded") {
-    alert("🎉 訂閱成功，歡迎使用 Pro 功能！");
-    // 你也可以顯示 toast、彈窗或寫入 store
-  } else if (status === "failed") {
-    alert("❌ 付款失敗，請稍後再試");
+    alert("Subscription was cancelled or not completed");
   }
 };
 const countFollowers = async () => {
@@ -227,7 +218,6 @@ const fetchUserInfo = async () => {
 
 onMounted(() => {
   productSub();
-  checkSubscription();
   fetchUserInfo();
   countFollowers();
   countFollowing();
