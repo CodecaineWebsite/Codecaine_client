@@ -56,7 +56,7 @@
           </div>
           <div
             v-if="message && message.target === 'avatar'"
-            class="px-4 py-2 rounded text-sm font-medium"
+            class="px-4 py-2 rounded text-sm font-medium mt-2"
             :class="
               message.type === 'success'
                 ? 'bg-green-500 text-white'
