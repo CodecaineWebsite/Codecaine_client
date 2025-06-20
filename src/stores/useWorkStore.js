@@ -12,9 +12,9 @@ export const useWorkStore = defineStore('work', () => {
     html: "",
     css: "",
     javascript: "",
-    htmlPreprocessor: "", // or "pug", "slim"
-    cssPreprocessor: "",  // or "sass", "scss"
-    jsPreprocessor: "",   // or "typescript"
+    htmlPreprocessor: "none", // or "pug", "slim"
+    cssPreprocessor: "none",  // or "sass", "scss"
+    jsPreprocessor: "none",   // or "typescript"
     links:[],
     cdns: [], 
     viewsCount: "",
@@ -71,9 +71,9 @@ export const useWorkStore = defineStore('work', () => {
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
-        htmlPreprocessor: data.html_preprocessor || "none",
-        cssPreprocessor: data.css_preprocessor || "none",
-        jsPreprocessor: data.js_preprocessor || "none",
+        htmlPreprocessor: data.html_preprocessor?.trim() || "none",
+        cssPreprocessor: data.css_preprocessor?.trim() || "none",
+        jsPreprocessor: data.js_preprocessor?.trim() || "none",
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
         cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
@@ -222,111 +222,111 @@ export const useWorkStore = defineStore('work', () => {
       javascript,
       cdns,
       links,
-      htmlPreprocessor,
-      cssPreprocessor,
-      jsPreprocessor,
     } = currentWork.value;
-  
+    const htmlPreprocessor = currentWork.value.htmlPreprocessor || 'none';
+    const cssPreprocessor = currentWork.value.cssPreprocessor || 'none';
+    const jsPreprocessor = currentWork.value.jsPreprocessor || 'none';
+
     const safeJS = (javascript || '') + '\n//# sourceURL=user-code.js';
     const escapeScript = (code) => code.replace(/<\/script>/gi, '<\\/script>');
     const cdnTags = (cdns || []).map(url => `<script src="${url}"></script>`).join('\n');
-const linkTags = (links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n');
+    const linkTags = (links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n');
 
-const previewHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  ${cdnTags}
-  ${linkTags}
-  ${htmlPreprocessor === 'pug' ? `<script src="https://cdn.jsdelivr.net/npm/pug-standalone@3.0.4/pug.min.js"></script>` : ''}
-  ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
-    ? `<script src="https://cdn.jsdelivr.net/npm/sass@1.89.2/sass.dart.min.js"></script>` : ''}
-  ${jsPreprocessor === 'typescript'
-    ? `<script src="https://cdn.jsdelivr.net/npm/typescript@5.0.0/lib/typescript.min.js"></script>` : ''}
-  <style id="user-style">${cssPreprocessor === 'none' ? css : ''}</style>
-</head>
-<body>
-  <div id="user-html">Loading preview...</div>
+    const previewHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      ${cdnTags}
+      ${linkTags}
+      ${htmlPreprocessor === 'pug' ? `<script src="https://cdn.jsdelivr.net/npm/pug-standalone@3.0.4/pug.min.js"></script>` : ''}
+      ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
+        ? `<script src="https://cdn.jsdelivr.net/npm/sass@1.89.2/sass.dart.min.js"></script>` : ''}
+      ${jsPreprocessor === 'typescript'
+        ? `<script src="https://cdn.jsdelivr.net/npm/typescript@5.0.0/lib/typescript.min.js"></script>` : ''}
+      <style id="user-style">${cssPreprocessor === 'none' ? css : ''}</style>
+    </head>
+    <body>
+      <div id="user-html">Loading preview...</div>
 
-  <script>
-    window.__runPreview__ = async function () {
-      const htmlPreprocessor = "${htmlPreprocessor}";
-      const cssPreprocessor = "${cssPreprocessor}";
-      const jsPreprocessor = "${jsPreprocessor}";
-      const html = ${JSON.stringify(html)};
-      const css = ${JSON.stringify(css)};
-      const js = ${JSON.stringify(escapeScript(safeJS))};
+      <script>
+        window.__runPreview__ = async function () {
+          const htmlPreprocessor = "${htmlPreprocessor}";
+          const cssPreprocessor = "${cssPreprocessor}";
+          const jsPreprocessor = "${jsPreprocessor}";
+          const html = ${JSON.stringify(html)};
+          const css = ${JSON.stringify(css)};
+          const js = ${JSON.stringify(escapeScript(safeJS))};
 
-      const waitForLib = async (key) => {
-        while (!window[key]) {
-          await new Promise(r => setTimeout(r, 50));
-        }
-      };
-
-      if (htmlPreprocessor === "pug") await waitForLib("pug");
-      if (cssPreprocessor === "sass" || cssPreprocessor === "scss") await waitForLib("Sass");
-      if (jsPreprocessor === "typescript") await waitForLib("ts");
-
-      try {
-        // HTML
-        if (htmlPreprocessor === "pug") {
-          try {
-            document.getElementById("user-html").innerHTML = window.pug.render(html || '');
-          } catch(e) {
-            document.getElementById("user-html").textContent = "Pug 渲染錯誤: " + e.message;
-          }
-        } else {
-          document.getElementById("user-html").innerHTML = html;
-        }
-
-        // CSS
-        if (cssPreprocessor === "sass" || cssPreprocessor === "scss") {
-          window.Sass.compile(css, {
-            indentedSyntax: cssPreprocessor === 'sass'
-          }, (result) => {
-            if (result.status === 0) {
-              document.getElementById("user-style").textContent = result.text;
-            } else {
-              console.error("Sass Error:", result);
+          const waitForLib = async (key) => {
+            while (!window[key]) {
+              await new Promise(r => setTimeout(r, 50));
             }
-          });
-        }
+          };
 
-        // JS
-        let finalJS = js;
-        if (jsPreprocessor === "typescript") {
-          finalJS = window.ts.transpile(js);
-        }
+          if (htmlPreprocessor === "pug") await waitForLib("pug");
+          if (cssPreprocessor === "sass" || cssPreprocessor === "scss") await waitForLib("Sass");
+          if (jsPreprocessor === "typescript") await waitForLib("ts");
 
-        // 用 Blob 方式插入 JS
-        const blob = new Blob([finalJS], { type: 'application/javascript' });
-        const script = document.createElement("script");
-        script.src = URL.createObjectURL(blob);
-        script.onload = () => URL.revokeObjectURL(script.src);
-        script.onerror = () => console.error("JS blob failed to load");
-        document.body.appendChild(script);
+          try {
+            // HTML
+            if (htmlPreprocessor === "pug") {
+              try {
+                document.getElementById("user-html").innerHTML = window.pug.render(html || '');
+              } catch(e) {
+                document.getElementById("user-html").textContent = "Pug 渲染錯誤: " + e.message;
+              }
+            } else {
+              document.getElementById("user-html").innerHTML = html;
+            }
 
-      } catch (e) {
-        console.error("Preview Error:", e);
-      }
-    };
-  </script>
+            // CSS
+            if (cssPreprocessor === "sass" || cssPreprocessor === "scss") {
+              window.Sass.compile(css, {
+                indentedSyntax: cssPreprocessor === 'sass'
+              }, (result) => {
+                if (result.status === 0) {
+                  document.getElementById("user-style").textContent = result.text;
+                } else {
+                  console.error("Sass Error:", result);
+                }
+              });
+            }
 
-  <script>
-    window.addEventListener('load', () => {
-      if (typeof window.__runPreview__ === 'function') {
-        window.__runPreview__();
-      }
-    });
-  </script>
-</body>
-</html>
-`.trim();
+            // JS
+            let finalJS = js;
+            if (jsPreprocessor === "typescript") {
+              finalJS = window.ts.transpile(js);
+            }
 
-const blob = new Blob([previewHTML], { type: 'text/html' });
-return URL.createObjectURL(blob);
+            // 用 Blob 方式插入 JS
+            const blob = new Blob([finalJS], { type: 'application/javascript' });
+            const script = document.createElement("script");
+            script.src = URL.createObjectURL(blob);
+            script.onload = () => URL.revokeObjectURL(script.src);
+            script.onerror = () => console.error("JS blob failed to load");
+            document.body.appendChild(script);
+
+          } catch (e) {
+            console.error("Preview Error:", e);
+          }
+        };
+      </script>
+
+      <script>
+        window.addEventListener('load', () => {
+          if (typeof window.__runPreview__ === 'function') {
+            window.__runPreview__();
+          }
+        });
+      </script>
+    </body>
+    </html>
+    `.trim();
+
+    const blob = new Blob([previewHTML], { type: 'text/html' });
+    return URL.createObjectURL(blob);
 
   };
   
@@ -356,9 +356,9 @@ return URL.createObjectURL(blob);
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
-      htmlPreprocessor: newWorkData.htmlPreprocessor || '',
-      cssPreprocessor: newWorkData.cssPreprocessor || '',
-      jsPreprocessor: newWorkData.jsPreprocessor || '',
+      html_preprocessor: newWorkData.htmlPreprocessor || "none",
+      css_preprocessor: newWorkData.cssPreprocessor || "none",
+      js_preprocessor: newWorkData.jsPreprocessor || "none",
       view_mode: newWorkData.view_mode,
       is_autosave: newWorkData.isAutoSave ?? false,
       is_autopreview: newWorkData.isAutoPreview ?? true,
@@ -387,9 +387,9 @@ return URL.createObjectURL(blob);
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
-        htmlPreprocessor: currentWork.value.htmlPreprocessor || '',
-        cssPreprocessor: currentWork.value.cssPreprocessor || '',
-        jsPreprocessor: currentWork.value.jsPreprocessor || '',
+        html_preprocessor: currentWork.value.htmlPreprocessor || '',
+        css_preprocessor: currentWork.value.cssPreprocessor || '',
+        js_preprocessor: currentWork.value.jsPreprocessor || '',
         view_mode: currentWork.value.view_mode,
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,

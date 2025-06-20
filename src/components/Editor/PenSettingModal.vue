@@ -41,7 +41,7 @@ const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
 const tags = ref(currentWork.value.tags)
-// const htmlPreprocessor = ref(currentWork.value.htmlPreprocessor)
+const htmlPreprocessor = ref(currentWork.value.htmlPreprocessor)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -55,10 +55,15 @@ watch(tags, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
 
+watch(htmlPreprocessor, (newHtml) => {
+  workStore.updateTags(newHtml)
+}, { deep: true })
+
 const activeTab = ref(props.selectedTab)
 const cdnInput = ref('')
 const linkInput = ref('')
 const tagInput = ref('')
+const htmlInput = ref('')
 const srcDoc = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
@@ -147,10 +152,10 @@ const removeTag = async(index) => {
                   id="htmlPreprocessor"
                   v-model="currentWork.htmlPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="none" selected>None</option>
-                  <option value="Haml">Haml</option>
-                  <option value="Markdown">Markdown</option>
-                  <option value="Slim">Slim</option>
+                  <option value="none">None</option>
+                  <!-- <option value="haml">Haml</option> -->
+                  <!-- <option value="markdown">Markdown</option> -->
+                  <option value="slim">Slim</option>
                   <option value="pug">Pug</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
@@ -196,8 +201,8 @@ const removeTag = async(index) => {
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
                   <option value="none" selected>None</option>
                   <!-- <option value="Less">Less</option> -->
-                  <option value="SCSS">SCSS</option>
-                  <option value="Sass">Sass</option>
+                  <option value="scss">SCSS</option>
+                  <option value="sass">Sass</option>
                   <!-- <option value="Stylus">Stylus</option> -->
                   <!-- <option value="PostCSS">PostCSS</option> -->
                 </select>

@@ -72,7 +72,12 @@ watch(
 </script>
 
 <template>
-  <!-- <iframe :srcdoc="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame"></iframe> -->
-  <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame" />
+  <!-- <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame" /> -->
+  <iframe
+  :src="iframeSrc"
+  sandbox="allow-scripts allow-same-origin"
+  class="h-full w-full"
+  title="Preview Frame"
+/>
 
 </template>
