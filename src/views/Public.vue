@@ -1,10 +1,11 @@
 <template>
   <div class="content mt-6">
+    <ViewModeChange @update:viewMode="viewMode = $event" class="mb-6" />
     <PenCardLayout
       v-if="!isLoading && pens.length > 0"
       :key="pens.length"
       :pens="pens"
-      mode="grid"
+      :mode="viewMode"
       @pen-clicked="modalStore.openPenDetailModal($event)"
     />
     <div
@@ -32,12 +33,14 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
+import ViewModeChange from "@/components/ViewModeChange.vue";
 import api from "@/config/api";
+
 const router = useRouter();
 const route = useRoute();
+const viewMode = ref(localStorage.getItem("cainesViewMode") || "grid");
 const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
-const pageSize = 6;
 const totalPages = ref(0);
 const isLoading = ref(true);
 
@@ -47,13 +50,13 @@ const fetchCaines = async () => {
     const res = await api.get(
       `/api/usersCaines/${route.params.username}/public`,
       {
-        params: { page: page.value, pageSize },
+        params: { page: page.value, view: viewMode.value },
       }
     );
     pens.value = res.data.results || [];
-    totalPages.value = Math.ceil(res.data.total / pageSize);
+    totalPages.value = res.data.totalPages || 0;
   } catch (error) {
-    console.error("❌ Failed to load Caines:", error);
+    console.error("Failed to load Caines:", error);
     pens.value = [];
   } finally {
     isLoading.value = false;
@@ -63,6 +66,19 @@ const fetchCaines = async () => {
 watch(page, (newPage) => {
   router.replace({
     query: { ...route.query, page: newPage },
+  });
+  fetchCaines();
+});
+
+watch(viewMode, (newViewMode) => {
+  localStorage.setItem("cainesViewMode", newViewMode);
+  page.value = 1;
+  router.replace({
+    query: {
+      ...route.query,
+      page: 1,
+      viewMode: newViewMode,
+    },
   });
   fetchCaines();
 });

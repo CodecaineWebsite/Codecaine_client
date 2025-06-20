@@ -17,8 +17,8 @@ export const useWorkStore = defineStore('work', () => {
     jsPreprocessor: "",   // or "typescript"
     links:[],
     cdns: [], 
-    views_count: "",
-    view_mode: "center",
+    viewsCount: "",
+    viewMode: "center",
     isAutoSave: true,
     isAutoPreview: true,
     isPrivate: false,
@@ -27,10 +27,10 @@ export const useWorkStore = defineStore('work', () => {
   const currentId = ref('');
   const works = ref([])
   const updateCDNs = (newCDNs) => {
-    currentWork.value.resources_js = newCDNs
+    currentWork.value.cdns = newCDNs
   }
   const updateLinks = (newLinks) => {
-  currentWork.value.resources_css = newLinks
+  currentWork.value.links = newLinks
   }
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
@@ -44,15 +44,26 @@ export const useWorkStore = defineStore('work', () => {
   }
 
   // 改變currentId function
-  const handleCurrentIdChange = async(id) => {
-    if(id) {
-      currentId.value = id
-      const data = await fetchWorkFromId(id)
-      api.put(`/api/pens/${id}/view`).catch(err => {
-      console.warn('Failed to increase views count:', err)
-    });
+  const handleCurrentIdChange = async (id) => {
+    if (!id) {
+      currentId.value = "";
+      currentWork.value = workTemplate;
+      return;
+    }
+  
+    currentId.value = id;
+  
+    try {
+      const data = await fetchWorkFromId(id);
+
+      api.put(`/api/pens/${id}/view`).catch((err) => {
+        console.warn('Failed to increase views count:', err);
+      });
+
+      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, resources_js, resources_css, tags, ...rest } = data;
+
       currentWork.value = {
-        ...data,
+        ...rest,
         userName: data.username,
         userId: data.user_id,
         isPro: data.is_pro,
@@ -63,20 +74,19 @@ export const useWorkStore = defineStore('work', () => {
         htmlPreprocessor: data.html_preprocessor || "none",
         cssPreprocessor: data.css_preprocessor || "none",
         jsPreprocessor: data.js_preprocessor || "none",
-        cdns: data.resources_js || [],
-        links: data.resources_css || [],
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
-        tags: data.tags || [],
-        
-      }
-    } else {
-      currentId.value = ""
-      currentWork.value = workTemplate
+        cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
+        links: Array.isArray(data.resources_css) ? data.resources_css : [],
+        tags: Array.isArray(data.tags) ? data.tags : [],
+      };
+    } catch (err) {
+      console.error('Failed to fetch work by ID:', err);
+      // 可加入錯誤處理
     }
-  }
+  };
+  
   // 更新CurrentCode 
-  // todo: 改v-model綁定
   const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
     if (!currentWork.value) return;
@@ -92,7 +102,6 @@ export const useWorkStore = defineStore('work', () => {
   // 開關自動存檔狀態
   const toggleAutoSave = () => {
     currentWork.value.isAutoSave = !currentWork.value.isAutoSave
-    console.log(currentWork.value.isAutoSave);
   }
   // 開關自動更新狀態
   const toggleAutoPreview = () => {
@@ -100,13 +109,13 @@ export const useWorkStore = defineStore('work', () => {
   }
   // 更新作品Preview
   // const updatePreviewSrc = () => {
-  //   const { html, css, javascript, cdns, links, htmlPreprocessor, cssPreprocessor, jsPreprocessor } = currentWork.value;
-
-  //   const rawJS = javascript + '\n//# sourceURL=user-code.js';
+  //   const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
   //   const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-  //   const escapeScript = (code) => code.replace(/<\/script>/gi, '<\\/script>');
-  //   const cdnTags = (cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-  //   const linkTags = (links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
+  //   const cssCode = currentWork.value.css;
+  //   const htmlCode = currentWork.value.html;
+  //   const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
+  //   const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
+  
   //   const previewData = `
   //     <!DOCTYPE html>
   //     <html lang="en">
@@ -120,142 +129,92 @@ export const useWorkStore = defineStore('work', () => {
   //         font-src 'self' https: data:;
   //         connect-src 'self' https:;
   //         frame-src https:;
-  //         worker-src 'self' blob: https:;
   //       ">
   //       ${cdnTags}
   //       ${linkTags}
-
-  //       ${htmlPreprocessor === 'pug'
-  //         ? `<script src="https://unpkg.com/pug@2.0.4/pug.min.js" onload="window.__PUG_READY__ = true;"></script>`
-  //         : ''}
-  //       ${htmlPreprocessor === 'slim' ? '<script src="https://cdn.jsdelivr.net/npm/slim-js@5.0.10/dist/index.legacy.min.js"></script>' : ''}
-  //       ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss' ? '<script src="https://cdn.jsdelivr.net/npm/sass@1.89.2/sass.dart.min.js"></script>' : ''}
-  //       ${jsPreprocessor === 'typescript' ? '<script src="https://cdn.jsdelivr.net/npm/typescript@5.8.3/lib/typescript.min.js"></script>' : ''}
-
-  //       <style id="user-style">${cssPreprocessor === 'none' ? css : ''}</style>
+  //       <style>
+  //         body {
+  //           background-color: white;
+  //           margin: 0;
+  //         }
+  //         ${cssCode}
+  //       </style>
   //       <script type="module">
-  //         const waitForPug = async () => {
-  //           if (${JSON.stringify(htmlPreprocessor)} !== 'pug') return;
-  //           console.log('Waiting for pug to load...');
-  //           while (!window.__PUG_READY__) {
-  //             await new Promise(r => setTimeout(r, 50));
-  //           }
-  //           console.log('Pug loaded!');
+  //         const originalConsole = {
+  //           log: console.log,
+  //           error: console.error,
+  //           warn: console.warn,
+  //           info: console.info
   //         };
-  //         console.log("typeof pug:", typeof pug);
-          
-  //         const preprocess = async () => {
-  //           try {
-  //             await waitForPug();
-  //             // HTML Preprocessor
-  //             console.log("htmlPreprocessor:", ${JSON.stringify(htmlPreprocessor)});
-  //             console.log("html:", ${JSON.stringify(html)});
-  //             console.log("Using HTML preprocessor:", "${htmlPreprocessor}");
-  //             console.log("Using CSS preprocessor:", "${cssPreprocessor}");
-  //             console.log("Using JS preprocessor:", "${jsPreprocessor}");
-
-  //             ${htmlPreprocessor === 'pug'
-  //               ? `document.getElementById("user-html").innerHTML = pug.render(${JSON.stringify(html)});`
-  //               : htmlPreprocessor === 'slim'
-  //               ? `const { renderSlim } = window.slimWASM;
-  //                 const slimResult = await renderSlim(${JSON.stringify(html)});
-  //                 document.getElementById("user-html").innerHTML = slimResult;`
-  //               : `document.getElementById("user-html").innerHTML = ${JSON.stringify(html)};`
-  //             }
-
-  //             // CSS Preprocessor
-  //             ${
-  //               cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
-  //                 ? `Sass.compile(${JSON.stringify(css)}, {
-  //                     indentedSyntax: ${cssPreprocessor === 'sass'}
-  //                   }, result => {
-  //                     if (result.status !== 0) {
-  //                       console.error('Sass Error:', result);
-  //                       return;
-  //                     }
-  //                     document.getElementById("user-style").textContent = result.text;
-  //                   });`
-  //                 : ''
-  //             }
-
-              
-  //             // JS Preprocessor
-  //             let scriptCode = '';
-  //             ${
-  //               jsPreprocessor === 'typescript'
-  //                 ? `scriptCode = ts.transpile(${JSON.stringify(safeJS)});`
-  //                 : `scriptCode = ${JSON.stringify(safeJS)};`
-  //             }
-  //             const blob = new Blob([scriptCode], { type: 'application/javascript' });
-  //             const script = document.createElement('script');
-  //             script.src = URL.createObjectURL(blob);
-  //             script.type = 'text/javascript';
-  //             script.onload = () => URL.revokeObjectURL(script.src);
-  //             script.onerror = () => {
-  //               window.parent.postMessage({
-  //                 type: 'log',
-  //                 message: 'Script loading error',
-  //                 level: 'error'
-  //               }, '*');
-  //             };
-  //             document.body.appendChild(script);
-  //           } catch (err) {
-  //             console.error('Preprocess error:', err);
-  //           }
-
-  //           const originalConsole = {
-  //             log: console.log,
-  //             error: console.error,
-  //             warn: console.warn,
-  //             info: console.info
-  //           };
-    
-  //           ['log', 'error', 'warn', 'info'].forEach(method => {
-  //             console[method] = (...args) => {
-  //               window.parent.postMessage({
-  //                 type: 'log',
-  //                 message: args.map(arg =>
-  //                   typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-  //                 ).join(' '),
-  //                 level: method
-  //               }, '*');
-  //               originalConsole[method](...args);
-  //             };
-  //           });
-    
-  //           window.onerror = function(message, source, lineno, colno, error) {
-  //             const errorMsg = error
-  //               ? \`\${error.name}: \${error.message}\`
-  //               : message;
+  
+  //         ['log', 'error', 'warn', 'info'].forEach(method => {
+  //           console[method] = (...args) => {
   //             window.parent.postMessage({
   //               type: 'log',
-  //               message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
-  //               level: 'error'
+  //               message: args.map(arg =>
+  //                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+  //               ).join(' '),
+  //               level: method
   //             }, '*');
-  //             return true;
+  //             originalConsole[method](...args);
   //           };
-            
-  //           window.addEventListener('unhandledrejection', function(event) {
-  //             window.parent.postMessage({
-  //               type: 'log',
-  //               message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
-  //               level: 'error'
-  //               }, '*');
-  //             });
-  //           };
-  //           preprocess();
-
-  //       </script>
+  //         });
+  
+  //         window.onerror = function(message, source, lineno, colno, error) {
+  //           const errorMsg = error
+  //             ? \`\${error.name}: \${error.message}\`
+  //             : message;
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
+  //             level: 'error'
+  //           }, '*');
+  //           return true;
+  //         };
+  
+  //         window.addEventListener('unhandledrejection', function(event) {
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
+  //             level: 'error'
+  //           }, '*');
+  //         });
+  
+  //         const code = ${JSON.stringify(safeJS)};
+  //         const blob = new Blob([code], { type: 'application/javascript' });
+  //         const blobUrl = URL.createObjectURL(blob);
+  
+  //         const script = document.createElement('script');
+  //         script.type = 'module';
+  //         script.src = blobUrl;
+  //         script.onload = () => URL.revokeObjectURL(blobUrl);
+  //         script.onerror = () => {
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: 'Script loading error',
+  //             level: 'error'
+  //           }, '*');
+  //         };
+  
+  //         document.head.appendChild(script);
+  //       <\/script>
   //     </head>
   //     <body>
-  //       <div id="user-html"></div>
+  //       ${htmlCode}
   //     </body>
   //     </html>
   //   `.trim();
-
-  //   return previewData
-
+  
+  //   const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+  //   const blobUrl = URL.createObjectURL(blob);
+  //   if (window.currentPreviewBlob) {
+  //     URL.revokeObjectURL(window.currentPreviewBlob);
+  //   }
+  //   window.currentPreviewBlob = blobUrl;
+  //   return blobUrl;
   // };
+
+  
   const updatePreviewSrc = () => {
     const {
       html,

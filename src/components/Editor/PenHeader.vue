@@ -1,9 +1,10 @@
 <script setup>
-	import { provide, ref, watch, nextTick, computed } from 'vue';
+	import { provide, ref, watch, nextTick, computed} from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
+  import api from "@/config/api";
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
   import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
@@ -38,12 +39,16 @@
   const isPro = ref(true);
   const isEdited = ref(false);
 
-  // 判斷是否為作者（computed 自動反應）
+  // 判斷是否為作者
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
-    const workUserId = currentWork.value?.user_id;
+    const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
-    return isNewWork || userId === workUserId;
+
+    // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
+    if (!authorId) return true;
+
+    return isNewWork || userId === authorId;
   });
 
   // 初始化 userName
@@ -68,10 +73,10 @@
       currentWork.value.javascript,
       currentWork.value.cdns,
       currentWork.value.links,
-      currentWork.value.view_mode,
+      currentWork.value.viewMode,
       currentWork.value.isAutoSave,
       currentWork.value.isAutoPreview,
-      currentWork.value.is_private,
+      currentWork.value.isPrivate,
       currentWork.value.tags,
     ],
     () => {
@@ -96,6 +101,7 @@
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
+    navListVisible.value = false;
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
       navListVisible.value = false;
@@ -137,7 +143,7 @@
   const selectedLayout = ref(layoutOptions[1]);
   const selectLayout = (layout) => {
     selectedLayout.value = layout
-    currentWork.value.view_mode = layout.id // 回寫 store
+    currentWork.value.viewMode = layout.id // 回寫 store
     layoutOptionVisible.value = false
   }
 
@@ -169,6 +175,54 @@
   }
 
   defineExpose({ toggleSetting, handleWorkAutoSave });
+
+  // 收藏功能
+
+  const isLiked = ref(false);
+ 
+  const checkFavorite = async () => {
+    if(!isLoggedIn.value || !currentWork.value?.id) return;
+    try {
+      const res = await api.get(`/api/favorites/check/${currentWork.value.id}`);
+      isLiked.value = res.data.liked;
+    } catch (err) {
+      console.log.err("checkFavorite error", error)
+    }
+  }
+
+  const toggleFavorite = async () => {
+    if (!isLoggedIn.value) {
+      isLoginModalShow.value = true;
+      router.push({ path: route.path, query: { modal: "login"}})
+      return;
+    }
+
+    try {
+      if(!isLiked.value) {
+        const res = await api.post(`/api/favorites/`, {
+          pen_id:currentWork.value.id,
+        });
+        isLiked.value = true;
+      } else {
+        const res = await api.delete(`/api/favorites`,{
+          data: {
+            pen_id: currentWork.value.id,
+          }
+        });
+        isLiked.value = false;
+      }
+    } catch(err) {
+      console.error("toggleFavorite error", err);
+    }
+  }
+
+  watch(
+    () => currentWork.value?.id,
+    (newId) => {
+      if (newId) checkFavorite();
+    },
+    { immediate: true }
+  );
 </script>
 
 <template>
@@ -204,9 +258,12 @@
       </div>
 
       <div class="flex items-center gap-1 md:gap-2 mr-2 md:mr-3 ">
-        <button v-if="isLoggedIn" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
-          <div class="h-7 flex">
-            <Like class="w-4 "/>
+        <button v-if="isLoggedIn"
+        @click="toggleFavorite" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer">
+          <div class="h-7 flex items-center">
+            <Like 
+            class="w-4" 
+            :class="isLiked ? 'fill-cc-red' : 'fill-current'"/>
           </div>
         </button>
 
@@ -349,12 +406,12 @@
             </div>
           </button>
           <div v-if="layoutOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleLayout"></div>
-          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 py-3 rounded-lg border-4 border-gray-800">
+          <div v-if="layoutOptionVisible" class="absolute z-50 bg-[#2C303A] top-12 right-0 pt-3 pb-1 rounded-lg border-4 border-gray-800">
             <div class="px-3 text-white">
               <span>Change View</span>
             </div>
-            <div class="flex justify-center align-middle py-3">
-              <div class="flex justify-center align-middle py-3 ">
+            <div class="flex justify-center align-middle py-2">
+              <div class="flex justify-center align-middle py-1">
                 <label
                   v-for="option in layoutOptions" :key="option.id" class="border-2 border-[#444857] w-20 flex justify-center h-12 editorSmallButton-hover-bgc   hover:cursor-pointer" :class="{ 'rounded-l-sm': option.id === 'left', 'rounded-r-sm': option.id === 'right', 'bg-[#444857]': selectedLayout.id === option.id }"
                 >
@@ -366,7 +423,7 @@
             </div>
             <ul
               class="relative flex flex-col rounded-sm right-0 bg-[#2C303A] text-white w-65 justify-between text-sm p-1"
-              v-if="currentWork.user_id"
+              v-if="currentWork.id"
             >
               <li
                 class="flex py-1 px-5 justify-between transition duration-300"

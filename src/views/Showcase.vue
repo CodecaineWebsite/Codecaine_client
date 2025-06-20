@@ -36,14 +36,15 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import api from "@/config/api";
+
 const router = useRouter();
 const route = useRoute();
-const goAllCaines = () => {
-  router.push({ name: "cainesPublic" });
-};
 const pens = ref([]);
 const isLoading = ref(true);
 
+const goAllCaines = () => {
+  router.push({ name: "cainesPublic" });
+};
 const fetchCaines = async () => {
   isLoading.value = true;
   try {
@@ -52,7 +53,7 @@ const fetchCaines = async () => {
     );
     pens.value = res.data.results || [];
   } catch (error) {
-    console.error("❌ Failed to load Caines:", error);
+    console.error("Failed to load Caines:", error);
     pens.value = [];
   } finally {
     isLoading.value = false;

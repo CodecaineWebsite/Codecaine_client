@@ -5,7 +5,6 @@
   import HTMLIcon from '../assets/html.vue';
   import CSSIcon from '../assets/css.vue';
   import JSIcon from '../assets/js.vue';
-
   import EditorSmallButton from '../components/Editor/EditorSmallButton.vue';
   import Editor from '@/components/Editor/Editor.vue';
   import EditorPreview from '@/components/Editor/EditorPreview.vue';
@@ -13,11 +12,10 @@
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
   import { debounce } from '@/utils/debounce';
-
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
   import { useAuthStore } from '@/stores/useAuthStore';
-
+  import { useHandleSave } from '@/utils/handleWorkSave';
   import { useRoute, useRouter } from 'vue-router'
 
   const route = useRoute();
@@ -26,6 +24,26 @@
   const authStore = useAuthStore();
   const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
+  const { handleSave } = useHandleSave();
+
+  const debouncedSave = debounce(() => {
+    handleSave()
+  }, 300)
+
+  const handleKeydown = (e) => {
+    const isMac = navigator.platform.toUpperCase().includes('MAC')
+    const key = e.key?.toLowerCase()
+
+    const isSaveKey =
+      (isMac && e.metaKey && key === 's') ||
+      (!isMac && e.ctrlKey && key === 's')
+
+    if (isSaveKey) {
+      e.preventDefault()
+      e.stopPropagation()
+      debouncedSave()
+    }
+  }
 
   onMounted( async() => {
     await handleCurrentIdChange(route.params.id);
@@ -37,7 +55,13 @@
       };
       await handleInitWork(userInit)
     }
+    window.addEventListener('keydown', handleKeydown, true)
   })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleKeydown, true)
+  })
+
 
   const penHeader = ref(null)
   const htmlCode = ref('');
@@ -95,10 +119,10 @@
       currentWork.value.javascript,
       currentWork.value.cdns,
       currentWork.value.links,
-      currentWork.value.view_mode,
+      currentWork.value.viewMode,
       currentWork.value.isAutoSave,
       currentWork.value.isAutoPreview,
-      currentWork.value.is_private,
+      currentWork.value.isPrivate,
       currentWork.value.tags,
     ],
     () => {
@@ -132,10 +156,10 @@
   ];
   
   const selectedLayout = ref(layoutOptions.find(
-    option => option.id === currentWork.value?.view_mode
+    option => option.id === currentWork.value?.viewMode
   ) || layoutOptions[1])
 
-  watch(() => currentWork.value?.view_mode, (newMode) => {
+  watch(() => currentWork.value?.viewMode, (newMode) => {
     const match = layoutOptions.find(option => option.id === newMode)
     if (match) selectedLayout.value = match
   }, { immediate: true })

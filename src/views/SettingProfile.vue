@@ -169,7 +169,7 @@
           <input
             v-model="profileLinks[idx]"
             type="text"
-            :placeholder="`連結 ${idx + 1}`"
+            :placeholder="`Link ${idx + 1}`"
             class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
             maxlength="100"
           />
@@ -198,11 +198,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/config/api";
 import { useAuthStore } from "@/stores/useAuthStore";
+import api from "@/config/api";
 
 const authStore = useAuthStore();
-
 const avatarUrl = ref("");
 const fileInput = ref(null);
 const fileName = ref("");
@@ -227,13 +226,11 @@ const onAvatarChange = (e) => {
     avatarUrl.value = "";
   }
 };
-
 const clearFile = () => {
   avatarUrl.value = "";
   fileName.value = "";
   if (fileInput.value) fileInput.value.value = "";
 };
-
 const isValidUrl = (url) => {
   if (!url) return true;
   try {
@@ -243,7 +240,6 @@ const isValidUrl = (url) => {
     return false;
   }
 };
-
 const saveProfile = async (target = "profile") => {
   if (target === "profile" && !userName.value.trim()) {
     message.value = {
@@ -328,5 +324,3 @@ onMounted(() => {
   }
 });
 </script>
-
-<style scoped></style>

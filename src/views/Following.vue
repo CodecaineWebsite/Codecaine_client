@@ -23,7 +23,9 @@
       </div>
     </div>
     <p
-      v-if="pages.length === 1 && Array.isArray(pages[0]) && pages[0].length === 0"
+      v-if="
+        pages.length === 1 && Array.isArray(pages[0]) && pages[0].length === 0
+      "
       class="text-center text-gray-400 mt-8 text-sm"
     >
       You're not following anyone yet.
@@ -45,7 +47,15 @@
         :key="'group-' + index"
       >
         <div class="grid grid-cols-2 gap-6">
-          <PenCard v-for="card in group" :key="card.id" :pen="card" />
+          <PenCard
+            v-for="pen in group"
+            :key="pen.id"
+            :pen="pen"
+            :is-open="openedDropdownId === pen.id"
+            @delete="handleDeletePen"
+            @privacy-changed="handlePrivacyChanged"
+            @toggle="toggleDropdown"
+          />
         </div>
       </SwiperSlide>
     </Swiper>
@@ -95,14 +105,21 @@
 
 <script setup>
 import api from "../config/api.js";
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthStore } from "@/stores/useAuthStore";
 const authStore = useAuthStore();
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+} from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import PenCard from "@/components/PenCardTemp.vue";
+import PenCard from "@/components/PenCards/PenCard.vue";
 
 const isTop = ref(false);
 
@@ -113,6 +130,8 @@ const currentSort = computed(() => (isTop.value ? "top" : "recent"));
 const atLastPage = ref(false);
 const swiperInstance = ref(null);
 const swiperRef = ref(null);
+
+const openedDropdownId = ref(null);
 
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
@@ -133,16 +152,16 @@ const loadPage = async (pageNum) => {
     const newCards = res.data.results || [];
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("已載入到最後一頁，不會再載入更多");
+      console.log("Loaded the last page.");
     }
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`已載入第 ${pageNum} 頁`, newCards);
+    console.log(`Loaded page ${pageNum}`, newCards);
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    console.error(`無法取得第 ${pageNum} 頁資料`, err);
+    console.error(`Failed to retrieve data for page ${pageNum}`, err);
     hasMore.value = false;
   }
 };
@@ -177,5 +196,55 @@ watch(isTop, async () => {
   hasMore.value = true;
   await loadPage(1);
   await loadPage(2);
+});
+
+function handleDeletePen(deletedId) {
+  const index = props.pens.findIndex((pen) => pen.id === deletedId);
+  if (index !== -1) {
+    props.pens.splice(index, 1);
+  }
+}
+
+function handleClickOutside(event) {
+  // 點擊不是按鈕或選單內容時，關閉 dropdown
+  if (
+    !event.target.closest(".dropdown-toggle") &&
+    !event.target.closest(".dropdown-menu")
+  ) {
+    openedDropdownId.value = null;
+  }
+}
+
+function handlePrivacyChanged({ id, is_private }) {
+  console.log("handlePrivacyChanged", id, is_private);
+  if (props.filter === "private" && !is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
+  }
+  if (props.filter === "public" && is_private) {
+    const index = props.pens.findIndex((pen) => pen.id === id);
+    if (index !== -1) {
+      props.pens.splice(index, 1);
+    }
+  }
+}
+
+function toggleDropdown(id) {
+  if (openedDropdownId.value === id) {
+    // 如果點的是已經開啟的那一筆，就關掉
+    openedDropdownId.value = null;
+  } else {
+    // 否則就打開這一筆
+    openedDropdownId.value = id;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
 });
 </script>
