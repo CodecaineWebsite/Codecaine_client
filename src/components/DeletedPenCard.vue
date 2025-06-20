@@ -30,45 +30,33 @@
       </button>
     </div>
 
-    <!-- Modal -->
-    <div
-      v-if="showDeleteModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-    >
-      <div
-        class="bg-cc-17 border-8 border-cc-red text-cc-1 p-6 rounded-md max-w-sm w-full"
-      >
-        <p class="font-bold mb-2 text-lg">
-          Are you sure you want to PERMANENTLY delete this work?
-        </p>
-        <p class="text-xs text-cc-1 mb-4">
-          “{{ pen.title }}” will be gone forever. Even Codecaine support has no
-          way to get it back. <br />
-          Be sure!
-        </p>
-        <div class="flex text-sm justify-start space-x-2">
-          <button
-            @click="handleDelete"
-            :disabled="deleting"
-            class="bg-cc-red text-white px-4.5 py-2.5 rounded hover:bg-cc-red-dark"
-          >
-            {{ deleting ? "Deleting..." : "Delete" }}
-          </button>
-          <button
-            @click="showDeleteModal = false"
-            class="bg-cc-13 px-4.5 py-2.5 rounded"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+     <ConfirmModal 
+     v-if="showDeleteModal"
+     variant="danger"
+     :confirm-text="'Delete'"
+     :cancelText="'Cancel'"
+     :confirming="deleting"
+     :loadingText="'Deleting...'"
+     @confirm="handleDelete"
+     @cancel="showDeleteModal = false"
+     >
+    <template #title>
+      Are you sure you want to PERMANENTLY delete this work?
+    </template>
+
+    <template #message>
+      <p>
+        “<strong>{{ pen.title }}</strong>” will be gone forever. Even Codecaine support has no
+          way to get it back.<br />Be sure!
+      </p>
+    </template>
+    </ConfirmModal>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
-
-import PensIcon from "./icons/PensIcon.vue";
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
+import PensIcon from "@/components/icons/PensIcon.vue";
 
 defineProps({
   pen: Object, // 單一作品資料
@@ -97,11 +85,11 @@ async function handleRestore() {
     restoring.value = true;
     await emit("restore");
 
-    // 還原成功後可以加 toast 
+    // 還原成功後可以加 toast
     // showToast({ type: "success", message: "Restored!" });
   } catch (err) {
-    alert("An error occurred. Please try again later.")
-    // 還原失敗可以加 toast 
+    alert("An error occurred. Please try again later.");
+    // 還原失敗可以加 toast
     // showToast({ type: "error", message: "Restore failed." });
   } finally {
     restoring.value = false;
