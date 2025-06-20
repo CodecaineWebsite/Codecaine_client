@@ -181,7 +181,7 @@ watch(showModal, (val) => {
               v-model="password"
             />
           </div>
-          <button type="button" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer" @click="handleLogIn">Log In</button>
+          <button type="submit" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer" @click="handleLogIn">Log In</button>
           <a href="#" class="text-slate-400 text-center" @click.prevent="toggleIsForgetPassword">Forget Password?</a>
         </form>
 
