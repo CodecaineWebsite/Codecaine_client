@@ -83,7 +83,7 @@ export const useWorkStore = defineStore('work', () => {
   // 更新CurrentCode 
   const autoSaveTimeout = ref(null);
   const updateCurrentCode = (language, newCode) => {
-    if (!currentWork.value) return;
+    if (!currentWork.value || !currentWork.value.id) return;
     currentWork.value[language] = newCode;
     if (currentWork.value.isAutoSave) {
       // 清掉前一個 debounce
