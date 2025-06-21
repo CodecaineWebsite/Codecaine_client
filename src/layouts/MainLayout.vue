@@ -4,7 +4,6 @@
     class="layout transition-all duration-400 ease-in-out"
     :style="{ gridTemplateColumns: layoutColumns }"
   >
-    <!-- Sidebar：830px 以下隱藏 -->
     <MainSidebar
       class="sidebar"
       v-if="!isCompactScreen"
@@ -19,7 +18,6 @@
 
     <SubFooter class="footer" />
 
-    <!-- Modal 詳細頁 -->
     <PenDetailModal
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
@@ -38,39 +36,42 @@ import MainSidebar from "@/components/MainSidebar.vue";
 import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
 
 const modalStore = useModalStore();
-
-const isMounted = ref(false); // 解決初始化樣式問題
+const isMounted = ref(false);
 const screenWidth = ref(window.innerWidth);
 const isCompactScreen = computed(() => screenWidth.value <= 830);
-
-// Sidebar 狀態：預設一律為 true，並根據寬度調整
 const isSidebarOpen = ref(true);
 
-const layoutColumns = computed(() =>
-  isSidebarOpen.value ? "160px 1fr" : "12px 1fr"
-);
-
-function toggleSidebar() {
+const layoutColumns = computed(() => {
+  if (isCompactScreen.value) {
+    return "1fr";
+  }
+  return isSidebarOpen.value ? "160px 1fr" : "12px 1fr";
+});
+const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
   localStorage.setItem("sidebarOpen", isSidebarOpen.value);
-}
-
+};
 const handleResize = () => {
   screenWidth.value = window.innerWidth;
   if (screenWidth.value <= 830) {
     isSidebarOpen.value = false;
   } else {
-    isSidebarOpen.value = true;
+    const stored = localStorage.getItem("sidebarOpen");
+    if (stored !== null) {
+      isSidebarOpen.value = stored === "true";
+    }
   }
 };
 
 watch(screenWidth, () => handleResize());
 
 onMounted(() => {
+  const storedSidebarOpen = localStorage.getItem("sidebarOpen");
+  if (storedSidebarOpen !== null) {
+    isSidebarOpen.value = storedSidebarOpen === "true";
+  }
+  screenWidth.value = window.innerWidth;
   window.addEventListener("resize", handleResize);
-
-  // 初始化：螢幕寬度超過 830 則預設開啟 sidebar
-  handleResize();
   isMounted.value = true;
 });
 

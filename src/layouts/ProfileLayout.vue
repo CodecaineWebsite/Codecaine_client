@@ -140,6 +140,7 @@ const userInfo = ref(null);
 const authStore = useAuthStore();
 const userFollowers = ref(0);
 const userFollowings = ref(0);
+
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -150,6 +151,13 @@ const Followers = () => {
   router.push(`/${route.params.username}/followers`);
 };
 
+const productSub = () => {
+  if (route.query.subscribed === "true") {
+    alert("Subscription successful! Thank you for your support 🎉");
+  } else if (route.query.subscribed === "false") {
+    alert("Subscription was cancelled or not completed");
+  }
+};
 const countFollowers = async () => {
   try {
     const res = await api.get(
@@ -176,7 +184,6 @@ const countFollowing = async () => {
     return 0;
   }
 };
-
 const fetchUserInfo = async () => {
   try {
     const res = await api.get(`/api/users/${route.params.username}`);
@@ -210,6 +217,7 @@ const fetchUserInfo = async () => {
 };
 
 onMounted(() => {
+  productSub();
   fetchUserInfo();
   countFollowers();
   countFollowing();
