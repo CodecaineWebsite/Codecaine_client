@@ -1,17 +1,27 @@
 <template>
-  <tr class="group">
-    <td class="py-1 px-2 max-w-[50%] text-cc-link bg-cc-18">
+  <tr
+    class="group w-full border-b border-cc-14 bg-cc-18 lg:bg-transparent grid [grid-template-columns:repeat(3,minmax(auto,1fr))_auto] items-center gap-x-2 gap-y-4 px-3 py-2 lg:table-row lg:px-0 lg:py-0 lg:gap-0 lg:border-none"
+  >
+    <td
+      class="col-span-4 lg:table-cell py-1 px-2 text-cc-link bg-cc-18 whitespace-nowrap overflow-hidden truncate"
+    >
       <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
     </td>
-    <td class="py-1 px-2 bg-cc-18">
+    <td class="hidden lg:table-cell py-1 px-2 bg-cc-18 whitespace-nowrap">
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="opacity-0 group-hover:opacity-100 transition "
+        class="opacity-0 group-hover:opacity-100 transition"
       />
     </td>
-    <td class="py-1 px-2 text-cc-9 bg-cc-18">{{ formatDate(pen.created_at) }}</td>
-    <td class="py-1 px-2 text-cc-9 bg-cc-18">{{ formatDate(pen.updated_at) }}</td>
-    <td class="py-1 px-2 bg-cc-18 align-middle">
+    <td class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap">
+      <div class="lg:hidden text-xs">Created on</div>
+      <div>{{ formatDate(pen.created_at) }}</div>
+    </td>
+    <td class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap">
+      <div class="lg:hidden text-xs">Updated on</div>
+      <div>{{ formatDate(pen.updated_at) }}</div>
+    </td>
+    <td class="lg:table-cell py-1 px-2 bg-cc-18 align-middle whitespace-nowrap">
       <div class="flex gap-2 items-center justify-center">
         <FavoriteBtn :target-pen="workId" />
         <PenCommentButton
@@ -22,8 +32,10 @@
         <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </td>
-    <td class="py-1 px-2 bg-cc-18">
-      <div class="flex items-center gap-2">
+    <td
+      class="w-fit lg:w-auto py-1 px-2 lg:table-cell bg-cc-18 whitespace-nowrap"
+    >
+      <div class="w-fit flex items-center gap-2 justify-center">
         <PenCardDropdown
           :is-open="isOpen"
           :is-owner="isOwner"
