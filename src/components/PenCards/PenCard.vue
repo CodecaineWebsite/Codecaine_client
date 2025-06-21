@@ -35,7 +35,7 @@
           <div class="flex-1 min-w-0 mr-2">
             <a
               :href="editorPageLink"
-              class="block font-bold text-base text-white w-full max-w-full overflow-hidden whitespace-nowrap truncate  border border-red-500"
+              class="block font-bold text-base text-white w-full max-w-full overflow-hidden whitespace-nowrap truncate"
             >
               {{ title }}
             </a>
