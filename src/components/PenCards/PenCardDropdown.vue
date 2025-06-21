@@ -8,24 +8,24 @@
     </button>
     <div
       v-if="isOpen"
-      class="dropdown-menu absolute right-0 mt-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
+      class="dropdown-menu absolute right-0 bottom-full mb-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
     >
       <!-- 追蹤 -->
       <button
         v-if="!isOwner"
         @click="handleFollow"
-        class="block w-full px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
+        class="w-full px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
       >
         <CheckIcon />
-        <span v-if="!isFollowing">Follow @{{ userName }}</span>
-        <span v-else>Unfollow @{{ userName }}</span>
+        <span v-if="isFollowing">Unfollow @{{ userName }}</span>
+        <span v-else>Follow @{{ userName }}</span>
       </button>
 
       <!-- 切換公開／私密 -->
       <button
         v-if="isOwner"
         @click="handleTogglePrivacy"
-        class="block w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
+        class="w-full text-left px-4 py-2 hover:bg-cc-13 flex items-center gap-2"
       >
         <component
           :is="isPrivate ? UnlockIcon : LockClosedIcon"
@@ -44,7 +44,7 @@
       <button
         v-if="isOwner"
         @click="handleDelete"
-        class="block w-full text-left px-4 py-2 hover:bg-cc-red flex items-center gap-2"
+        class="w-full text-left px-4 py-2 hover:bg-cc-red flex items-center gap-2"
       >
         <TrashCanIcon class="w-4 fill-current" />
         Delete
@@ -54,7 +54,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
 import CheckIcon from "@/components/icons/CheckIcon.vue";
 import LockClosedIcon from "@/components/icons/LockClosedIcon.vue";
 import UnlockIcon from "@/components/icons/UnlockIcon.vue";
