@@ -123,18 +123,6 @@
       </div>
     </div>
   </div>
-  <ConfirmModal
-    v-if="showErrorModal"
-    variant="warning"
-    :confirm-text="'OK'"
-    :confirming="false"
-    :loadingText="'Processing...'"
-    @confirm="showErrorModal = false">
-    <template #title> Error </template>
-    <template #message>
-      <p>{{ errorMessage }}</p>
-    </template>
-  </ConfirmModal>
 </template>
 
 <script setup>
@@ -143,19 +131,24 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoute } from "vue-router";
 import api from "@/config/api";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
+import { useMsgStore } from "@/stores/useMsgStore";
 
 const authStore = useAuthStore();
 const route = useRoute();
+const msg = useMsgStore();
+
 const showunsubscribeModal = ref(false);
 const confirmName = ref("");
 const subscriptionInfo = ref(null);
-const showErrorModal = ref(false);
-const errorMessage = ref("");
 
 const productSub = () => {
   if (route.query.subscribed === "false") {
-    errorMessage.value = "Failed to create subscription session.";
-    showErrorModal.value = true;
+    msg.open({
+      title: "Error",
+      message: "Failed to create subscription session.",
+      variant: "warning",
+      confirmText: "OK",
+    });
   }
 };
 const checkPendingPayment = async () => {
@@ -163,8 +156,12 @@ const checkPendingPayment = async () => {
     const res = await api.get("/api/stripe/subscription-status");
     subscriptionInfo.value = res.data;
   } catch (error) {
-    errorMessage.value = "Failed to fetch subscription status.";
-    showErrorModal.value = true;
+    msg.open({
+      title: "Error",
+      message: "Failed to fetch subscription status.",
+      variant: "warning",
+      confirmText: "OK",
+    });
     subscriptionInfo.value = null;
   }
 };
@@ -177,11 +174,20 @@ const subscribe = async () => {
     if (res.data.url) {
       window.location.href = res.data.url;
     } else {
-      alert("Failed to create subscription session.");
+      msg.open({
+        title: "Error",
+        message: "Failed to create subscription session.",
+        variant: "warning",
+        confirmText: "OK",
+      });
     }
   } catch (error) {
-    errorMessage.value = "Failed to create subscription session.";
-    showErrorModal.value = true;
+    msg.open({
+      title: "Error",
+      message: "Failed to create subscription session.",
+      variant: "warning",
+      confirmText: "OK",
+    });
   }
 };
 const canConfirmUnsubscribe = computed(() => {
@@ -192,8 +198,12 @@ const unSubscribe = async () => {
     const res = await api.put("/api/stripe/cancel-subscription");
     await checkPendingPayment();
   } catch (error) {
-    errorMessage.value = "Failed to cancel subscription.";
-    showErrorModal.value = true;
+    msg.open({
+      title: "Error",
+      message: "Failed to cancel subscription.",
+      variant: "warning",
+      confirmText: "OK",
+    });
   }
   confirmName.value = "";
 };
