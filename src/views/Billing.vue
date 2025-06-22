@@ -69,22 +69,43 @@
             </button>
             <ConfirmModal
               v-if="showunsubscribeModal"
-              variant="warning"
-              :confirm-text="'Cancel'"
+              variant="danger"
+              :confirm-text="'Confirm'"
               :cancelText="'Cancel'"
               :confirming="false"
               :loadingText="'Cancelling...'"
-              @confirm="unSubscribe"
-              @cancel="showunsubscribeModal = false">
+              @confirm="canConfirmUnsubscribe ? unSubscribe() : null"
+              @cancel="
+                () => {
+                  showunsubscribeModal = false;
+                  confirmName = '';
+                }
+              "
+              :disabled="!canConfirmUnsubscribe">
               <template #title>
                 Are you sure you want to cancel your subscription?
               </template>
 
               <template #message>
                 <p>
+                  Please type
+                  <span class="font-bold text-pink-600">{{
+                    authStore.userProfile?.username
+                  }}</span>
+                  to confirm.
+                  <br />
+                  <input
+                    v-model="confirmName"
+                    type="text"
+                    class="border rounded px-2 py-1 mt-2 text-black bg-white"
+                    placeholder="Enter your username" />
+                </p>
+                <p class="mt-3 text-sm text-white">
                   After cancellation, you will continue to enjoy Pro features
-                  until the end of your current billing period.<br />
-                  You can re-subscribe at any time.<br />
+                  until the end of your current billing period.
+                  <br />
+                  You can re-subscribe at any time.
+                  <br />
                   <span class="text-red-600 font-bold"
                     >This action will not delete your data.</span
                   >
@@ -119,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoute } from "vue-router";
 import api from "@/config/api";
@@ -128,6 +149,7 @@ import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 const authStore = useAuthStore();
 const route = useRoute();
 const showunsubscribeModal = ref(false);
+const confirmName = ref("");
 const subscriptionInfo = ref(null);
 const showErrorModal = ref(false);
 const errorMessage = ref("");
@@ -164,6 +186,9 @@ const subscribe = async () => {
     showErrorModal.value = true;
   }
 };
+const canConfirmUnsubscribe = computed(() => {
+  return confirmName.value === authStore.userProfile?.username;
+});
 const unSubscribe = async () => {
   try {
     const res = await api.put("/api/stripe/cancel-subscription");
@@ -172,6 +197,7 @@ const unSubscribe = async () => {
     errorMessage.value = "Failed to cancel subscription.";
     showErrorModal.value = true;
   }
+  confirmName.value = "";
 };
 
 onMounted(() => {
