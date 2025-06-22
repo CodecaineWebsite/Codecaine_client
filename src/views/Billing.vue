@@ -127,11 +127,9 @@
     v-if="showErrorModal"
     variant="warning"
     :confirm-text="'OK'"
-    :cancelText="'cancel'"
     :confirming="false"
     :loadingText="'Processing...'"
-    @confirm="showErrorModal = false"
-    @cancel="showErrorModal = false">
+    @confirm="showErrorModal = false">
     <template #title> Error </template>
     <template #message>
       <p>{{ errorMessage }}</p>
