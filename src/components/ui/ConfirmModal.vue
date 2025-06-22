@@ -22,6 +22,7 @@
           {{ confirming ? loadingText : confirmText }}
         </button>
         <button
+          v-if="cancelText"
           @click="onCancel"
           class="bg-cc-13 px-4.5 py-2.5 rounded cursor-pointer hover:bg-cc-14 text-cc-1">
           {{ cancelText }}
@@ -40,7 +41,6 @@ const props = defineProps({
   },
   cancelText: {
     type: String,
-    default: "Cancel",
   },
   confirming: {
     type: Boolean,
