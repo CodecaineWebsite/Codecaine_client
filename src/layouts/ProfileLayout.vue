@@ -151,11 +151,12 @@ const Followers = () => {
 
 const productSub = () => {
   if (route.query.subscribed === "true") {
-    msg.title = "Success";
-    msg.message = "Successfully subscribed to Pro features!";
-    msg.variant = "success";
-    msg.confirmText = "OK";
-    msg.show = true;
+    msg.open({
+      title: "Success",
+      message: "Successfully subscribed to Pro features!",
+      variant: "success",
+      confirmText: "OK",
+    });
   }
 };
 const countFollowers = async () => {

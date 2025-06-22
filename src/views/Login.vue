@@ -89,11 +89,6 @@
                 autocomplete="off"
                 class="w-full py-3 px-4 rounded bg-[#b3b4ba] text-black border-none focus:bg-[white] focus:outline-none focus:ring-2 focus:ring-[#38c172] text-base" />
             </div>
-            <p
-              v-if="error"
-              class="text-red-500 mt-4">
-              {{ error }}
-            </p>
             <button
               type="submit"
               class="w-full py-3 bg-[#38c172] rounded text-[#1e1f26] text-base font-medium cursor-pointer transition hover:bg-[#248C46] hover:text-white">
