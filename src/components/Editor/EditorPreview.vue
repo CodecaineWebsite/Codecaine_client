@@ -21,9 +21,9 @@ const autoUpdateIframe = debounce(() => {
   updateIframe();
 }, 2000)
 
-const updateIframe =() => {
+const updateIframe =async() => {
   revokeOldUrl()
-  const newBlobUrl = props.updatePreviewSrc()
+  const newBlobUrl = await props.updatePreviewSrc()
   iframeSrc.value = newBlobUrl
   currentBlobUrl = newBlobUrl
 }
@@ -75,7 +75,7 @@ watch(
   <!-- <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame" /> -->
   <iframe
   :src="iframeSrc"
-  sandbox="allow-scripts allow-same-origin"
+  sandbox="allow-scripts"
   class="h-full w-full"
   title="Preview Frame"
 />

@@ -107,6 +107,97 @@ export const useWorkStore = defineStore('work', () => {
   const toggleAutoPreview = () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
   }
+
+  const SASS_CDN = 'https://unpkg.com/sass.js@0.11.1/dist/sass.sync.umd.js';
+
+  let sassLoadPromise = null;
+  async function loadSass() {
+    if (window.Sass) return;
+    if (sassLoadPromise) return sassLoadPromise;
+
+    console.log('[Load Sass] Start loading');
+
+    sassLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = SASS_CDN;
+      script.onload = () => {
+        console.log('[Load Sass] Script loaded');
+
+        // 保險一點確認 Sass 被註冊
+        if (!window.Sass && typeof Sass !== 'undefined') {
+          window.Sass = Sass;
+          console.log(typeof window.Sass); // ✅ 應該是 "function"
+
+        }
+
+        const waitForSass = () => {
+          if (window.Sass) {
+            console.log('[Load Sass] Sass is available');
+            resolve();
+          } else {
+            setTimeout(waitForSass, 30);
+          }
+        };
+        waitForSass();
+      };
+      script.onerror = () => {
+        console.error('[Load Sass] Load failed');
+        reject(new Error('Failed to load Sass'));
+      };
+      document.body.appendChild(script);
+    });
+
+    return sassLoadPromise;
+  }
+
+
+  
+  // CSS 編譯器函式（支援 sass/scss，未來可擴展）
+  async function compileCSS(code, preprocessor) {
+    if (preprocessor === 'scss' || preprocessor === 'sass') {
+      try {
+        await loadSass(); // 載入 CDN
+        const sass = new window.Sass();
+
+        return await new Promise((resolve, reject) => {
+          sass.compile(code, result => {
+            if (result.status === 0) {
+              resolve(result.text);
+            } else {
+              console.error('[Sass Compile Error]', result);
+              reject(new Error(result.formatted || result.message));
+            }
+          }, {
+            indentedSyntax: preprocessor === 'sass'
+          });
+        });
+      } catch (err) {
+        console.error('[Sass Exception]', err);
+        return `body::before {
+          content: 'Sass Error: ${err.message.replace(/'/g, "\\'")}';
+          color: red;
+          white-space: pre;
+        }`;
+      }
+    }
+
+    return code; // 非 sass/scss，原樣回傳
+  }
+
+
+  // JS 編譯器函式（未實作，保留擴充）
+async function compileJS(code, preprocessor) {
+  // TODO: 未來可加入 typescript、babel 等編譯流程
+  return code;
+}
+
+// HTML 編譯器函式（未實作，保留擴充）
+function compileHTML(code, preprocessor) {
+  // TODO: 例如 pug、slim 等預處理器可放這
+  return code;
+}
+
+
   // 更新作品Preview
   // const updatePreviewSrc = () => {
   //   const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
@@ -213,122 +304,126 @@ export const useWorkStore = defineStore('work', () => {
   //   window.currentPreviewBlob = blobUrl;
   //   return blobUrl;
   // };
+  const updatePreviewSrc = async () => {
+    console.log('[CSS Preprocessor]', currentWork.value.cssPreprocessor);
+    
+    const htmlCode = currentWork.value.html;
+    const cssCode = currentWork.value.css;
+    const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
+    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
+    const compiledCSS = await compileCSS(currentWork.value.css, currentWork.value.cssPreprocessor || 'none');
 
+
+    console.log('[Compiled CSS]', compiledCSS);
+  const cssPreprocessor = currentWork.value.cssPreprocessor || 'none';
+  const jsPreprocessor = currentWork.value.jsPreprocessor || 'none';
+
+  const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n');
+  const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n');
+
+  // 1️⃣ 處理 CSS 編譯（支援 scss/sass）
   
-  const updatePreviewSrc = () => {
-    const {
-      html,
-      css,
-      javascript,
-      cdns,
-      links,
-    } = currentWork.value;
-    const htmlPreprocessor = currentWork.value.htmlPreprocessor || 'none';
-    const cssPreprocessor = currentWork.value.cssPreprocessor || 'none';
-    const jsPreprocessor = currentWork.value.jsPreprocessor || 'none';
 
-    const safeJS = (javascript || '') + '\n//# sourceURL=user-code.js';
-    const escapeScript = (code) => code.replace(/<\/script>/gi, '<\\/script>');
-    const cdnTags = (cdns || []).map(url => `<script src="${url}"></script>`).join('\n');
-    const linkTags = (links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n');
 
-    const previewHTML = `
+  const previewData = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
+        style-src 'self' 'unsafe-inline' https:;
+        img-src 'self' data: blob: https:;
+        font-src 'self' https: data:;
+        connect-src 'self' https:;
+        frame-src https:;
+      ">
       ${cdnTags}
       ${linkTags}
-      ${htmlPreprocessor === 'pug' ? `<script src="https://cdn.jsdelivr.net/npm/pug-standalone@3.0.4/pug.min.js"></script>` : ''}
-      ${cssPreprocessor === 'sass' || cssPreprocessor === 'scss'
-        ? `<script src="https://cdn.jsdelivr.net/npm/sass@1.89.2/sass.dart.min.js"></script>` : ''}
-      ${jsPreprocessor === 'typescript'
-        ? `<script src="https://cdn.jsdelivr.net/npm/typescript@5.0.0/lib/typescript.min.js"></script>` : ''}
-      <style id="user-style">${cssPreprocessor === 'none' ? css : ''}</style>
+      <style id="user-style">${compiledCSS}</style>
+      <style>
+        body {
+          background-color: white;
+          margin: 0;
+        }
+      </style>
+      <script type="module">
+        const originalConsole = {
+          log: console.log,
+          error: console.error,
+          warn: console.warn,
+          info: console.info
+        };
+
+        ['log', 'error', 'warn', 'info'].forEach(method => {
+          console[method] = (...args) => {
+            window.parent.postMessage({
+              type: 'log',
+              message: args.map(arg =>
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+              ).join(' '),
+              level: method
+            }, '*');
+            originalConsole[method](...args);
+          };
+        });
+
+        window.onerror = function(message, source, lineno, colno, error) {
+          const errorMsg = error
+            ? \`\${error.name}: \${error.message}\`
+            : message;
+          window.parent.postMessage({
+            type: 'log',
+            message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
+            level: 'error'
+          }, '*');
+          return true;
+        };
+
+        window.addEventListener('unhandledrejection', function(event) {
+          window.parent.postMessage({
+            type: 'log',
+            message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
+            level: 'error'
+          }, '*');
+        });
+
+        const code = ${JSON.stringify(safeJS)};
+        const blob = new Blob([code], { type: 'application/javascript' });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = blobUrl;
+        script.onload = () => URL.revokeObjectURL(blobUrl);
+        script.onerror = () => {
+          window.parent.postMessage({
+            type: 'log',
+            message: 'Script loading error',
+            level: 'error'
+          }, '*');
+        };
+
+        document.head.appendChild(script);
+      <\/script>
     </head>
     <body>
-      <div id="user-html">Loading preview...</div>
-
-      <script>
-        window.__runPreview__ = async function () {
-          const htmlPreprocessor = "${htmlPreprocessor}";
-          const cssPreprocessor = "${cssPreprocessor}";
-          const jsPreprocessor = "${jsPreprocessor}";
-          const html = ${JSON.stringify(html)};
-          const css = ${JSON.stringify(css)};
-          const js = ${JSON.stringify(escapeScript(safeJS))};
-
-          const waitForLib = async (key) => {
-            while (!window[key]) {
-              await new Promise(r => setTimeout(r, 50));
-            }
-          };
-
-          if (htmlPreprocessor === "pug") await waitForLib("pug");
-          if (cssPreprocessor === "sass" || cssPreprocessor === "scss") await waitForLib("Sass");
-          if (jsPreprocessor === "typescript") await waitForLib("ts");
-
-          try {
-            // HTML
-            if (htmlPreprocessor === "pug") {
-              try {
-                document.getElementById("user-html").innerHTML = window.pug.render(html || '');
-              } catch(e) {
-                document.getElementById("user-html").textContent = "Pug 渲染錯誤: " + e.message;
-              }
-            } else {
-              document.getElementById("user-html").innerHTML = html;
-            }
-
-            // CSS
-            if (cssPreprocessor === "sass" || cssPreprocessor === "scss") {
-              window.Sass.compile(css, {
-                indentedSyntax: cssPreprocessor === 'sass'
-              }, (result) => {
-                if (result.status === 0) {
-                  document.getElementById("user-style").textContent = result.text;
-                } else {
-                  console.error("Sass Error:", result);
-                }
-              });
-            }
-
-            // JS
-            let finalJS = js;
-            if (jsPreprocessor === "typescript") {
-              finalJS = window.ts.transpile(js);
-            }
-
-            // 用 Blob 方式插入 JS
-            const blob = new Blob([finalJS], { type: 'application/javascript' });
-            const script = document.createElement("script");
-            script.src = URL.createObjectURL(blob);
-            script.onload = () => URL.revokeObjectURL(script.src);
-            script.onerror = () => console.error("JS blob failed to load");
-            document.body.appendChild(script);
-
-          } catch (e) {
-            console.error("Preview Error:", e);
-          }
-        };
-      </script>
-
-      <script>
-        window.addEventListener('load', () => {
-          if (typeof window.__runPreview__ === 'function') {
-            window.__runPreview__();
-          }
-        });
-      </script>
+      ${htmlCode}
     </body>
     </html>
-    `.trim();
+  `.trim();
 
-    const blob = new Blob([previewHTML], { type: 'text/html' });
-    return URL.createObjectURL(blob);
+  // 3️⃣ 產出 Blob 預覽頁面
+  const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+  if (window.currentPreviewBlob) {
+    URL.revokeObjectURL(window.currentPreviewBlob);
+  }
+  window.currentPreviewBlob = blobUrl;
+  return blobUrl;
+};
 
-  };
   
   const fetchWorks = async () => {
     try {
