@@ -59,12 +59,34 @@
               {{ subscriptionInfo.current_period_end || "—" }}
             </template>
           </div>
-          <button
+          <div
             v-if="!subscriptionInfo.cancel_at_period_end"
-            @click="unSubscribe"
-            class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
-            Cancel Subscription
-          </button>
+            class="mt-4">
+            <button
+              @click="showunsubscribeModal = true"
+              class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
+              Cancel Subscription
+            </button>
+            <ConfirmModal
+              v-if="showunsubscribeModal"
+              @confirm="unSubscribe"
+              @cancel="showunsubscribeModal = false">
+              <template #title>
+                Are you sure you want to cancel your subscription?
+              </template>
+
+              <template #message>
+                <p>
+                  After cancellation, you will continue to enjoy Pro features
+                  until the end of your current billing period.<br />
+                  You can re-subscribe at any time.<br />
+                  <span class="text-red-600 font-bold"
+                    >This action will not delete your data.</span
+                  >
+                </p>
+              </template>
+            </ConfirmModal>
+          </div>
           <div
             v-else
             class="mt-4 text-yellow-700 text-center font-bold">
@@ -81,9 +103,10 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import api from "@/config/api";
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 
+const showunsubscribeModal = ref(false);
 const authStore = useAuthStore();
-
 const subscriptionInfo = ref(null);
 
 const checkPendingPayment = async () => {
@@ -94,7 +117,6 @@ const checkPendingPayment = async () => {
     alert("Failed to fetch subscription status.");
     subscriptionInfo.value = null;
   }
-  // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
 };
 
 const subscribe = async () => {
