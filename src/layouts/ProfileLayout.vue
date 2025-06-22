@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    class="content"
+    :class="$attrs.class"
+    v-bind="$attrs">
     <div
       class="pt-4"
       v-if="userInfo">
