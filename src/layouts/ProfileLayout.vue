@@ -121,18 +121,6 @@
       </div>
     </div>
   </div>
-  <ConfirmModal
-    v-if="showMsgModal"
-    variant="success"
-    :confirm-text="'OK'"
-    :confirming="false"
-    :loadingText="'Processing...'"
-    @confirm="showMsgModal = false">
-    <template #title> Success </template>
-    <template #message>
-      <p>{{ Message }}</p>
-    </template>
-  </ConfirmModal>
 </template>
 
 <script setup>
@@ -140,19 +128,17 @@ import { onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useMsgStore } from "@/stores/useMsgStore";
 import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
-import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 
+const msg = useMsgStore();
 const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
 const authStore = useAuthStore();
 const userFollowers = ref(0);
 const userFollowings = ref(0);
-const showMsgModal = ref(false);
-const Message = ref("");
-
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
 };
@@ -165,8 +151,11 @@ const Followers = () => {
 
 const productSub = () => {
   if (route.query.subscribed === "true") {
-    showMsgModal.value = true;
-    Message.value = "Successfully subscribed to Pro features!";
+    msg.title = "Success";
+    msg.message = "Successfully subscribed to Pro features!";
+    msg.variant = "success";
+    msg.confirmText = "OK";
+    msg.show = true;
   }
 };
 const countFollowers = async () => {
@@ -228,10 +217,10 @@ const fetchUserInfo = async () => {
 };
 
 onMounted(() => {
-  productSub();
   fetchUserInfo();
   countFollowers();
   countFollowing();
+  productSub();
 });
 
 watch(
