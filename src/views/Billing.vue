@@ -69,6 +69,11 @@
             </button>
             <ConfirmModal
               v-if="showunsubscribeModal"
+              variant="warning"
+              :confirm-text="'Cancel'"
+              :cancelText="'Cancel'"
+              :confirming="false"
+              :loadingText="'Cancelling...'"
               @confirm="unSubscribe"
               @cancel="showunsubscribeModal = false">
               <template #title>
@@ -97,28 +102,52 @@
       </div>
     </div>
   </div>
+  <ConfirmModal
+    v-if="showErrorModal"
+    variant="warning"
+    :confirm-text="'OK'"
+    :cancelText="'cancel'"
+    :confirming="false"
+    :loadingText="'Processing...'"
+    @confirm="showErrorModal = false"
+    @cancel="showErrorModal = false">
+    <template #title> Error </template>
+    <template #message>
+      <p>{{ errorMessage }}</p>
+    </template>
+  </ConfirmModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useRoute } from "vue-router";
 import api from "@/config/api";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 
-const showunsubscribeModal = ref(false);
 const authStore = useAuthStore();
+const route = useRoute();
+const showunsubscribeModal = ref(false);
 const subscriptionInfo = ref(null);
+const showErrorModal = ref(false);
+const errorMessage = ref("");
 
+const productSub = () => {
+  if (route.query.subscribed === "false") {
+    errorMessage.value = "Failed to create subscription session.";
+    showErrorModal.value = true;
+  }
+};
 const checkPendingPayment = async () => {
   try {
     const res = await api.get("/api/stripe/subscription-status");
     subscriptionInfo.value = res.data;
   } catch (error) {
-    alert("Failed to fetch subscription status.");
+    errorMessage.value = "Failed to fetch subscription status.";
+    showErrorModal.value = true;
     subscriptionInfo.value = null;
   }
 };
-
 const subscribe = async () => {
   try {
     const res = await api.post("/api/stripe/create-subscription-session", {
@@ -131,20 +160,22 @@ const subscribe = async () => {
       alert("Failed to create subscription session.");
     }
   } catch (error) {
-    alert("Failed to create subscription session.");
+    errorMessage.value = "Failed to create subscription session.";
+    showErrorModal.value = true;
   }
 };
-
 const unSubscribe = async () => {
   try {
     const res = await api.put("/api/stripe/cancel-subscription");
     await checkPendingPayment();
   } catch (error) {
-    alert("Failed to cancel subscription.");
+    errorMessage.value = "Failed to cancel subscription.";
+    showErrorModal.value = true;
   }
 };
 
 onMounted(() => {
+  productSub();
   checkPendingPayment();
 });
 </script>
