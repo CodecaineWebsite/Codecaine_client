@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="pt-4" v-if="userInfo">
+    <div
+      class="pt-4"
+      v-if="userInfo">
       <header class="profile-header">
         <div class="md:pt-[110px] md:pb-[75px] relative pt-5 pb-5">
           <div class="text-center text-4xl pb-3">
@@ -17,12 +19,10 @@
         </div>
       </header>
       <div
-        class="min-h-14 bg-black relative flex items-center justify-between p-4"
-      >
+        class="min-h-14 bg-black relative flex items-center justify-between p-4">
         <div class="flex flex-col md:flex-row w-full justify-between">
           <div
-            class="flex gap-4 text-gray-400 justify-center md:justify-start mb-2 md:mb-0 min-h-[24px]"
-          >
+            class="flex gap-4 text-gray-400 justify-center md:justify-start mb-2 md:mb-0 min-h-[24px]">
             <a
               class="hover:text-white"
               v-if="userInfo.profile_link1"
@@ -58,8 +58,7 @@
             >
           </div>
           <div
-            class="flex justify-center md:justify-end items-center gap-4 text-gray-400"
-          >
+            class="flex justify-center md:justify-end items-center gap-4 text-gray-400">
             <a
               :href="`/${route.params.username}/following`"
               class="hover:text-white"
@@ -77,18 +76,15 @@
                 userInfo.username !== authStore.userProfile.username
               "
               :current-user="authStore.userProfile.id"
-              :target-user="userInfo.username"
-            />
+              :target-user="userInfo.username" />
           </div>
         </div>
         <div
-          class="absolute left-4 bottom-26 w-[100px] h-[100px] md:absolute md:left-1/2 md:-translate-x-1/2 md:bottom-0 md:w-[124px] md:h-[124px]"
-        >
+          class="absolute left-4 bottom-26 w-[100px] h-[100px] md:absolute md:left-1/2 md:-translate-x-1/2 md:bottom-0 md:w-[124px] md:h-[124px]">
           <img
             :src="userInfo.profile_image_url || '/default-avatar.png'"
             alt="大頭貼"
-            class="bg-black h-full w-full border-gray-700 border-6"
-          />
+            class="bg-black h-full w-full border-gray-700 border-6" />
         </div>
       </div>
       <div class="text-center py-4">
@@ -100,22 +96,19 @@
           <button
             class="cursor-pointer hover:text-white p-2 flex-shrink-0"
             @click="caines"
-            :class="route.path.includes('caines') ? 'text-white' : ''"
-          >
+            :class="route.path.includes('caines') ? 'text-white' : ''">
             Caines
           </button>
           <button
             class="cursor-pointer hover:text-white p-2 flex-shrink-0"
             @click="Following"
-            :class="route.name === 'Profilefollowing' ? 'text-white' : ''"
-          >
+            :class="route.name === 'Profilefollowing' ? 'text-white' : ''">
             Following
           </button>
           <button
             class="cursor-pointer hover:text-white p-2 flex-shrink-0"
             @click="Followers"
-            :class="route.name === 'Profilefollowers' ? 'text-white' : ''"
-          >
+            :class="route.name === 'Profilefollowers' ? 'text-white' : ''">
             Followers
           </button>
         </div>
@@ -125,6 +118,18 @@
       </div>
     </div>
   </div>
+  <ConfirmModal
+    v-if="showMsgModal"
+    variant="success"
+    :confirm-text="'OK'"
+    :confirming="false"
+    :loadingText="'Processing...'"
+    @confirm="showMsgModal = false">
+    <template #title> Success </template>
+    <template #message>
+      <p>{{ Message }}</p>
+    </template>
+  </ConfirmModal>
 </template>
 
 <script setup>
@@ -134,12 +139,16 @@ import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
+
 const router = useRouter();
 const route = useRoute();
 const userInfo = ref(null);
 const authStore = useAuthStore();
 const userFollowers = ref(0);
 const userFollowings = ref(0);
+const showMsgModal = ref(false);
+const Message = ref("");
 
 const caines = () => {
   router.push(`/${route.params.username}/caines`);
@@ -153,9 +162,8 @@ const Followers = () => {
 
 const productSub = () => {
   if (route.query.subscribed === "true") {
-    alert("Subscription successful! Thank you for your support 🎉");
-  } else if (route.query.subscribed === "false") {
-    alert("Subscription was cancelled or not completed");
+    showMsgModal.value = true;
+    Message.value = "Successfully subscribed to Pro features!";
   }
 };
 const countFollowers = async () => {
