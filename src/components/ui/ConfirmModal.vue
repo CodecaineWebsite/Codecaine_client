@@ -2,9 +2,10 @@
   <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div
       class="p-6 rounded-md max-w-sm w-full border-8"
-      :class="styleClasses.container"
-    >
-      <p class="font-bold mb-2 text-lg" v-if="$slots.title">
+      :class="styleClasses.container">
+      <p
+        class="font-bold mb-2 text-lg"
+        v-if="$slots.title">
         <slot name="title" />
       </p>
 
@@ -14,13 +15,15 @@
 
       <div class="flex text-sm justify-start space-x-2">
         <button
+          class="cursor-pointer"
           :disabled="confirming"
           @click="onConfirm"
-          :class="styleClasses.confirm"
-        >
+          :class="styleClasses.confirm">
           {{ confirming ? loadingText : confirmText }}
         </button>
-        <button @click="onCancel" class="bg-cc-13 px-4.5 py-2.5 rounded">
+        <button
+          @click="onCancel"
+          class="bg-cc-13 px-4.5 py-2.5 rounded cursor-pointer hover:bg-cc-14 text-cc-1">
           {{ cancelText }}
         </button>
       </div>
