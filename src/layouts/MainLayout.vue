@@ -2,18 +2,18 @@
   <div
     v-show="isMounted"
     class="layout transition-all duration-400 ease-in-out"
-    :style="{ gridTemplateColumns: layoutColumns }"
-  >
+    :style="{ gridTemplateColumns: layoutColumns }">
     <MainSidebar
       class="sidebar"
       v-if="!isCompactScreen"
-      @toggle="toggleSidebar"
-    />
+      @toggle="toggleSidebar" />
 
     <SubHeader class="header" />
 
     <RouterView v-slot="{ Component }">
-      <component :is="Component" class="content" />
+      <component
+        :is="Component"
+        class="content" />
     </RouterView>
 
     <SubFooter class="footer" />
@@ -22,9 +22,22 @@
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
       :from="modalStore.from"
-      @close="modalStore.closeModal"
-    />
+      @close="modalStore.closeModal" />
   </div>
+  <ConfirmModal
+    v-if="msg.show"
+    :variant="msg.variant"
+    :confirming="msg.confirming"
+    :loadingText="msg.loadingText"
+    :confirm-text="msg.confirmText"
+    :cancel-text="msg.cancelText"
+    @confirm="msg.close"
+    @cancel="msg.close">
+    <template #title>{{ msg.title }}</template>
+    <template #message
+      ><p>{{ msg.message }}</p></template
+    >
+  </ConfirmModal>
 </template>
 
 <script setup>
@@ -34,7 +47,10 @@ import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
 import MainSidebar from "@/components/MainSidebar.vue";
 import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
+import { useMsgStore } from "@/stores/useMsgStore";
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 
+const msg = useMsgStore();
 const modalStore = useModalStore();
 const isMounted = ref(false);
 const screenWidth = ref(window.innerWidth);

@@ -2,8 +2,10 @@
   <div v-if="authStore.isAuthReady">
     <RouterView />
   </div>
-  <div v-else class="w-full h-screen flex items-center justify-center">
-    <p class="text-white">正在載入頁面</p>
+  <div
+    v-else
+    class="w-full h-screen flex items-center justify-center">
+    <div class="loader"></div>
   </div>
 </template>
 
@@ -60,5 +62,23 @@ onIdTokenChanged(auth, async (firebaseUser) => {
   color: white;
   background-color: #131417;
   color: white;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #38bdf8;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
