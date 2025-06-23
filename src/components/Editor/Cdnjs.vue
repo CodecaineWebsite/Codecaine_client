@@ -35,7 +35,7 @@ const fetchPackages = debounce(async (value) => {
     packages.value = res.data.results;
     showSelectList.value = true;
   } catch (error) {
-    console.error('搜尋失敗：', error);
+    console.error('Search failed：', error);
   }
 } , 200);
 
