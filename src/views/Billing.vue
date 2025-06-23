@@ -59,12 +59,60 @@
               {{ subscriptionInfo.current_period_end || "—" }}
             </template>
           </div>
-          <button
+          <div
             v-if="!subscriptionInfo.cancel_at_period_end"
-            @click="unSubscribe"
-            class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
-            Cancel Subscription
-          </button>
+            class="mt-4">
+            <button
+              @click="showunsubscribeModal = true"
+              class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
+              Cancel Subscription
+            </button>
+            <ConfirmModal
+              v-if="showunsubscribeModal"
+              variant="danger"
+              :confirm-text="'Confirm'"
+              :cancelText="'Cancel'"
+              :confirming="false"
+              :loadingText="'Cancelling...'"
+              @confirm="canConfirmUnsubscribe ? unSubscribe() : null"
+              @cancel="
+                () => {
+                  showunsubscribeModal = false;
+                  confirmName = '';
+                }
+              "
+              :disabled="!canConfirmUnsubscribe">
+              <template #title>
+                Are you sure you want to cancel your subscription?
+              </template>
+
+              <template #message>
+                <p>
+                  Please type
+                  <span class="font-bold text-pink-600">{{
+                    authStore.userProfile?.username
+                  }}</span>
+                  to confirm.
+                  <br />
+                  <input
+                    v-model="confirmName"
+                    type="text"
+                    class="border rounded px-2 py-1 mt-2 text-black bg-white"
+                    placeholder="Enter your username" />
+                </p>
+                <p class="mt-3 text-sm text-white">
+                  After cancellation, you will continue to enjoy Pro features
+                  until the end of your current billing period.
+                  <br />
+                  You can re-subscribe at any time.
+                  <br />
+                  <span class="text-red-600 font-bold"
+                    >This action will not delete your data.</span
+                  >
+                </p>
+              </template>
+            </ConfirmModal>
+          </div>
           <div
             v-else
             class="mt-4 text-yellow-700 text-center font-bold">
@@ -78,25 +126,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useRoute } from "vue-router";
 import api from "@/config/api";
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
+import { useMsgStore } from "@/stores/useMsgStore";
 
 const authStore = useAuthStore();
+const route = useRoute();
+const msg = useMsgStore();
 
+const showunsubscribeModal = ref(false);
+const confirmName = ref("");
 const subscriptionInfo = ref(null);
 
+const productSub = () => {
+  if (route.query.subscribed === "false") {
+    msg.open({
+      title: "Error",
+      message: "Failed to create subscription session.",
+      variant: "warning",
+      confirmText: "OK",
+    });
+  }
+};
 const checkPendingPayment = async () => {
   try {
     const res = await api.get("/api/stripe/subscription-status");
     subscriptionInfo.value = res.data;
   } catch (error) {
-    alert("Failed to fetch subscription status.");
+    msg.open({
+      title: "Error",
+      message: "Failed to fetch subscription status.",
+      variant: "warning",
+      confirmText: "OK",
+    });
     subscriptionInfo.value = null;
   }
-  // 成功的情況不用在這裡判斷，因為會直接跳轉到 return_url
 };
-
 const subscribe = async () => {
   try {
     const res = await api.post("/api/stripe/create-subscription-session", {
@@ -106,23 +174,42 @@ const subscribe = async () => {
     if (res.data.url) {
       window.location.href = res.data.url;
     } else {
-      alert("Failed to create subscription session.");
+      msg.open({
+        title: "Error",
+        message: "Failed to create subscription session.",
+        variant: "warning",
+        confirmText: "OK",
+      });
     }
   } catch (error) {
-    alert("Failed to create subscription session.");
+    msg.open({
+      title: "Error",
+      message: "Failed to create subscription session.",
+      variant: "warning",
+      confirmText: "OK",
+    });
   }
 };
-
+const canConfirmUnsubscribe = computed(() => {
+  return confirmName.value === authStore.userProfile?.username;
+});
 const unSubscribe = async () => {
   try {
     const res = await api.put("/api/stripe/cancel-subscription");
     await checkPendingPayment();
   } catch (error) {
-    alert("Failed to cancel subscription.");
+    msg.open({
+      title: "Error",
+      message: "Failed to cancel subscription.",
+      variant: "warning",
+      confirmText: "OK",
+    });
   }
+  confirmName.value = "";
 };
 
 onMounted(() => {
+  productSub();
   checkPendingPayment();
 });
 </script>
