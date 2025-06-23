@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export const useMsgStore = defineStore("modal", () => {
+export const useMsgStore = defineStore("messageModal", () => {
   const show = ref(false);
   const title = ref("");
   const message = ref("");
