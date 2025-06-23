@@ -7,17 +7,17 @@
         <h3 class="text-xl font-bold mb-2">Profile Image</h3>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-row gap-4 p-6"
+        class="w-full max-w-190 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-row gap-4 p-6"
       >
         <img
           v-if="avatarUrl"
           :src="avatarUrl"
           alt="Avatar Preview"
-          class="w-40 h-40 object-cover border-2 border-gray-600 rounded"
+          class="w-56 h-56 object-cover border-2 border-gray-600 rounded"
         />
         <div
           v-else
-          class="w-40 h-40 bg-gray-700 flex items-center justify-center text-gray-400 rounded"
+          class="w-56 h-56 bg-gray-700 flex items-center justify-center text-gray-400 rounded"
         >
           NO Image
         </div>
@@ -56,7 +56,7 @@
           </div>
           <div
             v-if="message && message.target === 'avatar'"
-            class="px-4 py-2 rounded text-sm font-medium"
+            class="px-4 py-2 rounded text-sm font-medium mt-2"
             :class="
               message.type === 'success'
                 ? 'bg-green-500 text-white'
@@ -86,7 +86,7 @@
         </p>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
+        class="w-full max-w-190 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
       >
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Username</label>
@@ -158,7 +158,7 @@
         </p>
       </div>
       <div
-        class="w-full max-w-160 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
+        class="w-full max-w-190 h-full min-h-16 bg-[#1E1F26] rounded-lg flex flex-col justify-center gap-4 p-6"
       >
         <div
           v-for="(link, idx) in profileLinks"

@@ -125,6 +125,7 @@
     penHeader.value?.handleWorkAutoSave()
   }, 2000)
   watch( () => [
+      currentWork.value.id,
       currentWork.value.title,
       currentWork.value.description,
       currentWork.value.html,
@@ -139,6 +140,9 @@
       currentWork.value.tags,
     ],
     () => {
+      if(!currentWork.value.id){
+        return
+      }
       if(isFirstRun) {
         isFirstRun = false;
         return

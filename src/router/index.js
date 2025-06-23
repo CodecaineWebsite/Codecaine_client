@@ -68,11 +68,11 @@ const router = createRouter({
             },
             {
               path: "caines",
-              name: "Profilecaines",
               component: () => import("../views/UsersCaines.vue"),
               children: [
                 {
                   path: "",
+                  name: "Profilecaines",
                   redirect: (to) => {
                     return `/${to.params.username}/caines/showcase`;
                   },
@@ -131,6 +131,11 @@ const router = createRouter({
               name: "settingAccount",
               component: () => import("../views/SettingAccount.vue"),
               meta: { requiresAuth: true },
+            },
+            {
+              path: "billing",
+              name: "billing",
+              component: () => import("../views/Billing.vue"),
             },
           ],
         },

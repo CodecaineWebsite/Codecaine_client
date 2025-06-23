@@ -113,9 +113,11 @@ import {
 } from "@/utils/errorHandlers";
 import { syncUser } from "@/utils/user.js";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useMsgStore } from "@/stores/useMsgStore";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const msg = useMsgStore();
 const showEmailForm = ref(false);
 const email = ref("");
 const password = ref("");
@@ -128,13 +130,25 @@ const register = async () => {
   try {
     await registerWithEmail(auth, email.value, password.value);
     success.value = "Registration successful！";
-    alert(success.value);
+    msg.open({
+      title: "Success",
+      message: success.value,
+      variant: "success",
+      confirmText: "OK",
+      onConfirm: () => {
+        router.push("/trending");
+      },
+    });
     await syncUser();
-    router.push("/trending");
   } catch (e) {
-    const msg = getRegisterErrorMessage(e.code);
-    alert(msg);
-    error.value = msg;
+    const msgText = getRegisterErrorMessage(e.code);
+    msg.open({
+      title: "Error",
+      message: msgText,
+      variant: "warning",
+      confirmText: "OK",
+    });
+    error.value = msgText;
     console.error("Registration failed:", e);
   }
 };
@@ -144,14 +158,25 @@ const socialSignIn = async (provider) => {
     const { token } = await loginWithProvider(auth, provider);
     authStore.setToken(token);
     await syncUser();
-    alert(
-      `${
+    msg.open({
+      title: "Success",
+      message: `${
         provider.providerId.includes("google") ? "Google" : "GitHub"
-      } sign in successful!`
-    );
-    router.push("/trending");
+      } sign in successful!`,
+      variant: "success",
+      confirmText: "OK",
+      onConfirm: () => {
+        router.push("/trending");
+      },
+    });
   } catch (e) {
-    alert(getSocialSignInErrorMessage(e.code, provider.providerId));
+    const msgText = getSocialSignInErrorMessage(e.code, provider.providerId);
+    msg.open({
+      title: "Error",
+      message: msgText,
+      variant: "warning",
+      confirmText: "OK",
+    });
     console.error(e);
   }
 };
