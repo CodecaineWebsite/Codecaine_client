@@ -22,7 +22,7 @@
     <!-- 卡片內容 -->
     <div class="p-4">
       <div class="flex items-center justify-between w-full">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <!-- 左：頭像 -->
           <a :href="userPageLink" class="shrink-0">
             <img
@@ -35,7 +35,7 @@
           <div class="flex-1 min-w-0 mr-2">
             <a
               :href="editorPageLink"
-              class="block font-bold text-base text-white truncate"
+              class="block font-bold text-base text-white w-full max-w-full overflow-hidden whitespace-nowrap truncate"
             >
               {{ title }}
             </a>
@@ -58,6 +58,7 @@
         </div>
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
+          
           <PenCardDropdown
             :is-open="isOpen"
             :is-owner="isOwner"
@@ -231,3 +232,4 @@ const openDetailModal = () => {
  * 按刪除將作品從使用者的作品清單中刪除
  */
 </script>
+
