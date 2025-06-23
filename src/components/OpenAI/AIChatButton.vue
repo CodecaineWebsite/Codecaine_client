@@ -1,16 +1,17 @@
 <script setup>
   import { ref } from 'vue';
+  import { useAIChatStore } from '@/stores/useAIChatStore';
   
   const emit = defineEmits(['handleOpenAIChat'])
+  const aiChatStore = useAIChatStore();
 
   const isShowAIChat = ref(false)
-  const openAIChat = () => {
+  const openAIChat = async() => {
     isShowAIChat.value =  true;
     emit('handleOpenAIChat')
   }
 
   const closeAIChat = () => {
-    console.log(isShowAIChat.value);
     isShowAIChat.value = false;
   }
 
