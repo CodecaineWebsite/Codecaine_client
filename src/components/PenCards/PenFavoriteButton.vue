@@ -15,11 +15,13 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useAuthStore } from "@/stores/useAuthStore";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import api from "@/config/api";
+
+const authStore = useAuthStore();
 const isLiked = ref(false);
 const favoritesCount = ref(0);
-
 const props = defineProps({
   targetPen: {
     type: [String, Number],
@@ -49,6 +51,10 @@ const handleClick = async () => {
   }
 };
 const checkFavorite = async () => {
+  if (!authStore.user) {
+    isLiked.value = false;
+    return;
+  }
   const res = await api.get(`/api/favorites/check/${props.targetPen}/`);
   isLiked.value = res.data.liked;
 };
