@@ -12,7 +12,7 @@
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
   import AIChatButton from '@/components/OpenAI/AIChatButton.vue';
-  import AIChatBar from '@/components/OpenAI/AIChatBar.vue';
+  import AIChat from '@/components/OpenAI/AIChat.vue';
   import { debounce } from '@/utils/debounce';
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
@@ -27,6 +27,7 @@
   const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
   const { handleSave } = useHandleSave();
+  const isPro = ref(false)
 
   const debouncedSave = debounce(() => {
     handleSave()
@@ -49,21 +50,32 @@
 
   onMounted( async() => {
     await handleCurrentIdChange(route.params.id);
+    const userProfile = authStore.userProfile;
     if (!route.params.id) {
      const userInit = {
-        userName: authStore.userProfile.username,
-        displayName: authStore.userProfile.display_name,
-        isPro: authStore.userProfile.is_pro,
+        userName: userProfile.username,
+        displayName: userProfile.display_name,
+        isPro: userProfile.is_pro,
       };
       await handleInitWork(userInit)
     }
+    isPro.value = !!userProfile.is_pro;
     window.addEventListener('keydown', handleKeydown, true)
   })
+
+  watch(
+    () => authStore.userProfile,
+    (profile) => {
+      if (profile && typeof profile.is_pro !== 'undefined') {
+        isPro.value = !!profile.is_pro;
+      }
+    },
+    { immediate: true, deep: true }
+  );
 
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown, true)
   })
-
 
   const penHeader = ref(null)
   const htmlCode = ref('');
@@ -100,7 +112,6 @@
 
   watch(currentWork, (newWork) => {
     if (newWork) {
-      console.log(newWork);
       htmlCode.value = newWork.html || '';
       cssCode.value = newWork.css || '';
       javascriptCode.value = newWork.javascript || '';
@@ -463,7 +474,7 @@ const handleOpenAIChat = () => {
 <template>
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
-    <AIChatButton ref="aiChatButtonRef" @handleOpenAIChat = "handleOpenAIChat"/>
+    <AIChatButton ref="aiChatButtonRef" @handleOpenAIChat = "handleOpenAIChat" v-if="isPro"/>
     <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" ref="penHeader"/>
     <main class="flex flex-1 overflow-hidden" ref="mainRef">
       <div class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="editorRef">
@@ -680,7 +691,7 @@ const handleOpenAIChat = () => {
               <span>➤</span>
             </button>
           </div>
-          <AIChatBar :style="{ width: aiChatWidth + 'px' }"/>
+          <AIChat :style="{ width: aiChatWidth + 'px' }" v-if="isPro"/>
         </div>
       </transition>
     </main>
