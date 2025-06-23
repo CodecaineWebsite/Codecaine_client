@@ -5,7 +5,7 @@ import { useWorkStore } from '@/stores/useWorkStore';
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
-
+import Cdnjs from './Cdnjs.vue';
 const router = useRouter();
 
 const props = defineProps({
@@ -55,12 +55,24 @@ watch(tags, (newTags) => {
 }, { deep: true })
 
 const activeTab = ref(props.selectedTab)
-const cdnInput = ref('')
+const cdnInput = ref([])
 const linkInput = ref('')
 const tagInput = ref('')
 const srcDoc = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
+function handleSelectedPackage(packageData){
+  const selectedCDN = packageData.latest
+  if (!isValidUrl(selectedCDN)) {
+    alert('請輸入有效的 CDN URL（必須以 http 或 https 開頭）');
+    return;
+  }  if (cdns.value.includes(selectedCDN)) {
+    alert("這個 CDN 已經加入了！");
+    return;
+  }
+  cdns.value.push(selectedCDN);
+  cdnInput.value = '';
+}
 const addCDN = () => {
   const url = cdnInput.value.trim();
   if (!isValidUrl(url)) {
@@ -110,7 +122,7 @@ const removeTag = async(index) => {
 }
 </script>
 <template>
-  <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
+  <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-2">
     <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-pensettingmodal-border h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
@@ -249,7 +261,7 @@ const removeTag = async(index) => {
               </div>
               <div class="flex flex-col">
                 <label>
-                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
                 <button @click="addLink" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
                 <ul class="mb-4 list-disc list-inside">
@@ -286,13 +298,14 @@ const removeTag = async(index) => {
                 <label for="addExternalScripts">Add External Scripts/Pens</label>
               </div>
               <div class="flex flex-col">
+                <Cdnjs @select="handleSelectedPackage"/>
                 <label>
-                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
                 <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
-                <ul class="mb-4 list-disc list-inside">
-                  <li v-for="(cdn, index) in cdns" :key="cdn" class="flex items-center justify-between gap-2">
-                    <span class="break-words max-w-[80%]">{{ cdn }}</span>
+                <ul class="mb-4">
+                  <li v-for="(cdn, index) in cdns" :key="cdn" class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between">
+                    <span class="max-w-[90%] text-xs truncate">{{ cdn }}</span>
                     <button @click="removeCDN(index)" class="text-red-500 hover:text-red-700 text-sm ">刪除</button>
                   </li>
                 </ul>
