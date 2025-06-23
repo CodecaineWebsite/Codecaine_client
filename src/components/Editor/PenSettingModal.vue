@@ -64,7 +64,7 @@ const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
 function handleSelectedPackage(packageData){
   const selectedCDN = packageData.latest
   if (!isValidUrl(selectedCDN)) {
-    alert('請輸入有效的 CDN URL（必須以 http 或 https 開頭）');
+    alert('Please enter a valid CDN URL (must start with http or https)');
     return;
   }  if (cdns.value.includes(selectedCDN)) {
     alert("This CDN has already been added!");
@@ -79,7 +79,7 @@ const addCDN = () => {
     alert('Please enter a valid CDN URL (must start with http or https)');
     return;
   }  if (cdns.value.includes(url)) {
-    alert("這個 CDN 已經加入了！");
+    alert("This CDN has already been added!");
     return;
   }
   cdns.value.push(url);
@@ -261,7 +261,7 @@ const removeTag = async(index) => {
               </div>
               <div class="flex flex-col">
                 <label>
-                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
+                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="Enter Link script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
                 <button @click="addLink" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
                 <ul class="mb-4 list-disc list-inside">
@@ -300,13 +300,13 @@ const removeTag = async(index) => {
               <div class="flex flex-col">
                 <Cdnjs @select="handleSelectedPackage"/>
                 <label>
-                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
+                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="Enter CDN script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
-                <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
+                <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ Add CDN</button>
                 <ul class="mb-4">
                   <li v-for="(cdn, index) in cdns" :key="cdn" class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between">
                     <span class="max-w-[90%] text-xs truncate">{{ cdn }}</span>
-                    <button @click="removeCDN(index)" class="text-red-500 hover:text-red-700 text-sm ">刪除</button>
+                    <button @click="removeCDN(index)" class="text-red-500 hover:text-red-700 text-sm ">Delete</button>
                   </li>
                 </ul>
               </div>
