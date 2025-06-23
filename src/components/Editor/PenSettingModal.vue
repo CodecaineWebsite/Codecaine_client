@@ -67,7 +67,7 @@ function handleSelectedPackage(packageData){
     alert('請輸入有效的 CDN URL（必須以 http 或 https 開頭）');
     return;
   }  if (cdns.value.includes(selectedCDN)) {
-    alert("這個 CDN 已經加入了！");
+    alert("This CDN has already been added!");
     return;
   }
   cdns.value.push(selectedCDN);
@@ -76,7 +76,7 @@ function handleSelectedPackage(packageData){
 const addCDN = () => {
   const url = cdnInput.value.trim();
   if (!isValidUrl(url)) {
-    alert('請輸入有效的 CDN URL（必須以 http 或 https 開頭）');
+    alert('Please enter a valid CDN URL (must start with http or https)');
     return;
   }  if (cdns.value.includes(url)) {
     alert("這個 CDN 已經加入了！");
@@ -91,7 +91,7 @@ const removeCDN = (index) => {
 const addLink = () => {
   const url = linkInput.value.trim();
   if (!isValidUrl(url)) {
-    alert('請輸入有效的 link URL（必須以 http 或 https 開頭）');
+    alert('Please enter a valid link URL（must start with http or https');
     return;
   }  if (links.value.includes(url)) {
     alert("This link has already been added!");
