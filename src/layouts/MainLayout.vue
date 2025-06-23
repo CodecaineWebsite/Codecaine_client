@@ -51,7 +51,7 @@ import MainSidebar from "@/components/MainSidebar.vue";
 import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
 import { useMsgStore } from "@/stores/useMsgStore";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
-import ToastContainer from "@/components/ui/ToastContainer.vue";
+import ToastContainer from "@/components/Toast/ToastContainer.vue";
 
 const msg = useMsgStore();
 const modalStore = useModalStore();

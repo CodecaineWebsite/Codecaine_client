@@ -16,7 +16,9 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
+import { useToastStore } from "@/stores/useToastStore";
+const toastStore = useToastStore();
+console.log(toastStore);
 
 const props = defineProps({
   penId: {
@@ -35,11 +37,16 @@ function copyLink() {
   navigator.clipboard
     .writeText(url)
     .then(() => {
-      // 可換成 emit 或 toast
-      alert("Link copied!");
+      toastStore.showToast({
+        message: "Link copied!",
+        variant: "success",
+      });
     })
     .catch(() => {
-      alert("Copy failed, please manually copy the link.");
+      toastStore.showToast({
+        message: "Copy failed, please manually copy the link.",
+        variant: "danger",
+      });
     });
 }
 </script>

@@ -8,11 +8,6 @@ export const useToastStore = defineStore('toast', () => {
   function showToast({ message, variant = 'warning', duration = 3000 }) {
     const id = Date.now().toString();
     toasts.value.push({ id, message, variant, duration });
-
-    // 自動移除
-    setTimeout(() => {
-      removeToast(id);
-    }, duration);
   }
 
   function removeToast(id) {
