@@ -14,13 +14,17 @@
         :class="route.name === 'cainesPublic' ? 'text-white' : ''"
       >
         {{
+          authStore.userProfile &&
           route.params.username === authStore.userProfile.username
             ? "Public"
             : "All Caines"
         }}
       </button>
       <button
-        v-if="route.params.username === authStore.userProfile.username"
+        v-if="
+          authStore.userProfile &&
+          route.params.username === authStore.userProfile.username
+        "
         class="cursor-pointer hover:text-white"
         @click="privateProfile"
         :class="route.name === 'cainesPrivate' ? 'text-white' : ''"
