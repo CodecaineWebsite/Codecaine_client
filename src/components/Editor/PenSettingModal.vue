@@ -114,7 +114,7 @@ const removeTag = async(index) => {
     <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-pensettingmodal-border h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
-          <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Pen Settings</span>
+          <span class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1">Dose Settings</span>
           <button type="button" @click.prevent="emit('close')" class="right-1 bg-[#424655] w-7 flex justify-center h-4">
             <svg class="w-2.5" viewBox="0 0 100 100">
               <path fill="white"
@@ -245,7 +245,7 @@ const removeTag = async(index) => {
 
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="addExternalStylesheets">Add External Stylesheets/Pens</label>
+                <label for="addExternalStylesheets">Add External Stylesheets/Doses</label>
               </div>
               <div class="flex flex-col">
                 <label>
@@ -283,7 +283,7 @@ const removeTag = async(index) => {
             
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="addExternalScripts">Add External Scripts/Pens</label>
+                <label for="addExternalScripts">Add External Scripts/Doses</label>
               </div>
               <div class="flex flex-col">
                 <label>
@@ -303,7 +303,7 @@ const removeTag = async(index) => {
           <div v-show="activeTab === 'detail'" class=" w-full flex flex-col gap-4">
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="penTitle">Pen Title</label>
+                <label for="penTitle">Dose Title</label>
               </div>
               <div class="relative">
                 <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
@@ -311,7 +311,7 @@ const removeTag = async(index) => {
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="penDescription">Pen Description</label>
+                <label for="penDescription">Dose Description</label>
               </div>
               <div class="relative">
                 <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
@@ -347,7 +347,7 @@ const removeTag = async(index) => {
                 <label>
                   Privacy
                 </label>
-                <span class="text-xs align-text-bottom mb-4 mt-1">Set this Pen as private. Only you can access it .</span>
+                <span class="text-xs align-text-bottom mb-4 mt-1">Set this Dose as private. Only you can access it .</span>
               </div>
               <label class="py-2 hover:cursor-pointer">
                 <div class="relative inline-block w-13 h-7 ">
@@ -366,7 +366,7 @@ const removeTag = async(index) => {
                   <img src="https://cpwebassets.codepen.io/assets/pro/privacy-048c44f7b51ade74eef277e8027a41fe1a8651c393278b25a807ad7ea79f8418.svg" alt="">
                 </div>
                 <h4 class="font-semibold text-15">Keep it secret; keep it safe.</h4>
-                <p class="font-thin text-15 text-center">Private Pens are hidden everywhere on CodePen, except to you. You can still share them and other people can see them, they just can't find them through searching or browsing.</p>
+                <p class="font-thin text-15 text-center">Private Doses are hidden everywhere on Codecaine, except to you. You can still share them and other people can see them, they just can't find them through searching or browsing.</p>
                 <!-- todo 加入導向升級pro頁面 -->
                 <a href="#" @click.prevent="router.push('/')" class="py-2 px-3 bg-cc-yellow rounded text-cc-20 hover:text-cc-1 hover:bg-cc-yellow-dark">Upgrade to PRO</a>
               </div>
@@ -377,7 +377,7 @@ const removeTag = async(index) => {
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex flex-col">
                 <label for="autoSave">Auto Save</label>
-                <span class="text-xs align-text-bottom mb-4 mt-1">If active, Pens will autosave every 30 seconds after being saved once.</span>
+                <span class="text-xs align-text-bottom mb-4 mt-1">If active, Doses will autosave every 30 seconds after being saved once.</span>
               </div>
               <label class="py-2 hover:cursor-pointer">
                 <div class="relative inline-block w-13 h-7 ">
