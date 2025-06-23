@@ -32,9 +32,9 @@ export const useMsgStore = defineStore("modal", () => {
     onConfirm.value = oc;
     show.value = true;
   }
-  function close() {
+  function close(isConfirm = false) {
     show.value = false;
-    if (onConfirm.value) onConfirm.value();
+    if (isConfirm && onConfirm.value) onConfirm.value();
     onConfirm.value = null;
   }
 
