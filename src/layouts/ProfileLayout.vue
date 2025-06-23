@@ -91,7 +91,7 @@
           />
         </div>
       </div>
-      <div class="text-center py-4">
+      <div class="text-center py-4 mx-auto max-w-7xl">
         <div>{{ userInfo.location }}</div>
         <div class="mt-2">{{ userInfo.bio }}</div>
       </div>
