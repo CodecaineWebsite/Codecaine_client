@@ -5,7 +5,7 @@ import { useWorkStore } from '@/stores/useWorkStore';
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
-import Cdnjs from './Cdnjs.vue';
+import Cdnjs from '@/components/Editor/Cdnjs.vue';
 const router = useRouter();
 
 const props = defineProps({
