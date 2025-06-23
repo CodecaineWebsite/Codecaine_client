@@ -2,26 +2,27 @@
   <div class="flex justify-center items-start min-h-screen bg py-24 px-4">
     <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
       <form class="mb-4">
-        <input
-          type="hidden"
-          name="authenticity_token"
-          value="..." />
+        <input type="hidden" name="authenticity_token" value="..." />
         <button
           type="button"
           @click="() => socialSignIn(new GoogleAuthProvider())"
-          class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200">
+          class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200"
+        >
           <img
             src="https://img.icons8.com/color/16/000000/google-logo.png"
-            alt="Google logo" />
+            alt="Google logo"
+          />
           <span>Sign Up with Google</span>
         </button>
         <button
           type="button"
           @click="() => socialSignIn(new GithubAuthProvider())"
-          class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200 mt-3">
+          class="w-full flex items-center justify-center gap-2 bg-gray-700 text-white font-bold py-3 rounded-md cursor-pointer hover:bg-black transition duration-200 mt-3"
+        >
           <img
             src="https://img.icons8.com/ios-glyphs/24/ffffff/github.png"
-            alt="GitHub logo" />
+            alt="GitHub logo"
+          />
           <span>Sign Up with GitHub</span>
         </button>
       </form>
@@ -30,7 +31,8 @@
 
       <button
         @click="showEmailForm = !showEmailForm"
-        class="w-full bg-gray-700 text-white font-bold py-3 rounded-md mb-4 cursor-pointer hover:bg-black transition duration-200">
+        class="w-full bg-gray-700 text-white font-bold py-3 rounded-md mb-4 cursor-pointer hover:bg-black transition duration-200"
+      >
         Sign Up with Email
       </button>
 
@@ -38,14 +40,11 @@
         @before-enter="beforeEnter"
         @enter="enter"
         @leave="leave"
-        :css="false">
-        <div
-          v-show="showEmailForm"
-          ref="emailSection">
+        :css="false"
+      >
+        <div v-show="showEmailForm" ref="emailSection">
           <form @submit.prevent="register">
-            <input
-              type="hidden"
-              value="..." />
+            <input type="hidden" value="..." />
 
             <div class="mb-4">
               <label
@@ -60,7 +59,8 @@
                 required
                 autocomplete="email"
                 maxlength="20"
-                class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition" />
+                class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
+              />
             </div>
 
             <div class="mb-4">
@@ -75,7 +75,8 @@
                 type="password"
                 autocomplete="new-password"
                 required
-                class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition" />
+                class="w-full border border-gray-300 rounded px-3 py-2 text-black bg-gray-200 hover:bg-white transition"
+              />
 
               <ul class="text-xs text-gray-600 mt-2 list-disc pl-5">
                 <li>Include an <strong>UPPER</strong> and lowercase letter</li>
@@ -89,7 +90,8 @@
 
             <button
               type="submit"
-              class="w-full bg-green-500 text-white font-bold py-3 rounded-md mt-4 cursor-pointer hover:bg-gray-600 transition duration-200">
+              class="w-full bg-green-500 text-white font-bold py-3 rounded-md mt-4 cursor-pointer hover:bg-gray-600 transition duration-200"
+            >
               Submit
             </button>
           </form>
@@ -163,8 +165,10 @@ const socialSignIn = async (provider) => {
       } sign in successful!`,
       variant: "success",
       confirmText: "OK",
+      onConfirm: () => {
+        router.push("/trending");
+      },
     });
-    router.push("/trending");
   } catch (e) {
     const msgText = getSocialSignInErrorMessage(e.code, provider.providerId);
     msg.open({
