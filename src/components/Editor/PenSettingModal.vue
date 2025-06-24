@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
 import Cdnjs from '@/components/Editor/Cdnjs.vue';
 import { useHandleSave } from '@/utils/handleWorkSave';
+import EditorSmallButton from "@/components/Editor/EditorSmallButton.vue";
 
 const router = useRouter();
 const props = defineProps({
@@ -147,7 +148,7 @@ const handleSaveAndClose = () => {
 
       <div class="md:flex h-full pr-4 block overflow-y-auto ">
         <ul class="md:w-1/4 flex md:flex-col md:overflow-y-auto pl-2 md:pl-0 overflow-y-auto">
-          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-[''] before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore, 'bg-cc-14': activeTab === tab.key}">
+          <li v-for="tab in tabs" :key="tab.key" tabindex="0" @click.prevent="activeTab = tab.key" class="cursor-pointer whitespace-nowrap transition hover:bg-cc-14 px-2 md:px-1.5 py-2 md:py-1 md:pl-4 ml-1 md:ml-0 relative before:content-none md:before:content-[''] before:absolute before:w-0 before:h-full before:left-0 before:top-0 focus:before:bg-green-500 before:transition-all before:duration-200" :class="{ 'before:bg-green-500 before:w-1': activeTab === tab.key, 'md:mt-4': tab.gapBefore, 'bg-cc-14': activeTab === tab.key}">
             {{ tab.label }}
             <ProTag v-if="tab.key === 'privacy'"/>
           </li>
@@ -164,7 +165,7 @@ const handleSaveAndClose = () => {
                 <select
                   id="htmlPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Haml">Haml</option>
                   <option value="Markdown">Markdown</option>
                   <option value="Slim">Slim</option>
@@ -210,7 +211,7 @@ const handleSaveAndClose = () => {
                 <select
                   id="cssPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Less">Less</option>
                   <option value="SCSS">SCSS</option>
                   <option value="Sass">Sass</option>
@@ -290,7 +291,7 @@ const handleSaveAndClose = () => {
                 <select
                   id="javaScriptPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Script">Script</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
@@ -326,7 +327,7 @@ const handleSaveAndClose = () => {
                 <label for="penTitle">Pen Title</label>
               </div>
               <div class="relative">
-                <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
+                <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" placeholder="Untitled" />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
@@ -334,7 +335,7 @@ const handleSaveAndClose = () => {
                 <label for="penDescription">Pen Description</label>
               </div>
               <div class="relative">
-                <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
+                <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500 placeholder:text-xs"  placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
@@ -346,16 +347,13 @@ const handleSaveAndClose = () => {
                 <input id="tags" type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
               </div>
               <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-for="(tag, index) in tags"
-                  :key="`${tag}-${index}`"
-                  class="flex items-center bg-green-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full"
-                >
-                  {{ tag }}
-                  <button @click="removeTag(index)" class="ml-1 text-gray-500 hover:text-red-500">
-                    ✕
-                  </button>
-                </span>
+              <EditorSmallButton 
+              v-for="(tag, index) in tags"
+              :key="`${tag}-${index}`"
+              class="mt-2 flex flex-wrap gap-2 bg-cc-13"
+              >{{ tag }}
+              <button @click="removeTag(index)" class="text-cc-9 hover:text-red-500">✕</button>
+              </EditorSmallButton>
               </div>
             </div>
           </div>
