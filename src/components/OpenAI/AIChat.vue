@@ -4,6 +4,7 @@
   import { useAIChatStore } from '@/stores/useAIChatStore';
   import AIChatMessage from './AIChatMessage.vue';
   import Arrow from '@/assets/arrow.vue';
+  import Edit from '@/assets/edit.vue';
   import TrashCanIcon from '../icons/TrashCanIcon.vue';
 
   const aiChatStore = useAIChatStore();
@@ -16,6 +17,8 @@
   const withHtmlCode = ref(false)
   const withCssCode = ref(false)
   const withJSCode = ref(false)
+  const editingChatId = ref(null);
+  const editedTitle = ref('');
 
   const chatContainer = ref(null);
 
@@ -71,7 +74,46 @@
     }
   }
 
+  const handleChatRename = async (chat) => {
+    if (editingChatId.value === chat.id) {
+      // 點第二次 → 強制提交並離開編輯模式
+      await submitChatRename(chat, { forceSubmit: true });
+    } else {
+      editingChatId.value = chat.id;
+      editedTitle.value = chat.title;
+
+      nextTick(() => {
+        const input = document.querySelector(`.chat-input-${chat.id}`);
+        input?.focus();
+      });
+    }
+  };
+
+  const submitChatRename = async (chat, options = {}) => {
+    const trimmed = editedTitle.value.trim();
+
+    const isSame = trimmed === chat.title;
+    const isEmpty = trimmed === '';
+
+    if (!options.forceSubmit && (isEmpty || isSame)) {
+      editingChatId.value = null;
+      return;
+    }
+
+    try {
+      if (!isSame && !isEmpty) {
+        await aiChatStore.renameChat(chat.id, trimmed);
+        chat.title = trimmed;
+      }
+    } catch (error) {
+      console.error('Failed to rename chat:', error);
+    } finally {
+      editingChatId.value = null;
+    }
+  };
+
   const switchChat = async(chat) => {
+    if (editingChatId.value !== null) return;
     showChatDropdown.value = false
     currentChat.value = chat
     await aiChatStore.fetchMessages(chat.id)
@@ -125,8 +167,8 @@
     <header class="mb-2">
       <div class="text-center p-2">OpenAI Chat</div>
       <div class="p-2 flex justify-between items-center relative  border-y-2 border-cc-editor-column-border">
-        <div class="py-1 px-2 truncate max-w-[150px]">{{ currentChat?.title || 'Choose a Chat' }}</div>
-        <div>
+        <div class="py-1 px-2 truncate max-w-full">{{ currentChat?.title || 'Choose a Chat' }}</div>
+        <div class="shrink-0">
           <button
             class="py-1 px-2 hover:cursor-pointer hover:text-cc-1 text-cc-editor-column-tab-text"
             @click="handleAddNewChat"
@@ -143,7 +185,7 @@
           <!-- Dropdown 選單 -->
           <ul
             v-if="showChatDropdown"
-            class="absolute right-0 top-full shadow-md rounded w-full z-10 border-2 border-cc-editor-column-border bg-cc-chat-bg"
+            class="absolute right-0 top-full shadow-md rounded w-full z-10 border-2 border-cc-editor-column-border bg-cc-chat-bg text-sm"
           >
             <li
               v-for="chat in chatList"
@@ -152,10 +194,25 @@
               class="w-full px-3 py-2 hover:bg-gray-500 cursor-pointer truncate flex justify-between items-center"
               :class="currentChat.id === chat.id? 'text-cc-1':'text-cc-editor-column-tab-text'"
             >
-              <div>{{ chat.title }}</div>
-              <button class="p-2 hover:text-cc-red fill-current" @click.stop="deleteChat(chat.id)">
-                <TrashCanIcon class="w-3 h-3"/>
-              </button>             
+              <div v-if="editingChatId !== chat.id" class="shrink-1 overflow-hidden">
+                <div class="truncate max-w-full">{{ chat.title }}</div>
+              </div>
+              <input
+                v-else
+                v-model="editedTitle"
+                class="bg-gray-800 rounded text-white p-1 w-full outline-none"
+                @blur="submitChatRename(chat)"
+                @keydown.enter.prevent="submitChatRename(chat)"
+              />
+              <div class="shrink-0">
+                <button class="p-2 hover:text-cc-1 fill-current text-cc-editor-column-tab-text" @click.stop="handleChatRename(chat)">
+                  <Edit class="w-3 h-3 block"/>
+                </button>    
+                
+                <button class="p-2 hover:text-cc-red fill-current text-cc-editor-column-tab-text" @click.stop="deleteChat(chat.id)">
+                  <TrashCanIcon class="w-3 h-3"/>
+                </button>     
+              </div>
             </li>
           </ul>
         </div>

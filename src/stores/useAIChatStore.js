@@ -130,6 +130,15 @@ export const useAIChatStore = defineStore('chat', () => {
     fetchMessages(currentChat.value.id)
   }
 
+  async function renameChat(chatId, newTitle) {
+    try {
+      await api.patch(`/api/ai/chats/${chatId}`, { title: newTitle });
+    } catch (error) {
+      console.error('Rename chat failed:', error);
+      throw error;
+    }
+  }
+
   async function deleteChat(chatId) {
     try {
       await api.delete(`/api/ai/chats/${chatId}`);
@@ -160,6 +169,7 @@ export const useAIChatStore = defineStore('chat', () => {
     addNewChat,
     fetchChats,
     fetchMessages,
+    renameChat,
     deleteChat
   }
 })
