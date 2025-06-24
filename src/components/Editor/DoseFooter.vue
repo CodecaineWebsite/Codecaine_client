@@ -18,22 +18,22 @@
 	}
 	
   const handleMoveToTrash = async () => {
-    const confirmed = window.confirm('確定要將這個作品移至垃圾桶嗎？此操作可以在垃圾桶中還原。');
+    const confirmed = window.confirm('Are you sure you want to move this work to the trash? You can restore it later from the trash.');
     if (!confirmed) return;
 		try {
 			const id = currentId.value;
 			const success = await moveToTrash(id);
 
 			if (success) {
-				console.log(`作品 ID: ${id} 已丟入垃圾桶`);
+				console.log(`Work ID: ${id} has been moved to the trash`);
 				await router.push({ path: '/your-work' });
 			} else {
-				console.warn(`移動失敗：伺服器未回傳成功狀態`);
-				alert('無法丟入垃圾桶，請稍後再試');
+				console.warn(`Move failed: server did not return a success status`);
+				alert('Failed to move to trash. Please try again later.');
 			}
 		} catch (error) {
-			console.error('丟入垃圾桶失敗：', error);
-			alert('無法丟入垃圾桶');
+			console.error('Failed to move to trash:', error);
+			alert('Failed to move to trash.');
 		}
 	};
 
