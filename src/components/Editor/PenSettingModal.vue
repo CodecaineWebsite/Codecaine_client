@@ -6,8 +6,9 @@ import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
 import Cdnjs from '@/components/Editor/Cdnjs.vue';
-const router = useRouter();
+import { useHandleSave } from '@/utils/handleWorkSave';
 
+const router = useRouter();
 const props = defineProps({
   cdns: {
     type: Array,
@@ -119,6 +120,12 @@ const addTag = async() => {
 const removeTag = async(index) => {
   tags.value.splice(index, 1)
   await workStore.saveCurrentWork();
+}
+
+const { handleSave } = useHandleSave();
+const handleSaveAndClose = () => {
+  handleSave();
+  emit('close');
 }
 </script>
 <template>
@@ -422,7 +429,7 @@ const removeTag = async(index) => {
       </div>
     </div>
     <div class="bg-cc-15 rounded-b-md shadow-lg  w-full flex flex-col py-4 px-2 ">
-    <button type="submit" @click.prevent="emit('close')" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
+    <button type="button" @click.prevent="handleSaveAndClose" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
     </div>
   </div>
 
