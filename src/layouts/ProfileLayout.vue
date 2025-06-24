@@ -214,6 +214,7 @@ const fetchUserInfo = async () => {
     }
   } catch (e) {
     userInfo.value = null;
+    router.replace({ name: "not-found" });
   }
 };
 
