@@ -55,13 +55,10 @@ export const useAIChatStore = defineStore('chat', () => {
       const res = await api.post('/api/ai/message', payload);
       const data = res.data;
 
-      messageInput.value = '';
-
       const index = historyMessages.value.findIndex(m => m.tempId === pendingId);
       if (index !== -1) historyMessages.value.splice(index, 1);
   
       if (data?.messages?.length) {
-        // const [_, assistantMsg] = data.messages;
         const assistantMsg = data.messages.find(m => m.role === 'assistant');
   
         // 如果有回覆就加入 historyMessages
@@ -71,7 +68,7 @@ export const useAIChatStore = defineStore('chat', () => {
           } else {
             historyMessages.value.push({
               role: 'assistant',
-              content: 'AI 無法回覆，請稍後再試。',
+              content: 'AI was unable to respond. Please try again later.',
               status: 3,
             });
           }
@@ -79,20 +76,20 @@ export const useAIChatStore = defineStore('chat', () => {
       } else {
         historyMessages.value.push({
           role: 'assistant',
-          content: 'AI 回覆失敗，未收到訊息。',
+          content: 'AI response failed. No message was received.',
           status: 3,
         });
       }
   
     } catch (err) {
-      console.error('送出訊息失敗', err);
+      console.error('Failed to send message', err);
       
       const index = historyMessages.value.findIndex(m => m.tempId === pendingId);
       if (index !== -1) historyMessages.value.splice(index, 1);
 
       historyMessages.value.push({
         role: 'assistant',
-        content: '送出訊息時發生錯誤，請稍後再試。',
+        content: 'An error occurred while sending the message. Please try again later.',
         status: 3,
       });
     } finally {
@@ -104,10 +101,9 @@ export const useAIChatStore = defineStore('chat', () => {
     try {
       const res = await api.get(`api/ai/chats`)
       chatList.value = res.data.chats;
-      changeCurrentChat(res.data.chats[0])
       return res.data.chats
     } catch (err) {
-      console.error('取得訊息失敗：', err)
+      console.error('Failed to fetch chats:', err)
     }
   }
 
@@ -116,17 +112,16 @@ export const useAIChatStore = defineStore('chat', () => {
       const res = await api.get(`/api/ai/messages/${chatId}`)
       historyMessages.value = res.data.messages || []
     } catch (err) {
-      console.error('取得訊息失敗：', err)
+      console.error('Failed to fetch messages:', err)
     }
   }
 
   async function addNewChat() {
     try {
       const res = await api.post(`/api/ai/chats`)
-      console.log(res.data.chat);
       changeCurrentChat(res.data.chat)
     } catch (err) {
-      console.error('取得訊息失敗：', err)
+      console.error('Failed to add new chat:', err)
     }
   }
 
@@ -151,7 +146,7 @@ export const useAIChatStore = defineStore('chat', () => {
       }
       fetchChats();
     } catch (err) {
-      console.error('刪除聊天失敗：', err);
+      console.error('Failed to delete chat:', err);
     }
   }
 
@@ -160,6 +155,7 @@ export const useAIChatStore = defineStore('chat', () => {
     historyMessages,
     currentChat,
     chatList,
+    changeCurrentChat,
     sendUserMessage,
     addNewChat,
     fetchChats,
