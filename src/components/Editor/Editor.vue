@@ -10,6 +10,10 @@
     code: {
       type: String,
       required: true,
+    },
+    tabSize: {
+      type: Number,
+      default: 2, 
     }
   })
 
@@ -17,19 +21,18 @@
 
   const language = ref(props.language);
   const theme = ref('vs-dark');
-
   const code = ref(props.code)
   watch(() => props.code, (newVal) => {
     code.value = newVal;
   }, { immediate: true });
-
+  
   const editorOptions = ref({
     automaticLayout: true,
     scrollbar: {
       scrollDuration: 0 // 減少滾動動畫
     },
     fontSize: 14,
-    tabSize: 2,
+    tabSize: props.tabSize,
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
     roundedSelection: false,
@@ -39,11 +42,18 @@
     wordWrap: 'on',
     parameterHints: { enabled: true },
   });
-
+  const tabSize = ref(editorOptions.value.tabSize)
+  
   watch(code, (newVal) => {
     emit('update:code', newVal)
   })
-  
+  watch(() => props.tabSize, (newSize) => {
+  editorOptions.value = {
+    ...editorOptions.value,
+    tabSize: newSize,
+  }
+})
+
 </script>
 
 <template>

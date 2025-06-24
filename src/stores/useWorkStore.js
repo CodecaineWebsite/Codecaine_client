@@ -16,6 +16,7 @@ export const useWorkStore = defineStore('work', () => {
     cdns: [], 
     viewsCount: "",
     viewMode: "center",
+    tabSize: 2,
     isAutoSave: true,
     isAutoPreview: true,
     isPrivate: false,
@@ -57,7 +58,7 @@ export const useWorkStore = defineStore('work', () => {
         console.warn('Failed to increase views count:', err);
       });
 
-      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, resources_js, resources_css, tags, ...rest } = data;
+      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
 
       currentWork.value = {
         ...rest,
@@ -70,6 +71,7 @@ export const useWorkStore = defineStore('work', () => {
         javascript: data.js_code,
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
+        tabSize: data.tabSize ?? 2,
         cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
         links: Array.isArray(data.resources_css) ? data.resources_css : [],
         tags: Array.isArray(data.tags) ? data.tags : [],
