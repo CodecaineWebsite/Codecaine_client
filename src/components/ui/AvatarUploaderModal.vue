@@ -103,7 +103,7 @@ import "vue-advanced-cropper/dist/style.css";
 const props = defineProps({
   isOpen: Boolean,
 });
-const emit = defineEmits(["close", "submit"]);
+const emit = defineEmits(["close", "submit","filename"]);
 
 const imageSrc = ref(null);
 const cropperRef = ref(null);
