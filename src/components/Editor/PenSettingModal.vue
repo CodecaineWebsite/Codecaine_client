@@ -113,6 +113,10 @@ const addTag = async() => {
     alert("This tag has already been added!");
     return;
   }
+  if (tags.value.length >= 5) {
+  alert('You can only add up to 5 tags.')
+  return;
+  }
   tags.value.push(tag);
   tagInput.value = '';
   await workStore.saveCurrentWork();
