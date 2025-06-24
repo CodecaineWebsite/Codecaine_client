@@ -5,7 +5,7 @@ import { useWorkStore } from '@/stores/useWorkStore';
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
-
+import Cdnjs from '@/components/Editor/Cdnjs.vue';
 const router = useRouter();
 
 const props = defineProps({
@@ -41,6 +41,7 @@ const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
 const tags = ref(currentWork.value.tags)
+const doseDescription = ref(currentWork.value.description)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -54,20 +55,36 @@ watch(tags, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
 
+watch(doseDescription, (newVal) => {
+  currentWork.value.description = newVal
+})
+
 const activeTab = ref(props.selectedTab)
-const cdnInput = ref('')
+const cdnInput = ref([])
 const linkInput = ref('')
 const tagInput = ref('')
 const srcDoc = ref('')
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
+function handleSelectedPackage(packageData){
+  const selectedCDN = packageData.latest
+  if (!isValidUrl(selectedCDN)) {
+    alert('Please enter a valid CDN URL (must start with http or https)');
+    return;
+  }  if (cdns.value.includes(selectedCDN)) {
+    alert("This CDN has already been added!");
+    return;
+  }
+  cdns.value.push(selectedCDN);
+  cdnInput.value = '';
+}
 const addCDN = () => {
   const url = cdnInput.value.trim();
   if (!isValidUrl(url)) {
-    alert('請輸入有效的 CDN URL（必須以 http 或 https 開頭）');
+    alert('Please enter a valid CDN URL (must start with http or https)');
     return;
   }  if (cdns.value.includes(url)) {
-    alert("這個 CDN 已經加入了！");
+    alert("This CDN has already been added!");
     return;
   }
   cdns.value.push(url);
@@ -79,7 +96,7 @@ const removeCDN = (index) => {
 const addLink = () => {
   const url = linkInput.value.trim();
   if (!isValidUrl(url)) {
-    alert('請輸入有效的 link URL（必須以 http 或 https 開頭）');
+    alert('Please enter a valid link URL（must start with http or https');
     return;
   }  if (links.value.includes(url)) {
     alert("This link has already been added!");
@@ -110,7 +127,7 @@ const removeTag = async(index) => {
 }
 </script>
 <template>
-  <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-4">
+  <div class="fixed md:translate-y-4/7 translate-y-1/2 left-1/2 -translate-x-1/2 md:h-4/5 h-11/12 md:w-175 max-w-185 w-full pb-20 px-2">
     <div class=" flex flex-col rounded-t-md bg-cc-17 text-white border-x-3 border-t-3  border-cc-pensettingmodal-border h-full w-full " >
       <div class="mx-4 pt-4">
         <div class="flex justify-between">
@@ -249,7 +266,7 @@ const removeTag = async(index) => {
               </div>
               <div class="flex flex-col">
                 <label>
-                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="輸入 Link script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalStylesheets" v-model="linkInput" @keyup.enter="addLink" type="text" placeholder="Enter Link script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
                 <button @click="addLink" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
                 <ul class="mb-4 list-disc list-inside">
@@ -286,14 +303,15 @@ const removeTag = async(index) => {
                 <label for="addExternalScripts">Add External Scripts/Pens</label>
               </div>
               <div class="flex flex-col">
+                <Cdnjs @select="handleSelectedPackage"/>
                 <label>
-                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="輸入 CDN script URL" class="w-full border px-2 py-1 mb-2"/>
+                <input id="addExternalScripts" v-model="cdnInput" @keyup.enter="addCDN" type="text" placeholder="Enter CDN script URL" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"/>
                 </label>
-                <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ 加入 CDN</button>
-                <ul class="mb-4 list-disc list-inside">
-                  <li v-for="(cdn, index) in cdns" :key="cdn" class="flex items-center justify-between gap-2">
-                    <span class="break-words max-w-[80%]">{{ cdn }}</span>
-                    <button @click="removeCDN(index)" class="text-red-500 hover:text-red-700 text-sm ">刪除</button>
+                <button @click="addCDN" class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700">➕ Add CDN</button>
+                <ul class="mb-4">
+                  <li v-for="(cdn, index) in cdns" :key="cdn" class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between">
+                    <span class="max-w-[90%] text-xs truncate">{{ cdn }}</span>
+                    <button @click="removeCDN(index)" class="text-red-500 hover:text-red-700 text-sm ">Delete</button>
                   </li>
                 </ul>
               </div>
@@ -314,7 +332,7 @@ const removeTag = async(index) => {
                 <label for="penDescription">Pen Description</label>
               </div>
               <div class="relative">
-                <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
+                <textarea id="penDescription" v-model="doseDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
