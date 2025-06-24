@@ -156,7 +156,7 @@ const handleSaveAndClose = () => {
         <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
 
           <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="htmlPreprocessor">HTML Preprocessor</label>
               </div>
