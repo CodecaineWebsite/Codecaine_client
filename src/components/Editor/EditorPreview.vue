@@ -33,17 +33,23 @@ function runPreview() {
 }
 defineExpose({ runPreview })
 
+const hasAnyContent = (work) => {
+  return Boolean(
+    work.html?.trim() ||
+    work.css?.trim() ||
+    work.javascript?.trim()
+  );
+}
 const isFirstRenderDone = ref(false);
 
 watch(
   () => props.currentWork,
   (work) => {
     if (!work || isFirstRenderDone.value) return;
-
-    if (work.isAutoPreview && work.html) {
+    if (work.isAutoPreview && hasAnyContent(work)) {
       updateIframe();
-      isFirstRenderDone.value = true;
     }
+    isFirstRenderDone.value = true;
   },
   { immediate: true }
 );

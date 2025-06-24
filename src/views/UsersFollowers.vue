@@ -57,14 +57,16 @@ const route = useRoute();
 const isLoaded = ref(false);
 const users = ref([]);
 const page = ref(1);
-const pageSize = 30;
 const totalPages = ref(1);
 
 const fetchFollowers = async () => {
   isLoaded.value = false;
   try {
     const res = await api.get(
-      `/api/follows/followers/${route.params.username}?page=${page.value}&pageSize=${pageSize}`
+      `/api/follows/followers/${route.params.username}`,
+      {
+        params: { page: page.value },
+      }
     );
     users.value = res.data.followers || [];
     totalPages.value = res.data.totalPages || 1;
