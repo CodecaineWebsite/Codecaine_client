@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, nextTick, onMounted, watch } from 'vue';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
@@ -11,23 +11,68 @@ const props = defineProps({
   }
 })
 
-// 設定 marked
+// marked 不處理代碼高亮
 marked.setOptions({
-  breaks: true, // 支援換行
-  highlight: (code, lang) => {
-    if (lang && hljs.getLanguage(lang)) {
-      return hljs.highlight(code, { language: lang }).value;
-    } else {
-      return hljs.highlightAuto(code).value;
-    }
-  }
-})
+  breaks: true,
+  highlight: false
+});
 
 // 轉為安全 HTML
 const parsedContent = computed(() => {
-  const rawHtml = marked.parse(props.message.content || '')
-  return DOMPurify.sanitize(rawHtml)
-})
+  if (!props.message?.content) return '';
+  
+  try {
+    const rawHtml = marked.parse(props.message.content);
+    return DOMPurify.sanitize(rawHtml);
+  } catch (err) {
+    console.error('Markdown parsing error:', err);
+    return props.message.content;
+  }
+});
+
+// 手動應用語法高亮
+const applyHighlight = async () => {
+  await nextTick();
+  
+  // 查找所有代碼塊
+  const codeBlocks = document.querySelectorAll('pre code');
+  
+  codeBlocks.forEach((block) => {
+    // 如果還沒有高亮過
+    if (!block.classList.contains('hljs')) {
+      // 嘗試從 class 中提取語言
+      const langClass = Array.from(block.classList).find(cls => cls.startsWith('language-'));
+      const language = langClass ? langClass.replace('language-', '') : null;
+      
+      if (language && hljs.getLanguage(language)) {
+        try {
+          const result = hljs.highlight(block.textContent, { language });
+          block.innerHTML = result.value;
+          block.classList.add('hljs', `language-${language}`);
+        } catch (err) {
+          console.error(`Error highlighting ${language}:`, err);
+          hljs.highlightElement(block);
+        }
+      } else {
+        // 自動檢測語言
+        hljs.highlightElement(block);
+      }
+    }
+  });
+};
+
+// 監聽內容變化並重新應用高亮
+watch(parsedContent, () => {
+  if (props.message?.role === 'assistant') {
+    applyHighlight();
+  }
+}, { immediate: true });
+
+onMounted(() => {
+  if (props.message?.role === 'assistant') {
+    applyHighlight();
+  }
+});
 </script>
 
 <template>
@@ -40,7 +85,7 @@ const parsedContent = computed(() => {
     ]"
   >
     <template v-if="message.role === 'assistant'">
-      <div v-html="parsedContent"></div>
+      <div v-html="parsedContent" class="message-content"></div>
     </template>
     <template v-else>
       <div style="white-space: pre-wrap;">{{ message.content }}</div>
