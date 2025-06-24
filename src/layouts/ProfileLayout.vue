@@ -78,7 +78,6 @@
                 authStore.userProfile &&
                 userInfo.username !== authStore.userProfile.username
               "
-              :current-user="authStore.userProfile.id"
               :target-user="userInfo.username" />
           </div>
         </div>
