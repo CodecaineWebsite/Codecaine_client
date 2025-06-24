@@ -41,6 +41,7 @@ const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
 const tags = ref(currentWork.value.tags)
+const doseDescription = ref(currentWork.value.description)
 
 watch(cdns, (newCDNs) => {
   workStore.updateCDNs(newCDNs)
@@ -53,6 +54,10 @@ watch(links, (newLinks) => {
 watch(tags, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
+
+watch(doseDescription, (newVal) => {
+  currentWork.value.description = newVal
+})
 
 const activeTab = ref(props.selectedTab)
 const cdnInput = ref('')
@@ -314,7 +319,7 @@ const removeTag = async(index) => {
                 <label for="penDescription">Pen Description</label>
               </div>
               <div class="relative">
-                <textarea id="penDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
+                <textarea id="penDescription" v-model="doseDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
