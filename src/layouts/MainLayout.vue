@@ -31,8 +31,8 @@
     :loadingText="msg.loadingText"
     :confirm-text="msg.confirmText"
     :cancel-text="msg.cancelText"
-    @confirm="msg.close"
-    @cancel="msg.close">
+    @confirm="msg.close(true)"
+    @cancel="msg.close(false)">
     <template #title>{{ msg.title }}</template>
     <template #message
       ><p>{{ msg.message }}</p></template
