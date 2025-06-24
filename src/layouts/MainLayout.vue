@@ -2,18 +2,21 @@
   <div
     v-show="isMounted"
     class="layout transition-all duration-400 ease-in-out"
-    :style="{ gridTemplateColumns: layoutColumns }">
+    :style="{
+      gridTemplateColumns: layoutColumns,
+      gridTemplateAreas: layoutAreas,
+    }"
+  >
     <MainSidebar
       class="sidebar"
       v-if="!isCompactScreen"
-      @toggle="toggleSidebar" />
+      @toggle="toggleSidebar"
+    />
 
     <SubHeader class="header" />
 
     <RouterView v-slot="{ Component }">
-      <component
-        :is="Component"
-        class="content" />
+      <component :is="Component" class="content" />
     </RouterView>
 
     <SubFooter class="footer" />
@@ -22,7 +25,8 @@
       v-if="modalStore.showDetailModal"
       :pen-id="modalStore.penId"
       :from="modalStore.from"
-      @close="modalStore.closeModal" />
+      @close="modalStore.closeModal"
+    />
   </div>
   <ConfirmModal
     v-if="msg.show"
@@ -32,7 +36,8 @@
     :confirm-text="msg.confirmText"
     :cancel-text="msg.cancelText"
     @confirm="msg.close(true)"
-    @cancel="msg.close(false)">
+    @cancel="msg.close(false)"
+  >
     <template #title>{{ msg.title }}</template>
     <template #message
       ><p>{{ msg.message }}</p></template
@@ -62,6 +67,13 @@ const layoutColumns = computed(() => {
     return "1fr";
   }
   return isSidebarOpen.value ? "160px 1fr" : "12px 1fr";
+});
+
+const layoutAreas = computed(() => {
+  if (isCompactScreen.value) {
+    return `"header" "content" "footer"`;
+  }
+  return `"sidebar header" "sidebar content" "sidebar footer"`;
 });
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -96,16 +108,12 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
+<style>
 .layout {
   display: grid;
-  grid-template-areas:
-    "sidebar header"
-    "sidebar content"
-    "sidebar footer";
   grid-template-rows: 75px 1fr auto;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .sidebar {
