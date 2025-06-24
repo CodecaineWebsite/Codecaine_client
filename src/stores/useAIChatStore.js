@@ -24,7 +24,10 @@ export const useAIChatStore = defineStore('chat', () => {
     const code = codeParts.join('\n');
   
     const userContent = `${code ? code + '\n' : ''}${content.trim()}`;
-    if (!userContent.trim()) return;
+    if (!userContent.trim()) {
+      isSending.value = false;
+      return;
+    }
   
     const payload = {
       content: userContent,
@@ -50,13 +53,20 @@ export const useAIChatStore = defineStore('chat', () => {
     };
   
     historyMessages.value.push(pendingMessage);
-
     try {
       const res = await api.post('/api/ai/message', payload);
       const data = res.data;
-
+      console.log(data, 'data');
       const index = historyMessages.value.findIndex(m => m.tempId === pendingId);
       if (index !== -1) historyMessages.value.splice(index, 1);
+
+      const userMsg = data.messages.find(m => m.role === 'user');
+      if (userMsg) {
+        const index = historyMessages.value.findIndex(m => m.tempId === userMsg.tempId); // 或其他你能對應的 key
+        if (index !== -1) {
+          historyMessages.value.splice(index, 1, userMsg); // 用正式 user message 替換暫時的
+        }
+      }
   
       if (data?.messages?.length) {
         const assistantMsg = data.messages.find(m => m.role === 'assistant');
@@ -94,6 +104,7 @@ export const useAIChatStore = defineStore('chat', () => {
       });
     } finally {
       isSending.value = false;
+      console.log(historyMessages.value);
     }
   }
 

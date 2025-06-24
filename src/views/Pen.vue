@@ -713,20 +713,18 @@ const handleOpenAIChat = () => {
 <style scoped>
   .slide-fade-enter-active,
   .slide-fade-leave-active {
-    transition: all 0.5s ease;
+    transition: all 0.5s ease-in-out;
   }
 
   .slide-fade-enter-from,
   .slide-fade-leave-to {
     max-width: 0;
-    opacity: 0;
     transform: translateX(-20px);
   }
 
   .slide-fade-enter-to,
   .slide-fade-leave-from {
     max-width: 100%;
-    opacity: 1;
     transform: translateX(0);
   }
 

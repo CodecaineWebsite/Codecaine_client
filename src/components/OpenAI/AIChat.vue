@@ -59,7 +59,8 @@
 
     // 清空輸入欄
     messageInput.value = '';
-    sendUserMessage(payload)
+    await sendUserMessage(payload)
+    scrollToBottom(true)
   };
   
   const handleAddNewChat = () => {
@@ -235,7 +236,7 @@
 
     <footer class="p-3 border-t-2 border-cc-editor-column-border ">
       <textarea
-        class="w-full py-2 px-1 outline-none placeholder-gray-500 resize-none"
+        class="w-full px-1 outline-none placeholder-gray-500 resize-none"
         v-model="messageInput"
         placeholder="How can I help you?"
         :disabled="isSending"
@@ -243,9 +244,13 @@
         @compositionstart="isComposing = true"
         @compositionend="isComposing = false"
       ></textarea>
+      <p class="text-xs text-gray-400">
+        Select code to include in your message
+      </p>
       <div class="flex justify-between mt-2">
         <div class="flex gap-1">
           <button
+            title="Include current HTML code"
             class="rounded px-3 py-1 hover:cursor-pointer"
             :class="withHtmlCode ? 'text-cc-1 bg-[#47cf73]' : 'bg-cc-13 text-cc-editor-column-tab-text hover:bg-gray-500 hover:text-cc-1'"
             @click="toggleWithCode('html')"
@@ -254,6 +259,7 @@
             HTML
           </button>
           <button
+            title="Include current CSS code"
             class="rounded px-3 py-1 hover:cursor-pointer"
             :class="withCssCode ? 'text-cc-1 bg-[#47cf73]' : 'bg-cc-13 text-cc-editor-column-tab-text hover:bg-gray-500 hover:text-cc-1'"
             @click="toggleWithCode('css')"
@@ -271,7 +277,8 @@
           </button>
         </div>
         <button
-          class="hover:cursor-pointer hover:text-cc-green p-2 transition duration-150 ease-in-out disabled:opacity-50 disabled:hover:text-current disabled:hover:bg-none"
+          title="Include current JavaScript code"
+          class="hover:cursor-pointer hover:text-cc-green px-2 py-1 transition duration-150 ease-in-out disabled:opacity-50 disabled:hover:text-current disabled:hover:bg-none"
           :disabled="isSending"
           @click="sendMessage"
         >
