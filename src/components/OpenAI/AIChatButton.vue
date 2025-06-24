@@ -1,13 +1,12 @@
 <script setup>
   import { ref } from 'vue';
-  import { useAIChatStore } from '@/stores/useAIChatStore';
+  import OpenAIIcon from '@/components/icons/OpenAIIcon.vue'
   
   const emit = defineEmits(['handleOpenAIChat'])
-  const aiChatStore = useAIChatStore();
 
   const isShowAIChat = ref(false)
   const openAIChat = async() => {
-    isShowAIChat.value =  true;
+    isShowAIChat.value = true;
     emit('handleOpenAIChat')
   }
 
@@ -21,9 +20,9 @@
 <template>
 
   <button type="button"
-    class="absolute bottom-10 bg-cc-yellow p-4.5 text-lg leading-4 rounded-full hover:bg-cc-blue hover:scale-110 duration-300 ease-in-out transition-* " @click="openAIChat"
+    class="absolute bottom-10 bg-[#10a37f] p-3 text-lg leading-4 rounded-full hover:bg-[#13b38f] hover:scale-110 duration-300 ease-in-out transition-* " @click="openAIChat"
     :class="isShowAIChat ? 'opacity-0 right-10' : 'opacity-100 right-2'"
   >
-    AI
+    <OpenAIIcon class="w-6 h-6 text-cc-1" />
   </button>
 </template>
