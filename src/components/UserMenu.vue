@@ -23,7 +23,7 @@ const goToPath = (path) => {
 const handleLogout = async () => {
   await signOut(auth);
   authStore.clearToken();
-  goToPath("/");
+  window.location.href = "/";
 };
 
 const handleClickOutside = (event) => {

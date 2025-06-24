@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export const useMsgStore = defineStore("modal", () => {
+export const useMsgStore = defineStore("messageModal", () => {
   const show = ref(false);
   const title = ref("");
   const message = ref("");
@@ -32,9 +32,9 @@ export const useMsgStore = defineStore("modal", () => {
     onConfirm.value = oc;
     show.value = true;
   }
-  function close() {
+  function close(isConfirm = false) {
     show.value = false;
-    if (onConfirm.value) onConfirm.value();
+    if (isConfirm && onConfirm.value) onConfirm.value();
     onConfirm.value = null;
   }
 
