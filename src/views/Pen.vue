@@ -98,7 +98,6 @@
 
   watch(currentWork, (newWork) => {
     if (newWork) {
-      console.log(newWork);
       htmlCode.value = newWork.html || '';
       cssCode.value = newWork.css || '';
       javascriptCode.value = newWork.javascript || '';
