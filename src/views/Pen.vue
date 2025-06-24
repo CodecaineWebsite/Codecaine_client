@@ -690,7 +690,7 @@ const handleOpenAIChat = () => {
           >
             <button
               @click="handleCloseAIChat"
-              class="absolute top-4 flex items-center justify-center w-4 h-7 bg-[#5A5F73] text-amber-50 rounded-r cursor-pointer z-50 transition-all duration-400 hover:opacity-100 ease-in-out"
+              class="absolute bottom-1/2 translate-y-1/2 flex items-center justify-center w-4 h-20 bg-[#5A5F73] text-amber-50 rounded-r cursor-pointer z-50 transition-all duration-400 hover:opacity-100 ease-in-out"
             >
               <span>➤</span>
             </button>

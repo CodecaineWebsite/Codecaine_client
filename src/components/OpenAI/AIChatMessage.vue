@@ -32,7 +32,7 @@ const parsedContent = computed(() => {
 
 <template>
   <li 
-  class="inline-block p-2 px-4 py-2 rounded-2xl mb-3 prose prose-invert text-sm leading-relaxed break-words"
+  class="inline-block p-2 px-4 py-2 rounded-2xl mb-3 prose prose-invert text-base leading-relaxed break-words"
   :class="[
     message.role === 'user' ? 'bg-cc-13 mr-0 ml-auto max-w-[80%]' : 'max-w-none',
     message.status === 3 && message.role === 'assistant' ? 'text-red-400' : '',
