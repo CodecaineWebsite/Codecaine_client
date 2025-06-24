@@ -121,11 +121,15 @@ const triggerFileInput = () => {
 const onFileChange = (e) => {
   const file = e.target.files[0];
   if (file) imageSrc.value = URL.createObjectURL(file);
+  emit('filename', file.name);
 };
 
 const onDrop = (e) => {
   const file = e.dataTransfer.files[0];
-  if (file) imageSrc.value = URL.createObjectURL(file);
+  if (file) {
+    imageSrc.value = URL.createObjectURL(file);
+    emit('filename', file.name)
+  }
 };
 
 const save = () => {
