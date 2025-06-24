@@ -16,7 +16,6 @@ function selectPackage(p) {
   emit('select', p);
   reset();
 }
-
 function reset() {
   keyword.value = '';
   showSelectList.value = false;
@@ -36,20 +35,15 @@ const fetchPackages = debounce(async (value) => {
         limit: 100
       }
     });
-
     const rawResults = data.results;
     const startsWith = rawResults.filter(pkg =>
       pkg.name.toLowerCase().startsWith(value.toLowerCase())
     );
-
     const includes = rawResults.filter(pkg =>
       pkg.name.toLowerCase().includes(value.toLowerCase()) &&
       !startsWith.includes(pkg)
     );
-
     packages.value = [...startsWith, ...includes].slice(0, 10); // 最多顯示前10筆
-    showSelectList.value = true;
-
     showSelectList.value = true;
   } catch (error) {
     console.error('Search failed:', error);
