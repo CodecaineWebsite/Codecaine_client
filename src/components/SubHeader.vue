@@ -10,8 +10,7 @@
       <img
         src="https://blog.codepen.io/wp-content/uploads/2012/06/Button-Fill-White-Large.png"
         class="w-8 h-8"
-        alt="logo"
-      />
+        alt="logo" />
       <button
         @click.stop="isMenuOpen = !isMenuOpen"
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
@@ -24,19 +23,16 @@
     <!-- Tabs（登入 + 大於 634px） -->
     <div
       v-if="authStore.idToken && !isVerySmallScreen"
-      class="flex items-center space-x-px flex-shrink-0"
-    >
+      class="flex items-center space-x-px flex-shrink-0">
       <button
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
-      >
+        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r">
         {{ tab }}
         <span
           class="absolute bottom-0 left-0 h-1 bg-cc-green transition-all duration-300"
-          :class="activeTab === tab ? 'w-full' : 'w-0'"
-        ></span>
+          :class="activeTab === tab ? 'w-full' : 'w-0'"></span>
       </button>
     </div>
 
@@ -89,19 +85,18 @@
       <template v-if="!authStore.idToken">
         <button
           class="bg-green-500 text-cc-20 h-9 px-4 rounded hover:bg-green-400 font-semibold"
-          @click="goToPath('/signup')"
-        >
+          @click="goToPath('/signup')">
           Sign Up
         </button>
         <button
           v-if="route.name !== 'login'"
           class="bg-cc-13 h-9 px-4 rounded hover:bg-cc-12 font-semibold"
-          @click="goToPath('/login')"
-        >
+          @click="goToPath('/login')">
           Log In
         </button>
       </template>
       <template v-else>
+        <Notify />
         <UserMenu />
       </template>
     </div>
@@ -109,18 +104,15 @@
     <!-- 下拉選單：830px 以下 -->
     <div
       v-if="isMenuOpen && isCompactScreen"
-      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2"
-    >
+      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2">
       <div class="text-[10px] text-gray-400 px-4 mb-2">CREATE</div>
 
       <!-- ✏️ 登入顯示 Caine，未登入顯示 Start Coding -->
       <div
         @click="goToPath('/pen')"
-        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2"
-      >
+        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2">
         <div
-          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"
-        ></div>
+          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"></div>
         <div
           class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center"
         >
@@ -132,22 +124,19 @@
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/your-work')"
-      >
+        @click="goToPath('/your-work')">
         Your Work
       </div>
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/following')"
-      >
+        @click="goToPath('/following')">
         Following
       </div>
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/trending')"
-      >
+        @click="goToPath('/trending')">
         Trending
       </div>
 
@@ -171,6 +160,7 @@ import SidebarToggleIcon from "@/components/icons/SidebarToggleIcon.vue";
 import UserMenu from "./UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
+import Notify from "@/components/Notify.vue";
 
 const authStore = useAuthStore();
 const route = useRoute();

@@ -57,6 +57,12 @@ const router = createRouter({
           },
         },
         {
+          path: "notifications",
+          name: "notifications",
+          component: () => import("../views/Notifications.vue"),
+          meta: { requiresAuth: true },
+        },
+        {
           path: ":username",
           component: () => import("../layouts/ProfileLayout.vue"),
           children: [
@@ -136,6 +142,7 @@ const router = createRouter({
               path: "billing",
               name: "billing",
               component: () => import("../views/Billing.vue"),
+              meta: { requiresAuth: true },
             },
           ],
         },
@@ -163,10 +170,10 @@ const router = createRouter({
       meta: { canBeModal: true },
     },
     {
-      path: '/:pathMatch(.*)*',
-      name: 'not-found',
-      component: () => import("../views/NotFound.vue")
-    }
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("../views/NotFound.vue"),
+    },
   ],
 });
 
