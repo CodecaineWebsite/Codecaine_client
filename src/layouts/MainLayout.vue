@@ -31,13 +31,15 @@
     :loadingText="msg.loadingText"
     :confirm-text="msg.confirmText"
     :cancel-text="msg.cancelText"
-    @confirm="msg.close"
-    @cancel="msg.close">
+    @confirm="msg.close(true)"
+    @cancel="msg.close(false)">
     <template #title>{{ msg.title }}</template>
     <template #message
       ><p>{{ msg.message }}</p></template
     >
   </ConfirmModal>
+
+  <ToastContainer />
 </template>
 
 <script setup>
@@ -49,6 +51,7 @@ import MainSidebar from "@/components/MainSidebar.vue";
 import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
 import { useMsgStore } from "@/stores/useMsgStore";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
+import ToastContainer from "@/components/Toast/ToastContainer.vue";
 
 const msg = useMsgStore();
 const modalStore = useModalStore();

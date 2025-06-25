@@ -30,11 +30,11 @@
 
       <div class="h-full overflow-y-auto overflow-x-hidden">
         <div>
-          <div class="img { w-full h-12 px-3 relative justify-center }">
-            <h1
-              class="cursor-pointer bg-center bg-no-repeat w-full h-full"
+          <div class="w-full h-12 px-3 flex items-center justify-center mt-4">
+            <CodecaineIcon
+              class="w-[150px] h-auto cursor-pointer"
               @click="goHome"
-            ></h1>
+            />
           </div>
         </div>
         <nav v-if="authStore.idToken">
@@ -105,6 +105,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import CodecaineIcon from "@/components/icons/CodecaineIcon.vue"
 
 const authStore = useAuthStore();
 const router = useRouter();

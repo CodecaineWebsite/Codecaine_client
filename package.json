@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.5",
+    "@headlessui/vue": "^1.7.23",
     "@stripe/stripe-js": "^7.3.1",
     "@tailwindcss/cli": "^4.1.6",
     "@tailwindcss/postcss": "^4.1.6",
@@ -26,6 +27,7 @@
     "swiper": "^11.2.8",
     "vite-plugin-monaco-editor": "^1.1.0",
     "vue": "^3.5.13",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

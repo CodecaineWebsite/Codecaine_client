@@ -23,7 +23,7 @@ const goToPath = (path) => {
 const handleLogout = async () => {
   await signOut(auth);
   authStore.clearToken();
-  goToPath("/");
+  window.location.href = "/";
 };
 
 const handleClickOutside = (event) => {
@@ -71,11 +71,11 @@ onUnmounted(() => {
           </button>
         </li>
         <hr class="border-cc-13 my-1 mx-4" />
-        <li
+        <li 
           class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
           @click="goToPath('/pen')">
           <i class="fas fa-pen mr-2 w-4 text-cc-10"></i>
-          <span>New Caine</span>
+          <span>New Dose</span>
         </li>
         <hr class="border-cc-13 my-1 mx-4" />
         <li
