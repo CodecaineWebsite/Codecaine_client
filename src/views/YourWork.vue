@@ -44,13 +44,13 @@
           <!-- Left Controls -->
           <div class="flex items-stretch space-x-2 relative">
             <!-- Search -->
-            <div class="flex rounded overflow-hidden">
+            <div class="flex-1 flex rounded overflow-hidden">
               <input
                 v-model="searchQuery"
                 @keyup.enter="handleSearch"
                 type="text"
                 placeholder="Search for..."
-                class="bg-input text-cc-1 text-sm px-3 py-1 placeholder-cc-9 focus:outline-none rounded-l"
+                class="min-w-0 bg-input text-cc-1 text-sm px-3 py-1 placeholder-cc-9 focus:outline-none rounded-l"
               />
               <button
                 @click="handleSearch"
@@ -452,9 +452,8 @@ async function loadDoses() {
     total.value = data.total;
     totalPages.value = data.totalPages;
     hasNextPage.value = data.hasNextPage;
-    console.log("🚀 載入我的 Doses 成功：", data);
   } catch (err) {
-    alert("Failed to load pens. Please try again later.");
+    alert("Failed to load doses. Please try again later.");
     // 可以加一個 toast 通知使用者
   }
 }

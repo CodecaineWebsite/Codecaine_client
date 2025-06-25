@@ -118,7 +118,6 @@ const props = defineProps({
 // 作品資訊
 const workId = props.pen.id;
 const title = props.pen.title || "Untitled";
-console.log("PenCard props", props.pen);
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;

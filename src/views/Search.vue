@@ -183,7 +183,7 @@ function updateRouteQuery() {
                   class="fill-current w-3 mr-1.5"
                   :class="{ 'text-[#0EBEFF]': activeTab === 'pens' }"
                 />
-                Pens
+                Doses
               </a>
             </div>
           </div>
