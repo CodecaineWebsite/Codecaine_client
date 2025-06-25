@@ -6,8 +6,10 @@ import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import ProTag from '@/components/Editor/ProTag.vue';
 import Cdnjs from '@/components/Editor/Cdnjs.vue';
-const router = useRouter();
+import { useHandleSave } from '@/utils/handleWorkSave';
+import EditorSmallButton from "@/components/Editor/EditorSmallButton.vue";
 
+const router = useRouter();
 const props = defineProps({
   cdns: {
     type: Array,
@@ -117,6 +119,10 @@ const addTag = async() => {
     alert("This tag has already been added!");
     return;
   }
+  if (tags.value.length >= 5) {
+  alert('You can only add up to 5 tags.')
+  return;
+  }
   tags.value.push(tag);
   tagInput.value = '';
   await workStore.saveCurrentWork();
@@ -125,6 +131,12 @@ const addTag = async() => {
 const removeTag = async(index) => {
   tags.value.splice(index, 1)
   await workStore.saveCurrentWork();
+}
+
+const { handleSave } = useHandleSave();
+const handleSaveAndClose = () => {
+  handleSave();
+  emit('close');
 }
 </script>
 <template>
@@ -155,7 +167,7 @@ const removeTag = async(index) => {
         <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
 
           <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">
-            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="htmlPreprocessor">HTML Preprocessor</label>
               </div>
@@ -163,7 +175,7 @@ const removeTag = async(index) => {
                 <select
                   id="htmlPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Haml">Haml</option>
                   <option value="Markdown">Markdown</option>
                   <option value="Slim">Slim</option>
@@ -209,7 +221,7 @@ const removeTag = async(index) => {
                 <select
                   id="cssPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Less">Less</option>
                   <option value="SCSS">SCSS</option>
                   <option value="Sass">Sass</option>
@@ -289,7 +301,7 @@ const removeTag = async(index) => {
                 <select
                   id="javaScriptPreprocessor"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500">
-                  <option value="" disabled selected>None</option>
+                  <option value="" selected>None</option>
                   <option value="Script">Script</option>
                 </select>
                 <div class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2">
@@ -325,7 +337,7 @@ const removeTag = async(index) => {
                 <label for="penTitle">Pen Title</label>
               </div>
               <div class="relative">
-                <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" />
+                <input id="penTitle" type="text" v-model="title" class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500" placeholder="Untitled" />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
@@ -333,7 +345,7 @@ const removeTag = async(index) => {
                 <label for="penDescription">Pen Description</label>
               </div>
               <div class="relative">
-                <textarea id="penDescription" v-model="doseDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" placeholder="Explain what's going on in your Pen here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
+                <textarea id="penDescription" v-model="doseDescription" class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500 placeholder:text-xs" placeholder="Explain what's going on in your Dose here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported." />
               </div>
             </div>
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
@@ -345,16 +357,13 @@ const removeTag = async(index) => {
                 <input id="tags" type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
               </div>
               <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-for="(tag, index) in tags"
-                  :key="`${tag}-${index}`"
-                  class="flex items-center bg-green-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full"
-                >
-                  {{ tag }}
-                  <button @click="removeTag(index)" class="ml-1 text-gray-500 hover:text-red-500">
-                    ✕
-                  </button>
-                </span>
+              <EditorSmallButton 
+              v-for="(tag, index) in tags"
+              :key="`${tag}-${index}`"
+              class="mt-2 flex flex-wrap gap-2 bg-cc-13"
+              >{{ tag }}
+              <button @click="removeTag(index)" class="text-cc-9 hover:text-red-500">✕</button>
+              </EditorSmallButton>
               </div>
             </div>
           </div>
@@ -451,7 +460,7 @@ const removeTag = async(index) => {
       </div>
     </div>
     <div class="bg-cc-15 rounded-b-md shadow-lg  w-full flex flex-col py-4 px-2 ">
-    <button type="submit" @click.prevent="emit('close')" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
+    <button type="button" @click.prevent="handleSaveAndClose" class="self-end bg-green-400 text-black rounded-md p-3">Save & Close</button>
     </div>
   </div>
 
