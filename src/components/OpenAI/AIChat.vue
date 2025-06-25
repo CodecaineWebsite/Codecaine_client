@@ -2,10 +2,10 @@
   import { ref, onMounted, onUnmounted, nextTick } from 'vue';
   import { storeToRefs } from 'pinia'
   import { useAIChatStore } from '@/stores/useAIChatStore';
-  import AIChatMessage from './AIChatMessage.vue';
+  import AIChatMessage from '@/components/OpenAI/AIChatMessage.vue';
   import Arrow from '@/assets/arrow.vue';
   import Edit from '@/assets/edit.vue';
-  import TrashCanIcon from '../icons/TrashCanIcon.vue';
+  import TrashCanIcon from '@/components/icons/TrashCanIcon.vue';
 
   const aiChatStore = useAIChatStore();
   const { addNewChat, fetchChats, fetchMessages, deleteChat, sendUserMessage, changeCurrentChat } = aiChatStore;
@@ -186,13 +186,13 @@
           <!-- Dropdown 選單 -->
           <ul
             v-if="showChatDropdown"
-            class="absolute right-0 top-full shadow-md rounded w-full z-10 border-2 border-cc-editor-column-border bg-cc-chat-bg text-sm"
+            class="absolute right-0 top-full shadow-md rounded w-full z-10 border-2 border-cc-editor-column-border bg-cc-chat-bg text-sm max-h-80 overflow-auto"
           >
             <li
               v-for="chat in chatList"
               :key="chat.id"
               @click="switchChat(chat)"
-              class="w-full px-3 py-2 hover:bg-gray-500 cursor-pointer truncate flex justify-between items-center"
+              class="w-full px-3 py-2 hover:bg-gray-500 hover:text-cc-1 cursor-pointer truncate flex justify-between items-center"
               :class="currentChat.id === chat.id? 'text-cc-1':'text-cc-editor-column-tab-text'"
             >
               <div v-if="editingChatId !== chat.id" class="shrink-1 overflow-hidden">
