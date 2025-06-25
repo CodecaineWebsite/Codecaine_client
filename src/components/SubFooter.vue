@@ -90,7 +90,9 @@
           <CodecaineIcon class="w-24 md:w-36 cursor-pointer" @click="goHome" />
         </div>
         <p class="text-white text-xs md:text-lg">©2025 CodeCaine</p>
-        <p class="italic mt-1 text-xs md:text-sm">Demo or it didn’t happen.</p>
+        <p class="italic mt-1 text-xs md:text-sm">
+          Ideas are cute. Tools are real.
+        </p>
       </div>
     </div>
   </footer>
