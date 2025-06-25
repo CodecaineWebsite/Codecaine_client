@@ -8,7 +8,7 @@
       <li
         v-for="n in pagedNotifications"
         class="flex gap-3 items-start p-4 mb-2 rounded-lg transition bg-[#23262f] hover:bg-[#2C303A] border border-transparent hover:border-[#05DF72] cursor-pointer"
-        :class="{ 'opacity-60': n.is_read }"
+        :class="{ 'opacity-80': n.is_read }"
       >
         <img
           v-if="n.sender && n.sender.profile_image_url"
@@ -70,7 +70,7 @@ import PaginationNav from "@/components/PaginationNav.vue";
 const notifyStore = useNotifyStore();
 
 const page = ref(1);
-const pageSize = 10;
+const pageSize = 8;
 const totalPages = computed(() =>
   Math.ceil(notifyStore.notifications.length / pageSize)
 );
@@ -85,7 +85,7 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 
-onMounted(() => {
-  notifyStore.fetchNotifications();
+onMounted(async () => {
+  await notifyStore.fetchNotifications();
 });
 </script>

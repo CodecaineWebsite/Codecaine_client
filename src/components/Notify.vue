@@ -1,10 +1,13 @@
 <template>
-  <div class="relative" @click="toggleDropdown">
-    <button class="relative focus:outline-none">
-      🔔
+  <div class="relative">
+    <button
+      class="relative focus:outline-none cursor-pointer"
+      @click="toggleDropdown"
+    >
+      <BellIcon />
       <span
         v-if="notifyStore.unreadCount > 0"
-        class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full"
+        class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow"
       >
         {{ notifyStore.unreadCount }}
       </span>
@@ -12,13 +15,12 @@
 
     <div
       v-if="showDropdown"
-      class="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded shadow-lg z-50"
+      class="absolute right-0 mt-2 w-72 bg-[#23262f] border border-[#2C303A] rounded shadow-lg z-50"
     >
       <ul>
         <li
           v-for="notification in notifyStore.notifications.slice(0, 7)"
-          :key="notification.id"
-          class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-2 items-start"
+          class="px-4 py-2 hover:bg-[#2C303A] cursor-pointer flex gap-2 items-start transition"
         >
           <img
             v-if="notification.sender && notification.sender.profile_image_url"
@@ -27,17 +29,24 @@
             alt="avatar"
           />
           <div class="flex-1">
-            <div class="font-medium text-gray-800">
+            <div class="font-medium text-[#ececf1] flex items-center gap-1">
               {{
                 notification.sender?.display_name ||
                 notification.sender?.username ||
                 "System"
               }}
+              <span
+                v-if="!notification.is_read"
+                class="ml-1 w-2 h-2 rounded-full bg-red-500 inline-block"
+                title="Unread"
+              ></span>
             </div>
-            <div class="text-sm text-gray-700">
+            <div class="text-sm text-gray-300">
               <template v-if="notification.type === 'comment'">
                 Commented on
-                <span class="font-semibold">{{ notification.pen?.title }}</span
+                <span class="font-semibold text-[#05DF72]">{{
+                  notification.pen?.title || "Untitled Pen"
+                }}</span
                 >:
                 <span class="italic"
                   >"{{ notification.comment?.content }}"</span
@@ -45,7 +54,9 @@
               </template>
               <template v-else-if="notification.type === 'favorite'">
                 Favorited your pen
-                <span class="font-semibold">{{ notification.pen?.title }}</span>
+                <span class="font-semibold text-[#05DF72]">{{
+                  notification.pen?.title
+                }}</span>
               </template>
               <template v-else-if="notification.type === 'follow'">
                 Started following you
@@ -54,25 +65,23 @@
                 {{ notification.message || "New notification" }}
               </template>
             </div>
-            <div class="text-xs text-gray-400">
+            <div class="text-xs text-gray-500">
               {{ formatDate(notification.created_at) }}
             </div>
           </div>
         </li>
         <li
           v-if="notifyStore.notifications.length === 0"
-          class="px-4 py-2 text-gray-500"
+          class="px-4 py-2 text-gray-400 text-center"
         >
           No notifications yet
         </li>
         <li
           v-if="notifyStore.notifications.length >= 7"
-          class="px-4 py-2 text-center"
+          class="px-4 py-2 text-center bg-gray-700 cursor-pointer transition text-[#05DF72] font-semibold group hover:text-white"
+          @click="notify"
         >
-          <button
-            class="text-blue-500 hover:underline cursor-pointer"
-            @click="notify"
-          >
+          <button class="text-inherit cursor-pointer">
             View all notifications
           </button>
         </li>
@@ -85,13 +94,19 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useNotifyStore } from "@/stores/useNotifyStore";
+import BellIcon from "@/assets/BellIcon.vue";
 
 const router = useRouter();
 const notifyStore = useNotifyStore();
 const showDropdown = ref(false);
 
-const notify = () => router.push({ name: "notifications" });
-const toggleDropdown = () => {
+const notify = () => {
+  showDropdown.value = !showDropdown.value;
+  router.push({ name: "notifications" });
+};
+const toggleDropdown = async () => {
+  await notifyStore.fetchNotifications();
+  await notifyStore.markAllAsRead();
   showDropdown.value = !showDropdown.value;
 };
 
@@ -100,7 +115,7 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 
-onMounted(() => {
-  notifyStore.fetchNotifications();
+onMounted(async () => {
+  await notifyStore.fetchNotifications();
 });
 </script>
