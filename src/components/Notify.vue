@@ -94,7 +94,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useNotifyStore } from "@/stores/useNotifyStore";
-import BellIcon from "@/assets/BellIcon.vue";
+import BellIcon from "@/components/icons/BellIcon.vue";
 
 const router = useRouter();
 const notifyStore = useNotifyStore();
