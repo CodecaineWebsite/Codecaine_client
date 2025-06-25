@@ -439,7 +439,7 @@
               >
                 <a href="#" class="flex justify-between w-full">
                   <div>Editor View</div>
-                  <div>/pen/</div>
+                  <div>/dose/</div>
                 </a>
               </li>
               <li
