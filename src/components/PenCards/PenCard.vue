@@ -58,7 +58,6 @@
         </div>
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
-          
           <PenCardDropdown
             :is-open="isOpen"
             :is-owner="isOwner"
@@ -123,7 +122,6 @@ const props = defineProps({
 // 作品資訊
 const workId = props.pen.id;
 const title = props.pen.title || "Untitled";
-console.log("PenCard props", props.pen);
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
@@ -132,18 +130,18 @@ const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
-const iframeSrc = ref('')
+const iframeSrc = ref("");
 const code = {
   html: props.pen.html_code || "",
   css: props.pen.css_code || "",
   javascript: props.pen.js_code || "",
   cdns: props.resources_js || [],
-  links: props.resources_css || []
-}
+  links: props.resources_css || [],
+};
 onMounted(async () => {
   const newBlobUrl = updateCardPreviewSrc(code);
-  iframeSrc.value = newBlobUrl
-})
+  iframeSrc.value = newBlobUrl;
+});
 
 // 統計資料
 const comments = props.pen.comments_count;
@@ -153,7 +151,6 @@ const views = props.pen.views_count;
 const editorPageLink = `/${userName}/pen/${workId}`;
 const userPageLink = `/${userName}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
-
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
@@ -232,4 +229,3 @@ const openDetailModal = () => {
  * 按刪除將作品從使用者的作品清單中刪除
  */
 </script>
-
