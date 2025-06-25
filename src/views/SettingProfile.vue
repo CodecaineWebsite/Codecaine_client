@@ -26,28 +26,13 @@
             <button
               type="button"
               class="rounded bg-[#444857] text-white px-4 py-2 border-0 cursor-pointer hover:bg-[#5A5F73] transition-colors duration-200"
-              @click="fileInput && fileInput.click()"
+              @click="isCropModalOpen = true"
             >
               Select File
             </button>
-            <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              @change="onAvatarChange"
-              class="hidden"
-            />
           </label>
           <div class="mt-2 flex flex-col items-start gap-2 min-h-6">
             <div class="flex flex-row items-center gap-2 w-full">
-              <button
-                v-if="fileName"
-                @click="clearFile"
-                type="button"
-                class="rounded w-20 bg-[#444857] text-white px-4 py-2 border-0 cursor-pointer hover:bg-[#5A5F73] transition-colors duration-200"
-              >
-                Clear
-              </button>
               <span v-if="fileName" class="overflow-hidden">{{
                 fileName
               }}</span>
@@ -194,16 +179,25 @@
       </div>
     </section>
   </div>
+  <AvatarUploaderModal
+    :isOpen="isCropModalOpen"
+    @close="isCropModalOpen = false"
+    @submit="handleCroppedBlob"
+    @filename="originalFileName = $event"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
+import AvatarUploaderModal from "@/components/ui/AvatarUploaderModal.vue";
 import api from "@/config/api";
 
+const isCropModalOpen = ref(false);
+const croppedAvatarBlob = ref(null);
+const originalFileName = ref("avatar.jpg"); // fallback
 const authStore = useAuthStore();
 const avatarUrl = ref("");
-const fileInput = ref(null);
 const fileName = ref("");
 const profileLinks = ref(["", "", ""]);
 const userName = ref("");
@@ -212,24 +206,16 @@ const location = ref("");
 const bio = ref("");
 const message = ref(null);
 
-const onAvatarChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    fileName.value = file.name;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      avatarUrl.value = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    fileName.value = "";
-    avatarUrl.value = "";
-  }
-};
-const clearFile = () => {
-  avatarUrl.value = "";
-  fileName.value = "";
-  if (fileInput.value) fileInput.value.value = "";
+const handleCroppedBlob = (blob) => {
+  fileName.value = originalFileName.value;
+  croppedAvatarBlob.value = blob;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    avatarUrl.value = event.target.result;
+  };
+  reader.readAsDataURL(blob);
+
+  isCropModalOpen.value=false;
 };
 const isValidUrl = (url) => {
   if (!url) return true;
@@ -259,8 +245,9 @@ const saveProfile = async (target = "profile") => {
       formData.append("bio", bio.value);
     }
     if (target == "avatar") {
-      if (fileInput.value && fileInput.value.files[0]) {
-        formData.append("profile_image", fileInput.value.files[0]);
+      if (croppedAvatarBlob.value) {
+        const file = new File([croppedAvatarBlob.value], originalFileName.value, { type: 'image/jpeg' })
+        formData.append("profile_image", file);
       }
     }
     if (target === "links") {
