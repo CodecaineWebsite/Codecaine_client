@@ -13,7 +13,7 @@
       </div>
 
       <div
-        class="flex flex-col md:flex-row max-w-[960px] w-full rounded-lg overflow-hidden px-2 sm:px-4 md:px-8 mx-auto"
+        class="flex flex-col md:flex-row max-w-[960px] w-full rounded-lg overflow-hidden px-4 sm:px-4 md:px-8 mx-auto"
       >
         <div
           class="w-full md:w-1/2 md:pr-16 flex flex-col items-end mb-8 md:mb-0"
@@ -77,7 +77,7 @@
             class="absolute left-1/2 -translate-x-1/2 w-px h-1/2 bg-white md:h-[41%] top-1/2 md:top-[59%]"
           ></div>
         </div>
-        <div class="flex-1 flex flex-col px-4 sm:px-8 md:px-16 pb-4">
+        <div class="flex-1 flex flex-col px-2 md:px-16 pb-4">
           <form @submit.prevent="login">
             <div class="mb-5">
               <label for="username" class="block mb-1 text-sm">Email</label>
