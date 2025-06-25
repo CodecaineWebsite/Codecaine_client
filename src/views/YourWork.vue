@@ -420,7 +420,7 @@ function clearSelectedTag() {
 }
 
 function goPen() {
-  router.push("/pen");
+  router.push("/dose");
 }
 
 function toggleFilters() {
