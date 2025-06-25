@@ -63,23 +63,23 @@ const router = createRouter({
             {
               path: "",
               redirect: (to) => {
-                return `/${to.params.username}/caines`;
+                return `/${to.params.username}/doses`;
               },
             },
             {
-              path: "caines",
+              path: "doses",
               component: () => import("../views/UsersCaines.vue"),
               children: [
                 {
                   path: "",
-                  name: "Profilecaines",
+                  name: "Profiledoses",
                   redirect: (to) => {
-                    return `/${to.params.username}/caines/showcase`;
+                    return `/${to.params.username}/doses/showcase`;
                   },
                 },
                 {
                   path: "showcase",
-                  name: "cainesShowcase",
+                  name: "dosesShowcase",
                   component: () => import("../views/Showcase.vue"),
                 },
                 {

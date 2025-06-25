@@ -4,7 +4,7 @@
       <button
         class="cursor-pointer hover:text-white"
         @click="showcase"
-        :class="route.name === 'cainesShowcase' ? 'text-white' : ''"
+        :class="route.name === 'dosesShowcase' ? 'text-white' : ''"
       >
         Showcase
       </button>
@@ -53,7 +53,7 @@ const router = useRouter();
 const route = useRoute();
 
 const showcase = () => {
-  router.push(`/${route.params.username}/caines/showcase`);
+  router.push(`/${route.params.username}/doses/showcase`);
 };
 const publicProfile = () => {
   router.push(`/${route.params.username}/caines/public`);
