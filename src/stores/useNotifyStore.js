@@ -21,10 +21,23 @@ export const useNotifyStore = defineStore("notify", () => {
     }
   }
 
+  async function markAllAsRead() {
+    try {
+      await api.patch("/api/notify/read-all");
+      notifications.value = notifications.value.map((n) => ({
+        ...n,
+        is_read: true,
+      }));
+    } catch (e) {
+      console.error("Failed to mark notifications as read", e);
+    }
+  }
+
   return {
     notifications,
     loading,
     unreadCount,
     fetchNotifications,
+    markAllAsRead,
   };
 });
