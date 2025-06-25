@@ -1,9 +1,9 @@
 <script setup>
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
-	import EditorSmallButton from './EditorSmallButton.vue';
+	import EditorSmallButton from '@/components/Editor/EditorSmallButton.vue';
   import { useRoute, useRouter } from 'vue-router';
-	import PenDetailModal from '../PenDetails/PenDetailModal.vue';
+	import PenDetailModal from '@/components/PenDetails/PenDetailModal.vue';
 	import { useModalStore } from '@/stores/useModalStore';
 	
 	const route = useRoute();
@@ -14,6 +14,9 @@
   const { moveToTrash } = workStore; 
   const { currentWork, currentId } = storeToRefs(workStore);
 	function openPenDetailModal() {
+		if(!currentId.value){
+			return;
+		}
 		modalStore.openModal(currentId.value, "editor")
 	}
 	
