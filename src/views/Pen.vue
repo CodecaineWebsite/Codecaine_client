@@ -69,7 +69,6 @@
   const javascriptCode = ref('');
   const cdns = ref([]);
   const links = ref([]);
-
   // RWD
   const tabs = [
     { id: 'html', label: 'HTML' },
@@ -120,6 +119,7 @@
       currentWork.value.cdns,
       currentWork.value.links,
       currentWork.value.viewMode,
+      currentWork.value.tabSize,
       currentWork.value.isAutoSave,
       currentWork.value.isAutoPreview,
       currentWork.value.isPrivate,
@@ -472,7 +472,7 @@
                     </EditorSmallButton>
                   </div>
                 </div>
-                <Editor :language="'html'" :code="htmlCode" @update:code="newCode => updateCode('html', newCode)"/>
+                <Editor :language="'html'" :code="htmlCode" :tabSize="currentWork.tabSize" @update:code="newCode => updateCode('html', newCode)"/>
               </div>
 
               <div
@@ -503,7 +503,7 @@
                     </EditorSmallButton>
                   </div>
                 </div>
-                <Editor :language="'css'" :code="cssCode" @update:code="newCode => updateCode('css', newCode)"/>
+                <Editor :language="'css'" :code="cssCode" :tabSize="currentWork.tabSize" @update:code="newCode => updateCode('css', newCode)"/>
               </div>
 
               <div
@@ -535,7 +535,7 @@
                     </EditorSmallButton>
                   </div>
                 </div>
-                <Editor :language="'javascript'" :code="javascriptCode" @update:code="newCode => updateCode('javascript', newCode)"/>
+                <Editor :language="'javascript'" :code="javascriptCode" :tabSize="currentWork.tabSize" @update:code="newCode => updateCode('javascript', newCode)"/>
               </div>
 
             </div>
