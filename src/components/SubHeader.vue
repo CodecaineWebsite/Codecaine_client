@@ -1,18 +1,21 @@
 <template>
   <header
     ref="dropdownRef"
-    class="relative bg-cc-20 text-cc-1 w-full px-4 py-2 border-b-3 border-cc-14 flex items-center gap-4">
+    class="relative bg-cc-20 text-cc-1 w-full px-2 py-2 sm:px-4 sm:py-2 border-b-3 border-cc-14 flex items-center gap-2 sm:gap-4"
+  >
     <!-- Logo + SidebarToggleIcon：830px 以下顯示 -->
     <div
-      class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex">
+      class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
+    >
       <img
         src="https://blog.codepen.io/wp-content/uploads/2012/06/Button-Fill-White-Large.png"
         class="w-8 h-8"
         alt="logo" />
       <button
         @click.stop="isMenuOpen = !isMenuOpen"
-        class="w-10 h-10 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
-        title="Toggle Navigation">
+        class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
+        title="Toggle Navigation"
+      >
         <SidebarToggleIcon :expanded="isMenuOpen" />
       </button>
     </div>
@@ -34,38 +37,46 @@
     </div>
 
     <!-- 搜尋欄 -->
-    <div class="relative h-9 ml-2 w-full max-w-[320px]">
-      <i
-        class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-cc-10"></i>
-      <form @submit.prevent="handleSearchSubmit">
-        <input
-          type="text"
-          placeholder="Search Codecaine..."
-          class="bg-cc-14 text-cc-1 pl-10 pr-4 py-2 rounded w-full h-full placeholder-cc-10 focus:outline-none"
-          v-model="searchKeyword"
-          @focus="searchFocused = true"
-          @blur="searchFocused = false" />
-      </form>
+    <div class="flex-1 flex justify-center">
+      <div class="relative h-9 ml-2 w-full min-w-0 max-w-[320px]">
+        <i
+          class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-cc-10"
+        ></i>
+        <form @submit.prevent="handleSearchSubmit">
+          <input
+            type="text"
+            placeholder="Search Codecaine..."
+            class="bg-cc-14 text-cc-1 pl-10 pr-4 py-2 rounded w-full h-full placeholder-cc-10 focus:outline-none"
+            v-model="searchKeyword"
+            @focus="searchFocused = true"
+            @blur="searchFocused = false"
+          />
+        </form>
 
-      <!-- 浮出搜尋選單 -->
-      <div
-        v-if="searchFocused"
-        class="absolute left-0 mt-2 bg-cc-18 text-cc-1 rounded-md shadow-lg border border-cc-13 z-50 flex space-x-0.5 px-2 py-2">
-        <button
-          v-if="authStore.idToken"
-          @mousedown="selectSearchTab('your-work')"
-          class="px-2.5 py-1.5 rounded bg-cc-14 text-cc-1 text-xs hover:bg-cc-13 transition flex items-center">
-          <YourWorkIcon class="fill-current w-3 mr-1 text-cc-1" />
-          Your Work
-        </button>
-        <button
-          @mousedown="selectSearchTab('pens')"
-          class="px-2.5 py-1.5 rounded bg-cc-14 text-cc-1 text-sm hover:bg-cc-13 transition flex items-center">
-          <PensIcon
-            class="fill-current w-3 mr-1"
-            :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-1'" />
-          Pens
-        </button>
+        <!-- 浮出搜尋選單 -->
+        <div
+          v-if="searchFocused"
+          class="absolute left-0 mt-2 bg-cc-18 text-cc-1 rounded shadow-lg z-50 flex space-x-1 px-1 py-1"
+        >
+          <button
+            v-if="authStore.idToken"
+            @mousedown="selectSearchTab('your-work')"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13  hover:text-cc-5 transition flex items-center"
+          >
+            <YourWorkIcon class="fill-current w-3 mr-1 text-cc-10" />
+            Your Work
+          </button>
+          <button
+            @mousedown="selectSearchTab('pens')"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+          >
+            <PensIcon
+              class="fill-current w-3 mr-1"
+              :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-10'"
+            />
+            Doses
+          </button>
+        </div>
       </div>
     </div>
 
@@ -103,8 +114,9 @@
         <div
           class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"></div>
         <div
-          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center">
-          {{ authStore.idToken ? "✏️ Caine" : "Start Coding" }}
+          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center"
+        >
+          {{ authStore.idToken ? "✏️ Dose" : "Start Coding" }}
         </div>
       </div>
 
@@ -128,12 +140,13 @@
         Trending
       </div>
 
-      <!-- 未登入：Search Pains -->
+      <!-- 未登入：Search  -->
       <div
         v-if="!authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/search')">
-        Search Pains
+        @click="goToPath('/search')"
+      >
+        Search Doses
       </div>
     </div>
   </header>

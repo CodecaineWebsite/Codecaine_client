@@ -11,6 +11,8 @@
   import ConsolePreview from '@/components/Editor/ConsolePreview.vue'
   import PenHeader from '@/components/Editor/PenHeader.vue';
   import AnonLoginModal from '@/components/Editor/AnonLoginModal.vue';
+  import AIChatButton from '@/components/OpenAI/AIChatButton.vue';
+  import AIChat from '@/components/OpenAI/AIChat.vue';
   import { debounce } from '@/utils/debounce';
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore';
@@ -26,6 +28,7 @@
   const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
   const { currentWork, currentId } = storeToRefs(workStore); //放資料
   const { handleSave } = useHandleSave();
+  const isPro = ref(false)
 
   const debouncedSave = debounce(() => {
     handleSave()
@@ -48,16 +51,28 @@
 
   onMounted( async() => {
     await handleCurrentIdChange(route.params.id);
+    const userProfile = authStore.userProfile;
     if (!route.params.id) {
      const userInit = {
-        userName: authStore.userProfile.username,
-        displayName: authStore.userProfile.display_name,
-        isPro: authStore.userProfile.is_pro,
+        userName: userProfile.username,
+        displayName: userProfile.display_name,
+        isPro: userProfile.is_pro,
       };
       await handleInitWork(userInit)
     }
+    isPro.value = !!userProfile.is_pro;
     window.addEventListener('keydown', handleKeydown, true)
   })
+
+  watch(
+    () => authStore.userProfile,
+    (profile) => {
+      if (profile && typeof profile.is_pro !== 'undefined') {
+        isPro.value = !!profile.is_pro;
+      }
+    },
+    { immediate: true, deep: true }
+  );
 
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown, true)
@@ -79,7 +94,7 @@
   const selectedTab = ref('html')
   const isMobile = ref(false)
   const checkMobile = () => {
-    isMobile.value = window.innerWidth < 768
+    isMobile.value = editorRef.value?.clientWidth < 768
   }
   onMounted(() => {
     window.addEventListener('resize', checkMobile)
@@ -176,10 +191,12 @@
   const isDraggingEditor = ref(false)
   const isDraggingConsole = ref(false)
   const isDraggingColumn = ref(false)
+  const isDraggingAiChat = ref(false)
 
   const currentColumnIndex = ref(null)
   const dragElement = ref(null)
-  const mainRef = ref(null);
+  const editorRef = ref(null);
+  const mainRef = ref(null)
 
   // 啟動 / 停止拖曳時禁用選取文字
   function enableNoSelect() {
@@ -223,7 +240,8 @@
   const editorWrapperRef = ref(null)
 
   function updateEditorSizeByDevice() {
-    editorWrapperSize.value = window.innerWidth < 640 ? 200 : 300
+    const editorWidth = editorRef.value?.clientWidth || 0;
+    editorWrapperSize.value = editorWidth < 640 ? 200 : 300;
   }
 
   onMounted(() => {
@@ -257,7 +275,7 @@
     if (layoutId === 'center') {
       const deltaY = e.clientY - startY
       const newHeight = initialHeight + deltaY
-      const mainHeight = mainRef.value ? mainRef.value.getBoundingClientRect().height : window.innerHeight
+      const mainHeight = editorRef.value ? editorRef.value.getBoundingClientRect().height : window.innerHeight
       let maxHeight = window.innerHeight
 
       if (isConsoleShow.value) {
@@ -341,7 +359,7 @@
   // 如果有顯示console 且 顯示模式是center  maxEditorHeight保留(console拖曳欄高 + editor拖曳欄高)
   watch(isConsoleShow, (show) => {
     if (show && selectedLayout.value.id === 'center') {
-      const mainHeight = mainRef.value?.getBoundingClientRect().height || window.innerHeight
+      const mainHeight = editorRef.value?.getBoundingClientRect().height || window.innerHeight
       const maxEditorHeight = mainHeight - 36 - 16  // console 高度預留
 
       if (editorWrapperSize.value > maxEditorHeight) {
@@ -350,20 +368,57 @@
     }
   })
 
+  // handle AI Chat Drag
+  const aiChatWidth = ref(400); // 預設寬度，可以依需求調整
+  let startX = 0;
+  let startWidth = 0;
+
+  function startAiChatDrag(e) {
+    e.preventDefault();
+    isDraggingAiChat.value = true;
+    e.target.setPointerCapture?.(e.pointerId);
+    startX = e.clientX;
+    startWidth = aiChatWidth.value;
+    enableNoSelect();
+  }
+
+  function handleAiChatDrag(e) {
+    if (!isDraggingAiChat.value || !mainRef.value) return;
+
+    const deltaX = e.clientX - startX;
+    let newWidth = startWidth - deltaX;
+
+    const maxWidth = mainRef.value.clientWidth;
+
+    if (newWidth < 320) newWidth = 320;
+    if (newWidth > maxWidth) newWidth = maxWidth;
+
+    aiChatWidth.value = newWidth;
+  }
+
+  function stopAiChatDrag(e) {
+    isDraggingAiChat.value = false;
+    e?.target?.releasePointerCapture?.(e.pointerId);
+    disableNoSelect();
+  }
+
   function onPointerMove(e) {
     if (isDraggingConsole.value) {
-      handleConsoleDrag(e)
+      handleConsoleDrag(e);
     } else if (isDraggingEditor.value) {
-      handleEditorDrag(e)
+      handleEditorDrag(e);
     } else if (isDraggingColumn.value) {
-      handleColumnDrag(e)
+      handleColumnDrag(e);
+    } else if (isDraggingAiChat.value) {
+      handleAiChatDrag(e);
     }
   }
 
   function onPointerUp(e) {
-    stopConsoleDrag(e)
-    stopEditorDrag(e)
-    stopColumnDrag(e)
+    stopConsoleDrag(e);
+    stopEditorDrag(e);
+    stopColumnDrag(e);
+    stopAiChatDrag(e);
   }
 
   onMounted(() => {
@@ -385,14 +440,27 @@
   const handleRunPreview = () => {
     previewRef.value?.runPreview()
   }
+
+  const aiChatButtonRef = ref(null)
+  const isShowAIChat = ref(false)
+
+  const handleCloseAIChat = () => {
+    isShowAIChat.value = false
+    aiChatButtonRef.value.closeAIChat()
+  }
+
+  const handleOpenAIChat = () => {
+    isShowAIChat.value = true
+  }
 </script>
 
 <template>
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
+    <AIChatButton ref="aiChatButtonRef" @handleOpenAIChat = "handleOpenAIChat" v-if="isPro"/>
     <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" ref="penHeader"/>
-    <main class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="mainRef">
-
+    <main class="flex flex-1 overflow-hidden" ref="mainRef">
+      <div class="flex-1 flex overflow-hidden w-full" :class="selectedLayout.display" ref="editorRef">
         <div v-if="isMobile" class="flex border-b border-gray-600 mb-1 px-2 gap-1">
           <button
             v-for="tab in tabs"
@@ -543,53 +611,93 @@
           </template>
         </div>
 
-      <div
-        :class="[
-          'bg-cc-editor-column-bg',
-          'border-cc-editor-column-border',
-          'select-none', 
-          selectedLayout.id === 'center'
-            ? 'h-4 cursor-row-resize border-y'
-            : 'w-4 cursor-col-resize border-x'
-        ]"
-        v-if="!isMobile"
-        @pointerdown="startEditorDrag"
-      ></div>
+        <div
+          :class="[
+            'bg-cc-editor-column-bg',
+            'border-cc-editor-column-border',
+            'select-none', 
+            selectedLayout.id === 'center'
+              ? 'h-4 cursor-row-resize border-y'
+              : 'w-4 cursor-col-resize border-x'
+          ]"
+          v-if="!isMobile"
+          @pointerdown="startEditorDrag"
+        ></div>
 
-      <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
-        <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
-          <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
-        </div>
-        <div v-show="isConsoleShow">
-          <div
-            class="h-9 bg-cc-editor-column-bg cursor-row-resize text-cc-1 flex justify-between items-center py-2 px-3"
-            @pointerdown="startConsoleDrag"
-          >
-            <div>
-              <h2 class="text-base text-cc-editor-column-title font-bold">
-                Console
-              </h2>
+        <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
+          <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
+            <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
+          </div>
+          <div v-show="isConsoleShow">
+            <div
+              class="h-9 bg-cc-editor-column-bg cursor-row-resize text-cc-1 flex justify-between items-center py-2 px-3"
+              @pointerdown="startConsoleDrag"
+            >
+              <div>
+                <h2 class="text-base text-cc-editor-column-title font-bold">
+                  Console
+                </h2>
+              </div>
+              <div class="flex gap-1">
+
+                <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
+                  Clear
+                </EditorSmallButton>
+                <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
+                  <Close class="w-2.5 h-2.5" alt="close button"/>
+                </EditorSmallButton>
+              </div>
             </div>
-            <div class="flex gap-1">
-
-              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClear">
-                Clear
-              </EditorSmallButton>
-              <EditorSmallButton class="hover:bg-cc-12" @buttonClick="handleConsoleClose">
-                <Close class="w-2.5 h-2.5" alt="close button"/>
-              </EditorSmallButton>
+            <div
+              class="h-16 bg-cc-editor-column-bg flex flex-col justify-between"
+              :style="{ height: `${consoleHeight}px` }"
+            >
+              <ConsolePreview ref="consoleRef"/>
             </div>
           </div>
-          <div
-            class="h-16 bg-cc-editor-column-bg flex flex-col justify-between"
-            :style="{ height: `${consoleHeight}px` }"
-          >
-            <ConsolePreview ref="consoleRef"/>
-          </div>
         </div>
-        
       </div>
+      <transition name="slide-fade">
+        <div
+          v-if="isShowAIChat"
+          class="flex"
+          style="overflow: hidden;"
+        >
+          <div
+            class="relative resizer cursor-col-resize border-cc-editor-column-border bg-cc-editor-column-bg z-10 w-4 border-x h-full"
+            @pointerdown="startAiChatDrag"
+          >
+            <button
+              @click="handleCloseAIChat"
+              class="absolute bottom-1/2 translate-y-1/2 flex items-center justify-center w-4 h-20 bg-[#5A5F73] text-amber-50 rounded-r cursor-pointer z-50 transition-all duration-400 hover:opacity-100 ease-in-out"
+            >
+              <span>➤</span>
+            </button>
+          </div>
+          <AIChat :style="{ width: aiChatWidth + 'px' }" v-if="isPro"/>
+        </div>
+      </transition>
     </main>
     <DoseFooter @toggle-console="toggleConsole"/>
   </div>
 </template>
+
+<style scoped>
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: all 0.5s ease-in-out;
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    max-width: 0;
+    transform: translateX(-20px);
+  }
+
+  .slide-fade-enter-to,
+  .slide-fade-leave-from {
+    max-width: 100%;
+    transform: translateX(0);
+  }
+
+</style>

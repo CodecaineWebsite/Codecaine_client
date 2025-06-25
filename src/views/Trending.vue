@@ -16,7 +16,7 @@
         v-for="(group, index) in chunkedCards"
         :key="'group-' + index"
       >
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <PenCard
             v-for="pen in group"
             :key="pen.id"

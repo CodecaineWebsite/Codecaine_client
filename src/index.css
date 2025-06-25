@@ -68,6 +68,8 @@
   /* PenSettingModal */
   --color-cc-pensettingmodal-border: #252830;
 
+  /* AI chat theme */
+  --color-cc-chat-bg: #1e1e1e;
 }
 
 .editor-bgc {
