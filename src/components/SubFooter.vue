@@ -4,7 +4,7 @@
       <!-- 左邊：連結群 -->
       <div class="flex flex-col space-y-4">
         <div>
-          <span class="font-bold mr-2">CodePen</span>
+          <span class="font-bold mr-2">Codecaine</span>
           <a href="#" class="mr-2">About</a>
           <a href="#" class="mr-2">Blog</a>
           <a href="#" class="mr-2">Podcast</a>
@@ -22,7 +22,7 @@
           <a href="#" class="mr-2">威廷</a>
           <a href="#" class="mr-2">Primitive</a>
         </div>
-<div>
+        <div>
           <span class="font-bold mr-2">Community</span>
           <a href="#" class="mr-2">Spark</a>
           <a href="#" class="mr-2">Challenges</a>
@@ -30,13 +30,13 @@
           <a href="#" class="mr-2">Code of Conduct</a>
         </div>
       </div>
-        <div>
-          <span class="font-bold mr-2"></span>
-          <a href="#" class="mr-2"></a>
-          <a href="#" class="mr-2"></a>
-          <a href="#" class="mr-2"></a>
-          <a href="#" class="mr-2"></a>
-        </div>
+      <div>
+        <span class="font-bold mr-2"></span>
+        <a href="#" class="mr-2"></a>
+        <a href="#" class="mr-2"></a>
+        <a href="#" class="mr-2"></a>
+        <a href="#" class="mr-2"></a>
+      </div>
       <!-- 右邊：LOGO 與資訊 -->
       <div class="flex flex-col items-center text-[11px] text-gray-400">
         <img

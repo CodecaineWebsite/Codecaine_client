@@ -43,7 +43,7 @@ const pens = ref([]);
 const isLoading = ref(true);
 
 const goAllCaines = () => {
-  router.push({ name: "cainesPublic" });
+  router.push({ name: "dosesPublic" });
 };
 const fetchCaines = async () => {
   isLoading.value = true;

@@ -93,7 +93,7 @@
           </div>
           <div class="mt-1.5">
             <div class="text-xl p-3 px-4 cursor-pointer btn" @click="goSearch">
-              Search Pains
+              Search Doses
             </div>
           </div>
         </nav>

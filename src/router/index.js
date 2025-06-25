@@ -84,18 +84,18 @@ const router = createRouter({
                 },
                 {
                   path: "public",
-                  name: "cainesPublic",
+                  name: "dosesPublic",
                   component: () => import("../views/Public.vue"),
                 },
                 {
                   path: "private",
-                  name: "cainesPrivate",
+                  name: "dosesPrivate",
                   component: () => import("../views/Private.vue"),
                   meta: { requiresPrivate: true },
                 },
                 {
                   path: "loved",
-                  name: "cainesLoved",
+                  name: "dosesLoved",
                   component: () => import("../views/Loved.vue"),
                 },
               ],

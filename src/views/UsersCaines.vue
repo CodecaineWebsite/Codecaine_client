@@ -11,13 +11,13 @@
       <button
         class="cursor-pointer hover:text-white"
         @click="publicProfile"
-        :class="route.name === 'cainesPublic' ? 'text-white' : ''"
+        :class="route.name === 'dosesPublic' ? 'text-white' : ''"
       >
         {{
           authStore.userProfile &&
           route.params.username === authStore.userProfile.username
             ? "Public"
-            : "All Caines"
+            : "All Doses"
         }}
       </button>
       <button
@@ -27,14 +27,14 @@
         "
         class="cursor-pointer hover:text-white"
         @click="privateProfile"
-        :class="route.name === 'cainesPrivate' ? 'text-white' : ''"
+        :class="route.name === 'dosesPrivate' ? 'text-white' : ''"
       >
         Private
       </button>
       <button
         class="cursor-pointer hover:text-white"
         @click="loved"
-        :class="route.name === 'cainesLoved' ? 'text-white' : ''"
+        :class="route.name === 'dosesLoved' ? 'text-white' : ''"
       >
         Loved
       </button>
@@ -56,12 +56,12 @@ const showcase = () => {
   router.push(`/${route.params.username}/doses/showcase`);
 };
 const publicProfile = () => {
-  router.push(`/${route.params.username}/caines/public`);
+  router.push(`/${route.params.username}/doses/public`);
 };
 const loved = () => {
-  router.push(`/${route.params.username}/caines/loved`);
+  router.push(`/${route.params.username}/doses/loved`);
 };
 const privateProfile = () => {
-  router.push(`/${route.params.username}/caines/private`);
+  router.push(`/${route.params.username}/doses/private`);
 };
 </script>
