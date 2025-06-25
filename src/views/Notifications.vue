@@ -13,7 +13,7 @@
         <img
           v-if="n.sender && n.sender.profile_image_url"
           :src="n.sender.profile_image_url"
-          class="w-10 h-10 rounded-full object-cover mt-1"
+          class="w-10 h-10 rounded object-cover mt-1"
           alt="avatar"
         />
         <div class="flex-1">

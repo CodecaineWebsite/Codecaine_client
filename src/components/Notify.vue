@@ -25,7 +25,7 @@
           <img
             v-if="notification.sender && notification.sender.profile_image_url"
             :src="notification.sender.profile_image_url"
-            class="w-8 h-8 rounded-full object-cover"
+            class="w-8 h-8 object-cover rounded"
             alt="avatar"
           />
           <div class="flex-1">
