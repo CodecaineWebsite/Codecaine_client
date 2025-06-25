@@ -18,6 +18,7 @@
   import Settings from '@/assets/settings.vue';
   import Layout from '@/assets/layout.vue';
   import { useHandleSave } from '@/utils/handleWorkSave';
+  import LogoIcon from '@/components/icons/LogoIcon.vue';
 
   const route = useRoute();
   const router = useRouter();
@@ -227,8 +228,8 @@
 <template>
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
-        <a href="/" class="text-0 flex-shrink-0">
-          <img :src="Icon" alt="icon" class="w-7 md:w-9 mr-1 md:mr-2">
+        <a href="/" class="flex items-center justify-center w-10 h-10 overflow-hidden">
+          <LogoIcon alt="icon" class="w-10 object-cover scale-[1.7] md:mt-1 mt-2"/>
         </a>
         <div class="flex flex-col gap-1 flex-1 min-w-0">
           <div class="flex items-center w-full min-w-0">
