@@ -56,7 +56,6 @@ export const useAIChatStore = defineStore('chat', () => {
     try {
       const res = await api.post('/api/ai/message', payload);
       const data = res.data;
-      console.log(data, 'data');
       const index = historyMessages.value.findIndex(m => m.tempId === pendingId);
       if (index !== -1) historyMessages.value.splice(index, 1);
 

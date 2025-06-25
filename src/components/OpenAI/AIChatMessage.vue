@@ -11,13 +11,11 @@ const props = defineProps({
   }
 })
 
-// marked 不處理代碼高亮
 marked.setOptions({
   breaks: true,
   highlight: false
 });
 
-// 轉為安全 HTML
 const parsedContent = computed(() => {
   if (!props.message?.content) return '';
   
@@ -30,17 +28,14 @@ const parsedContent = computed(() => {
   }
 });
 
-// 手動應用語法高亮
 const applyHighlight = async () => {
   await nextTick();
   
-  // 查找所有代碼塊
   const codeBlocks = document.querySelectorAll('pre code');
   
   codeBlocks.forEach((block) => {
-    // 如果還沒有高亮過
     if (!block.classList.contains('hljs')) {
-      // 嘗試從 class 中提取語言
+
       const langClass = Array.from(block.classList).find(cls => cls.startsWith('language-'));
       const language = langClass ? langClass.replace('language-', '') : null;
       
@@ -54,14 +49,12 @@ const applyHighlight = async () => {
           hljs.highlightElement(block);
         }
       } else {
-        // 自動檢測語言
         hljs.highlightElement(block);
       }
     }
   });
 };
 
-// 監聽內容變化並重新應用高亮
 watch(parsedContent, () => {
   if (props.message?.role === 'assistant') {
     applyHighlight();
