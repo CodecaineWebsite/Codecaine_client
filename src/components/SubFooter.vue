@@ -29,7 +29,7 @@
             >Kaia</a
           >
           <a
-            href=" https://github.com/lllBarry"
+            href="https://github.com/lllBarry"
             class="mr-2 mb-2 text-gray-400 hover:text-white transition"
             target="_blank"
             >Barry</a
