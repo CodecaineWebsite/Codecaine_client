@@ -48,10 +48,8 @@
 
     // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
     if (!authorId) return true;
-
     return isNewWork || userId === authorId;
   });
-
   // 初始化 userName
   userName.value =
     currentWork.value?.userName ??
@@ -247,7 +245,7 @@
                 {{ title.length ? title : "Untitled" }}
               </span>
             </template>
-            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing">
+            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing && isAuthor" >
               <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
             </button>
           </div>
