@@ -345,6 +345,8 @@ export const useWorkStore = defineStore('work', () => {
         js_code: currentWork.value.javascript,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
+        html_style: currentWork.value.htmlStyle || "",
+        head_stuff: currentWork.value.headStuff || "",
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
         resources_css: currentWork.value.links || [],
