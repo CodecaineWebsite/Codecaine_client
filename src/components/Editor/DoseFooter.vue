@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useWorkStore } from "@/stores/useWorkStore";
 import EditorSmallButton from "@/components/Editor/EditorSmallButton.vue";
@@ -6,6 +7,8 @@ import { useRoute, useRouter } from "vue-router";
 import PenDetailModal from "@/components/PenDetails/PenDetailModal.vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useToastStore } from "@/stores/useToastStore";
+
+import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 
 const toastStore = useToastStore();
 
@@ -15,7 +18,14 @@ const workStore = useWorkStore();
 const modalStore = useModalStore();
 const { showToast } = toastStore;
 const { moveToTrash } = workStore;
-const { currentWork, currentId } = storeToRefs(workStore);
+const { currentId } = storeToRefs(workStore);
+
+const deleting = ref(false);
+
+const toDelete = () => {
+  router.push('/your-work')
+}
+
 function openPenDetailModal() {
   if (!currentId.value) {
     return;
@@ -23,11 +33,9 @@ function openPenDetailModal() {
   modalStore.openModal(currentId.value, "editor");
 }
 
+const showDeleteModal = ref(false);
 const handleMoveToTrash = async () => {
-  const confirmed = window.confirm(
-    "Are you sure you want to move this work to the trash? You can restore it later from the trash."
-  );
-  if (!confirmed) return;
+  deleting.value = true;
   try {
     const id = currentId.value;
     const success = await moveToTrash(id);
@@ -51,12 +59,11 @@ const handleMoveToTrash = async () => {
       message: "Failed to move to trash. Please try again later.",
       variant: "danger",
     });
+  } finally {
+    deleting.value = false;
   }
 };
 
-defineProps({
-  isConsoleShow: Boolean,
-});
 const emit = defineEmits(["toggle-console"]);
 
 const handleToggleConsole = () => {
@@ -64,6 +71,31 @@ const handleToggleConsole = () => {
 };
 </script>
 <template>
+  <ConfirmModal
+    v-if="showDeleteModal"
+    variant="danger"
+    :confirm-text="'I understand, delete my Dose'"
+    :cancelText="'Cancel'"
+    :confirming="deleting"
+    :loadingText="'Deleting...'"
+    @confirm="handleMoveToTrash"
+    @cancel="showDeleteModal = false"
+  >
+    <template #title>
+      Are you sure you want to delete this Dose?
+    </template>
+
+    <template #message>
+      <p class="mb-5">
+        Here's what happens when you delete a Dose:
+      </p>
+      <ul class="list-disc list-outside pl-4">
+        <li>This Dose will no longer be accessible on Codecaine.</li>
+        <li>This Dose will be moved to the <a class="text-cc-blue" href="#" @click.prevent="toDelete">Deleted Items section of Your Work</a> for 3 days.</li>
+        <li>After 3 days, the Pen is permanently deleted. You can also manually delete it from your Deleted Items.</li>
+      </ul>
+    </template>
+  </ConfirmModal>
   <PenDetailModal
     v-if="modalStore.showDetailModal"
     :pen-id="Number(currentId)"
@@ -85,10 +117,11 @@ const handleToggleConsole = () => {
     <div class="flex items-center h-full" >
       <EditorSmallButton
         class="hover:bg-cc-red"
-        @click.prevent="handleMoveToTrash"
+        @click.prevent="showDeleteModal = true"
         v-if="currentId > 0"
-        >Delete</EditorSmallButton
       >
+        Delete
+      </EditorSmallButton>
     </div>
   </footer>
 </template>
