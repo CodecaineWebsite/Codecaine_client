@@ -5,7 +5,7 @@
     @mouseenter="isHovering = true"
     @mouseleave="isHovering = false"
     :class="[
-      'text-xs px-1 py-1 rounded cursor-pointer transition-colors duration-150',
+      'text-xs px-1 rounded cursor-pointer transition-colors duration-150 flex justify-center items-center',
       !isFollowing
         ? 'bg-green-500 text-black hover:text-white hover:bg-green-800'
         : isHovering
@@ -13,9 +13,9 @@
         : 'bg-gray-400 text-white',
     ]"
   >
-    <span v-if="!isFollowing">+ Follow</span>
-    <span v-else-if="isHovering">✕ Unfollow</span>
-    <span v-else>✓ Following</span>
+    <span v-if="!isFollowing"><span>+</span> <span>Follow</span></span>
+    <span v-else-if="isHovering"> <span>✕</span> <span>Unfollow</span></span>
+    <span v-else><span>✓</span> <span>Following</span></span>
   </button>
 </template>
 

@@ -89,7 +89,6 @@ import api from "@/config/api"; // API 請求配置
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
-import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
@@ -220,12 +219,5 @@ const openDetailModal = () => {
   modalStore.openModal(props.pen.id, "card");
 };
 
-/**
- * TODO:
- * 1. 完成追蹤作者功能
- * 2. 若作品卡為使用者的作品，則顯示刪除按鈕
- * API:
- * 按追蹤將作者加入追蹤清單
- * 按刪除將作品從使用者的作品清單中刪除
- */
+// 需要改為用 store 管理收藏狀態，因為PenCard的收藏按鈕與Modal收藏按鈕狀態不同步
 </script>

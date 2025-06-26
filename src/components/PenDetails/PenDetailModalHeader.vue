@@ -6,7 +6,7 @@
     <!-- 左區：標題與作者 -->
     <div class="flex flex-1 flex-col min-w-[120px] pr-2 ml-4">
       <h1 class="text-xl font-bold text-white truncate max-w-full">
-        {{ pen.title }}
+        {{ pen?.title || 'Untitled' }}
       </h1>
       <div class="flex items-center gap-1 text-sm text-cc-9">
         <RouterLink
@@ -17,7 +17,7 @@
         </RouterLink>
         <span
           v-if="pen.is_pro"
-          class="ml-1 bg-yellow-300 text-black text-[10px] font-bold px-1 py-[1px] rounded"
+          class="ml-1 bg-cc-yellow text-black text-[10px] font-bold px-1 py-[1px] rounded text-xs font-bold"
         >
           PRO
         </span>
@@ -76,6 +76,7 @@ import { useModalStore } from "@/stores/useModalStore";
 import { useRouter, RouterLink } from "vue-router";
 import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
+import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 
@@ -97,7 +98,6 @@ const checkFavorite = async () => {
   if (!authStore.userProfile) return;
   const res = await api.get(`/api/favorites/check/${props.pen.id}/`);
   isLiked.value = res.data.liked;
-  console.log(res.data);
 };
 
 const handleFavorite = async () => {
