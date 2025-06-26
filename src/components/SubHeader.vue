@@ -7,11 +7,9 @@
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <img
-        src="https://blog.codepen.io/wp-content/uploads/2012/06/Button-Fill-White-Large.png"
-        class="w-8 h-8"
-        alt="logo"
-      />
+      <div class="w-8 bg-white h-8 rounded-full flex justify-center items-center">
+        <LogoIcon alt="icon" class="w-6 h-6 text-black" />
+      </div>
       <button
         @click.stop="isMenuOpen = !isMenuOpen"
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
@@ -171,6 +169,7 @@ import SidebarToggleIcon from "@/components/icons/SidebarToggleIcon.vue";
 import UserMenu from "./UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
+import LogoIcon from '@/components/icons/LogoIcon.vue';
 
 const authStore = useAuthStore();
 const route = useRoute();
