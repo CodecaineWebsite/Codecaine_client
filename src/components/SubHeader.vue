@@ -67,12 +67,12 @@
             Your Work
           </button>
           <button
-            @mousedown="selectSearchTab('pens')"
+            @mousedown="selectSearchTab('doses')"
             class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
           >
             <PensIcon
               class="fill-current w-3 mr-1"
-              :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-10'"
+              :class="searchTab === 'doses' ? 'text-cc-pens' : 'text-cc-10'"
             />
             Doses
           </button>
@@ -109,14 +109,22 @@
 
       <!-- ✏️ 登入顯示 Caine，未登入顯示 Start Coding -->
       <div
-        @click="goToPath('/pen')"
+        @click="goToPath('/dose')"
         class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2">
         <div
           class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"></div>
         <div
-          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center"
+          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
         >
-          {{ authStore.idToken ? "✏️ Dose" : "Start Coding" }}
+          <Layout
+            class="w-4 h-4 text-cc-1"
+          />
+          <div>
+            {{ authStore.idToken ? 
+              "Dose" : 
+              "Start Coding" 
+            }}
+          </div>
         </div>
       </div>
 
@@ -161,6 +169,7 @@ import UserMenu from "./UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import Notify from "@/components/Notify.vue";
+import Layout from "@/assets/layout.vue";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -175,7 +184,7 @@ const dropdownRef = ref(null);
 const tabs = ["Your Work", "Following", "Trending"];
 const searchKeyword = ref("");
 const searchFocused = ref(false);
-const searchTab = ref("pens");
+const searchTab = ref("doses");
 
 const activeTab = computed(() => {
   const path = route.path;
@@ -198,7 +207,7 @@ const handleSearchSubmit = () => {
   const trimmed = searchKeyword.value.trim().toLowerCase();
   if (trimmed) {
     router.push({
-      path: "/search/pens",
+      path: "/search/doses",
       query: { q: trimmed },
     });
   }
@@ -207,7 +216,7 @@ const handleSearchSubmit = () => {
 const selectSearchTab = (tab) => {
   searchTab.value = tab;
   if (tab === "your-work") goToPath("/your-work");
-  else if (tab === "pens") goToPath({ path: "/search/pens", query: { q: "" } });
+  else if (tab === "doses") goToPath({ path: "/search/doses", query: { q: "" } });
 };
 
 const handleResize = () => {

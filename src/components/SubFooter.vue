@@ -101,6 +101,7 @@
 <script setup>
 import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 const goHome = () => {
   router.push("/");

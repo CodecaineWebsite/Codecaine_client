@@ -41,7 +41,7 @@
           <div class="flex flex-col py-3 px-4 text-lg text-white">
             <h2
               class="cursor-pointer text-[9px] pb-3 relative create"
-              @click="goYourwork"
+              @click="goYourWork"
             >
               CREATE
             </h2>
@@ -66,7 +66,7 @@
           <div class="mt-1.5">
             <div
               class="text-xl p-3 px-4 cursor-pointer btn"
-              @click="goYourwork"
+              @click="goYourWork"
             >
               Your Work
             </div>
@@ -116,14 +116,13 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
-
 import Layout from "@/assets/layout.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
 const isSidebarHover = ref(false);
 
-const goYourwork = () => {
+const goYourWork = () => {
   router.push("/your-work");
 };
 const goFollowing = () => {
