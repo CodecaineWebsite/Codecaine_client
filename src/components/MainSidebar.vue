@@ -41,22 +41,32 @@
           <div class="flex flex-col py-3 px-4 text-lg text-white">
             <h2
               class="cursor-pointer text-[9px] pb-3 relative create"
-              @click="goYourwork"
+              @click="goYourWork"
             >
               CREATE
             </h2>
             <ul
               class="bg-[#2c303a] font-medium text-lg text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
             >
-              <li class="cursor-pointer btn p-3 px-4" @click="goPen">
-                ✏️ Caine
+              <li
+                class="cursor-pointer btn p-3 px-4 flex items-center gap-3 group hover:bg-gray-100 transition-colors duration-300"
+                @click="goDose"
+              >
+                <Layout
+                  class="w-4 h-4 text-cc-10 group-hover:text-cc-blue transition-colors duration-300"
+                />
+                <div
+                  class="text-cc-1 group-hover:text-cc-1 transition-colors duration-300"
+                >
+                  Dose
+                </div>
               </li>
             </ul>
           </div>
           <div class="mt-1.5">
             <div
               class="text-xl p-3 px-4 cursor-pointer btn"
-              @click="goYourwork"
+              @click="goYourWork"
             >
               Your Work
             </div>
@@ -84,7 +94,7 @@
             >
               <li
                 class="cursor-pointer bg-black start text-center"
-                @click="goPen"
+                @click="goDose"
               >
                 <span class="bg-black block px-3 py-3">Start Coding</span>
               </li>
@@ -106,12 +116,13 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
+import Layout from "@/assets/layout.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
 const isSidebarHover = ref(false);
 
-const goYourwork = () => {
+const goYourWork = () => {
   router.push("/your-work");
 };
 const goFollowing = () => {
@@ -120,7 +131,7 @@ const goFollowing = () => {
 const goTrending = () => {
   router.push("/trending");
 };
-const goPen = () => {
+const goDose = () => {
   router.push("/dose");
 };
 const goHome = () => {
