@@ -141,9 +141,6 @@ export const useWorkStore = defineStore('work', () => {
         ${cdnTags}
         ${linkTags}
         <style>
-          body {
-            margin: 0;
-          }
           ${cssCode}
         </style>
         <script type="module">
@@ -248,9 +245,6 @@ export const useWorkStore = defineStore('work', () => {
         ${cdnTags}
         ${linkTags}
         <style>
-          body {
-            margin: 0;
-          }
           ${cssCode}
         </style>
         <script type="module">
