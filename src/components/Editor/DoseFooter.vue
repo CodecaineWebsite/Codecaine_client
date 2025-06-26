@@ -78,14 +78,15 @@ const handleToggleConsole = () => {
         @buttonClick="handleToggleConsole"
         >Console</EditorSmallButton
       >
-      <EditorSmallButton class="hover:bg-cc-12" @click="openPenDetailModal"
+      <EditorSmallButton class="hover:bg-cc-12" @click="openPenDetailModal" v-if="currentId > 0"
         >comment</EditorSmallButton
       >
     </div>
-    <div class="flex items-center h-full">
+    <div class="flex items-center h-full" >
       <EditorSmallButton
         class="hover:bg-cc-red"
         @click.prevent="handleMoveToTrash"
+        v-if="currentId > 0"
         >Delete</EditorSmallButton
       >
     </div>
