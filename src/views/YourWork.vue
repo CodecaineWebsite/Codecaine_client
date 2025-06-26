@@ -18,11 +18,11 @@
           {{ tab }}
         </button>
 
-        <!-- New Pen button -->
+        <!-- New Dose button -->
         <div class="ml-auto">
           <button
             class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2"
-            @click="goPen"
+            @click="goDose"
           >
             <PensIcon class="fill-current w-3 h-3 text-cc-1" />
             <span>New Dose</span>
@@ -239,8 +239,8 @@
               v-for="pen in pens"
               :key="pen.id"
               :pen="pen"
-              @restore="restorePen(pen.id)"
-              @delete="deletePen(pen.id)"
+              @restore="restoreDose(pen.id)"
+              @delete="deleteDose(pen.id)"
             />
             <!-- 沒有任何刪除作品時顯示 -->
             <div
@@ -293,7 +293,7 @@
           >
             <p class="text-lg font-semibold mb-4">{{ emptyStateMessage }}</p>
             <button
-              @click="goPen"
+              @click="goDose"
               class="bg-cc-green text-cc-20 font-medium px-4 py-2 hover:bg-cc-green-dark rounded-md"
             >
               Go make one!
@@ -413,18 +413,18 @@ function selectTag(tag) {
   tagInput.value = tag;
   showTags.value = false;
   page.value = 1;
-  loadPens();
+  loadDoses();
 }
 
 function clearSelectedTag() {
   selectedTag.value = "";
   tagInput.value = "";
   page.value = 1;
-  loadPens();
+  loadDoses();
 }
 
-function goPen() {
-  router.push("/pen");
+function goDose() {
+  router.push("/dose");
 }
 
 function toggleFilters() {
@@ -435,10 +435,10 @@ function handleSearch() {
   page.value = 1;
   showFilters.value = false;
   showTags.value = false;
-  loadPens();
+  loadDoses();
 }
 
-async function loadPens() {
+async function loadDoses() {
   try {
     const { data } = await api.get("/api/my/pens", {
       params: {
@@ -464,7 +464,7 @@ async function loadPens() {
   }
 }
 
-async function loadDeletedPens() {
+async function loadDeletedDoses() {
   try {
     const { data } = await api.get("/api/pens/trash");
 
@@ -489,10 +489,10 @@ async function loadTags() {
 onMounted(() => {
   loadTags();
   if (activeTab.value === "Doses") {
-    loadPens();
+    loadDoses();
   }
   if (activeTab.value === "Deleted") {
-    loadDeletedPens();
+    loadDeletedDoses();
   }
 });
 
@@ -500,25 +500,25 @@ watch(
   [activeTab, filters, selectedTag, sortOption, sortDirection, viewMode],
   () => {
     page.value = 1;
-    if (activeTab.value === "Doses") loadPens();
+    if (activeTab.value === "Doses") loadDoses();
   },
   { deep: true }
 );
 
 watch(page, () => {
-  if (activeTab.value === "Doses") loadPens();
+  if (activeTab.value === "Doses") loadDoses();
 });
 
 watch(activeTab, () => {
   pens.value = [];
   if (activeTab.value === "Deleted") {
-    loadDeletedPens();
+    loadDeletedDoses();
   } else {
-    loadPens();
+    loadDoses();
   }
 });
 
-async function deletePen(penId) {
+async function deleteDose(penId) {
   try {
     await api.delete(`/api/pens/${penId}/`);
     pens.value = pens.value.filter((pen) => pen.id !== penId);
@@ -530,7 +530,7 @@ async function deletePen(penId) {
   }
 }
 
-async function restorePen(penId) {
+async function restoreDose(penId) {
   try {
     await api.put(`/api/pens/${penId}/restore`);
     pens.value = pens.value.filter((pen) => pen.id !== penId);

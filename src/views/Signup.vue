@@ -79,11 +79,10 @@
               />
 
               <ul class="text-xs text-gray-600 mt-2 list-disc pl-5">
-                <li>Include an <strong>UPPER</strong> and lowercase letter</li>
-                <li>Include a number</li>
-                <li>
-                  Include special characters: <code>@$!%*#?&><()^+_-</code>
-                </li>
+                <li>Your password can contain:</li>
+                <li>Upper and lowercase letters</li>
+                <li>Numbers</li>
+                <li>Special characters: <code>@$!%*#?&gt;&lt;()^+_-</code></li>
                 <li>8–100 characters</li>
               </ul>
             </div>

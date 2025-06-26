@@ -25,7 +25,7 @@ export function useHandleSave() {
     try {
       const createdWork = await workStore.createNewWork(work);
       if (createdWork?.id) {
-        await router.push({ path: `/${userName}/pen/${createdWork.id}` });
+        await router.push({ path: `/${userName}/dose/${createdWork.id}` });
       } else {
         showToast({
           message: "Failed to create. Please try again later.",

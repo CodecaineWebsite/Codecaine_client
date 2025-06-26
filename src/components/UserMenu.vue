@@ -73,7 +73,7 @@ onUnmounted(() => {
         <hr class="border-cc-13 my-1 mx-4" />
         <li 
           class="flex items-center px-4 py-2 hover:bg-cc-13 cursor-pointer"
-          @click="goToPath('/pen')">
+          @click="goToPath('/dose')">
           <i class="fas fa-pen mr-2 w-4 text-cc-10"></i>
           <span>New Dose</span>
         </li>

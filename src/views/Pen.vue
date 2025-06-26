@@ -51,7 +51,9 @@
 
   onMounted( async() => {
     await handleCurrentIdChange(route.params.id);
+
     const userProfile = authStore.userProfile;
+    if(!userProfile) return;
     if (!route.params.id) {
      const userInit = {
         userName: userProfile.username,

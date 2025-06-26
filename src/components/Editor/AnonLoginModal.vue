@@ -162,10 +162,10 @@ watch(showModal, (val) => {
         class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"
       ></div>
       <button
-        class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+        class="absolute top-5 right-4 hover:text-gray-700 z-20"
         @click="close"
       >
-        <Close class="w-3 h-3 cursor-pointer" />
+        <Close class="w-3 h-3 cursor-pointer text-slate-700" />
       </button>
 
       <div>
@@ -173,7 +173,7 @@ watch(showModal, (val) => {
           Hold up!
         </h2>
         <p class="text-slate-400 text-center text-sm mb-4 tracking-tight">
-          You’ll have to Log In or Sign Up (for free!) to save your Pen.<br />
+          You’ll have to Log In or Sign Up (for free!) to save your Dose.<br />
           Don’t worry! All your work will be saved to your account.
         </p>
       </div>
@@ -281,7 +281,7 @@ watch(showModal, (val) => {
           @click.prevent="handleToSignUp"
         >
           Need to create an account?
-          <span class="text-teal-700 text-sm">Sign Up for CodePen</span>
+          <span class="text-teal-700 text-sm">Sign Up for Codecaine</span>
         </a>
         <a
           v-else-if="modalType === 'signup'"

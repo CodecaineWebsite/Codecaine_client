@@ -72,17 +72,17 @@ const handleToggleConsole = () => {
   <footer
     class="h-8 w-full flex relative justify-between items-center py-[.2rem] px-3 bg-cc-14 text-white"
   >
-    <div class="flex items-center h-full">
+    <div class="flex items-center h-full gap-2">
       <EditorSmallButton
         class="hover:bg-cc-12"
         @buttonClick="handleToggleConsole"
         >Console</EditorSmallButton
       >
-    </div>
-    <div class="flex items-center h-full gap-2">
       <EditorSmallButton class="hover:bg-cc-12" @click="openPenDetailModal"
         >comment</EditorSmallButton
       >
+    </div>
+    <div class="flex items-center h-full">
       <EditorSmallButton
         class="hover:bg-cc-red"
         @click.prevent="handleMoveToTrash"

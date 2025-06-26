@@ -111,6 +111,9 @@ export const useAIChatStore = defineStore('chat', () => {
     try {
       const res = await api.get(`api/ai/chats`)
       chatList.value = res.data.chats;
+      if(chatList.value.length === 0) {
+        addNewChat()
+      }
       return res.data.chats
     } catch (err) {
       console.error('Failed to fetch chats:', err)

@@ -34,7 +34,7 @@ const tabs = [
   { label: "HTML", key: "html" },
   { label: "CSS", key: "css" },
   { label: "JS", key: "js" },
-  { label: "Pen Detail", key: "detail", gapBefore: true },
+  { label: "Dose Detail", key: "detail", gapBefore: true },
   { label: "Privacy", key: "privacy" },
   { label: "Behavior", key: "behavior" },
   { label: "Editor", key: "editor" },
@@ -192,7 +192,7 @@ const handleSaveAndClose = () => {
         <div class="flex justify-between">
           <span
             class="after:content-[''] after:border-b-2 after:border-green-400 after:absolute after:-bottom-0.5 after:left-0 after:w-full relative pb-1"
-            >Pen Settings</span
+            >Dose Settings</span
           >
           <button
             type="button"
@@ -400,7 +400,7 @@ const handleSaveAndClose = () => {
             >
               <div>
                 <label for="addExternalStylesheets"
-                  >Add External Stylesheets/Pens</label
+                  >Add External Stylesheets / Doses</label
                 >
               </div>
               <div class="flex flex-col">
@@ -470,7 +470,7 @@ const handleSaveAndClose = () => {
             >
               <div>
                 <label for="addExternalScripts"
-                  >Add External Scripts/Pens</label
+                  >Add External Scripts / Doses</label
                 >
               </div>
               <div class="flex flex-col">
@@ -518,7 +518,7 @@ const handleSaveAndClose = () => {
               class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
             >
               <div>
-                <label for="penTitle">Pen Title</label>
+                <label for="penTitle">Dose Title</label>
               </div>
               <div class="relative">
                 <input
@@ -534,7 +534,7 @@ const handleSaveAndClose = () => {
               class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
             >
               <div>
-                <label for="penDescription">Pen Description</label>
+                <label for="penDescription">Dose Description</label>
               </div>
               <div class="relative">
                 <textarea
@@ -591,7 +591,7 @@ const handleSaveAndClose = () => {
               <div class="flex flex-col">
                 <label> Privacy </label>
                 <span class="text-xs align-text-bottom mb-4 mt-1"
-                  >Set this Pen as private. Only you can access it .</span
+                  >Set this Dose as private. Only you can access it .</span
                 >
               </div>
               <label class="py-2 hover:cursor-pointer">
@@ -626,14 +626,14 @@ const handleSaveAndClose = () => {
                   Keep it secret; keep it safe.
                 </h4>
                 <p class="font-thin text-15 text-center">
-                  Private Pens are hidden everywhere on CodePen, except to you.
-                  You can still share them and other people can see them, they
-                  just can't find them through searching or browsing.
+                  Private Doses are hidden everywhere on Codecaine, except to
+                  you. You can still share them and other people can see them,
+                  they just can't find them through searching or browsing.
                 </p>
                 <!-- todo 加入導向升級pro頁面 -->
                 <a
                   href="#"
-                  @click.prevent="router.push('/')"
+                  @click.prevent="router.push('/settings/billing')"
                   class="py-2 px-3 bg-cc-yellow rounded text-cc-20 hover:text-cc-1 hover:bg-cc-yellow-dark"
                   >Upgrade to PRO</a
                 >
@@ -651,7 +651,7 @@ const handleSaveAndClose = () => {
               <div class="flex flex-col">
                 <label for="autoSave">Auto Save</label>
                 <span class="text-xs align-text-bottom mb-4 mt-1"
-                  >If active, Pens will autosave every 30 seconds after being
+                  >If active, Doses will autosave every 30 seconds after being
                   saved once.</span
                 >
               </div>

@@ -93,7 +93,7 @@ const isFollowing = ref(false);
 const isPro = authStore.userProfile?.is_pro || false;
 const userName = props.pen.username;
 const views = props.pen.views_count;
-const editorPageLink = `/${userName}/pen/${workId}`;
+const editorPageLink = `/${userName}/dose/${workId}`;
 
 const handleFollow = async () => {
   try {

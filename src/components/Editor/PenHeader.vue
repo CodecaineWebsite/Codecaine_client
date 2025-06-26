@@ -18,6 +18,7 @@
   import Settings from '@/assets/settings.vue';
   import Layout from '@/assets/layout.vue';
   import { useHandleSave } from '@/utils/handleWorkSave';
+  import LogoIcon from '@/components/icons/LogoIcon.vue';
 
   const route = useRoute();
   const router = useRouter();
@@ -227,8 +228,8 @@
 <template>
     <nav class="relative md:h-16 h-14 w-full bg-black flex items-center justify-between">
       <div class="flex items-center ml-2">
-        <a href="/" class="text-0 flex-shrink-0">
-          <img :src="Icon" alt="icon" class="w-7 md:w-9 mr-1 md:mr-2">
+        <a href="/" class="flex items-center justify-center w-10 mr-1">
+          <LogoIcon alt="icon"/>
         </a>
         <div class="flex flex-col gap-1 flex-1 min-w-0">
           <div class="flex items-center w-full min-w-0">
@@ -250,9 +251,15 @@
               <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
             </button>
           </div>
-          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis">
-            {{ userName ? userName : "Captain Anonymous" }}
-          </a>
+          <router-link
+            v-if="userName"
+            :to="`/${userName}/doses/showcase`"
+            :title="userName"
+            class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis"
+          >
+            {{ userName }}
+          </router-link>
+          <span v-else class="text-xs md:text-11 text-gray-400">Captain Anonymous</span>
         </div>
       </div>
 
@@ -433,7 +440,7 @@
               >
                 <a href="#" class="flex justify-between w-full">
                   <div>Editor View</div>
-                  <div>/pen/</div>
+                  <div>/dose/</div>
                 </a>
               </li>
               <li
