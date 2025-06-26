@@ -275,7 +275,11 @@
 
         <div v-else class="w-full">
           <div v-if="pens.length > 0">
-            <PenCardLayout :pens="pens" :mode="viewMode" :filter="filters.privacy" />
+            <PenCardLayout
+              :pens="pens"
+              :mode="viewMode"
+              :filter="filters.privacy"
+            />
             <PaginationNav
               :currentPage="page"
               :totalPages="totalPages"
@@ -320,13 +324,13 @@ import ViewModeChange from "@/components/ViewModeChange.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import FiltersIcon from "@/components/icons/FiltersIcon.vue";
 import TagsIcon from "@/components/icons/TagsIcon.vue";
-import GridIcon from "@/components/icons/GridIcon.vue";
-import ListIcon from "@/components/icons/ListIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
+import { useToastStore } from "@/stores/useToastStore";
 
+const toastStore = useToastStore();
 const router = useRouter();
-
+const { showToast } = toastStore;
 // data
 const pens = ref([]);
 const tags = ref([]);
@@ -453,8 +457,10 @@ async function loadPens() {
     totalPages.value = data.totalPages;
     hasNextPage.value = data.hasNextPage;
   } catch (err) {
-    alert("Failed to load doses. Please try again later.");
-    // 可以加一個 toast 通知使用者
+    showToast({
+      message: "Failed to load pens. Please try again later.",
+      variant: "danger",
+    });
   }
 }
 
@@ -464,8 +470,10 @@ async function loadDeletedPens() {
 
     pens.value = data;
   } catch (err) {
-    alert("Failed to load deleted pens. Please try again later.");
-    // 可以加一個 toast 通知使用者
+    showToast({
+      message: "Failed to load deleted pens. Please try again later.",
+      variant: "danger",
+    });
   }
 }
 async function loadTags() {
@@ -515,8 +523,10 @@ async function deletePen(penId) {
     await api.delete(`/api/pens/${penId}/`);
     pens.value = pens.value.filter((pen) => pen.id !== penId);
   } catch (err) {
-    alert("Failed to delete. Please try again later.");
-    // TODO: 加一個 toast 通知使用者
+    showToast({
+      message: "Failed to delete. Please try again later.",
+      variant: "danger",
+    });
   }
 }
 
@@ -525,8 +535,10 @@ async function restorePen(penId) {
     await api.put(`/api/pens/${penId}/restore`);
     pens.value = pens.value.filter((pen) => pen.id !== penId);
   } catch (err) {
-    alert("Failed to restore. Please try again later.");
-    // TODO: 加 toast 顯示錯誤訊息
+    showToast({
+      message: "Failed to restore. Please try again later.",
+      variant: "danger",
+    });
   }
 }
 
