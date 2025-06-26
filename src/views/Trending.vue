@@ -76,10 +76,14 @@ import { nextTick } from "vue";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
+import { useToastStore } from "@/stores/useToastStore";
 import "swiper/css";
 import "swiper/css/navigation";
 import api from "@/config/api";
 import PenCard from "@/components/PenCards/PenCard.vue";
+
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 
 const swiperRef = ref(null);
 const pages = ref([]);
@@ -113,7 +117,10 @@ const loadPage = async (pageNum) => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    alert("System error. Please try again later")
+    showToast({
+      message: "System error. Please try again later",
+      variant: "danger",
+    });
     console.error(`Failed to retrieve data for page ${pageNum}`, err);
     hasMore.value = false; // 防止一直 retry
   }
@@ -145,11 +152,9 @@ onMounted(async () => {
   await loadPage(2);
 });
 
-
 // TODO
 // 空資料畫面
 // 載入中畫面
-
 
 function handleDeletePen(deletedId) {
   const index = props.pens.findIndex((pen) => pen.id === deletedId);
@@ -200,5 +205,4 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
-
 </script>

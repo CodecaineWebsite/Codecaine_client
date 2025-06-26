@@ -1,39 +1,47 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import Close from '@/components/icons/Close.vue';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { loginWithEmail, registerWithEmail, resetPassword } from '@/utils/authCore';
+import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Close from "@/components/icons/Close.vue";
+import { useAuthStore } from "@/stores/useAuthStore";
+import {
+  loginWithEmail,
+  registerWithEmail,
+  resetPassword,
+} from "@/utils/authCore";
 import {
   getLoginErrorMessage,
   getResetErrorMessage,
 } from "@/utils/errorHandlers";
 import { syncUser } from "@/utils/user";
 import { auth } from "@/config/firebase";
-import { useHandleSave } from '@/utils/handleWorkSave';
+import { useHandleSave } from "@/utils/handleWorkSave";
+import { useToastStore } from "@/stores/useToastStore";
 
 const { handleSave } = useHandleSave();
-const route = useRoute()
-const router = useRouter()
+const toastStore = useToastStore();
+const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
-const modal = ref(null)
+const modal = ref(null);
+const { showToast } = toastStore;
+const account = ref("");
+const password = ref("");
+const success = ref("");
+const error = ref("");
 
-const account = ref('')
-const password = ref('')
-const success = ref("")
-const error = ref("")
-
-const emailForResetPassword = ref('')
+const emailForResetPassword = ref("");
 const resetError = ref("");
 const resetSuccess = ref("");
 
-const modalType = computed(() => route.query.modal)
-const showModal = computed(() => modalType.value === 'login' || modalType.value === 'signup')
+const modalType = computed(() => route.query.modal);
+const showModal = computed(
+  () => modalType.value === "login" || modalType.value === "signup"
+);
 
-const isForgetPassword = ref(false)
+const isForgetPassword = ref(false);
 const toggleIsForgetPassword = () => {
-  isForgetPassword.value = !isForgetPassword.value
-}
+  isForgetPassword.value = !isForgetPassword.value;
+};
 
 const startClick = (e) => {
   mouseDownInside = modal.value?.contains(e.target);
@@ -48,13 +56,13 @@ const checkClose = (e) => {
 };
 
 const close = () => {
-  const newQuery = { ...route.query }
-  delete newQuery.modal
-  router.replace({ path: route.path, query: newQuery })
-}
+  const newQuery = { ...route.query };
+  delete newQuery.modal;
+  router.replace({ path: route.path, query: newQuery });
+};
 
 let mouseDownInside = false;
-const handleLogIn = async() => {
+const handleLogIn = async () => {
   error.value = "";
   success.value = "";
 
@@ -65,29 +73,32 @@ const handleLogIn = async() => {
 
     handleSave();
 
-    account.value = ""
-    password.value = ""
+    account.value = "";
+    password.value = "";
   } catch (e) {
     error.value = getLoginErrorMessage(e.code);
     console.error(e);
   }
-}
+};
 
-const handleSignUp = async() => {
+const handleSignUp = async () => {
   error.value = "";
   success.value = "";
 
   try {
     await registerWithEmail(auth, account.value, password.value);
     success.value = "You have successfully registered!";
-    handleLogIn()
+    handleLogIn();
   } catch (e) {
     const msg = getRegisterErrorMessage(e.code);
-    alert(msg);
+    showToast({
+      message: msg,
+      variant: "danger",
+    });
     error.value = msg;
     console.error("註冊失敗:", e);
   }
-}
+};
 
 const handleResetPassword = async () => {
   resetError.value = "";
@@ -109,14 +120,14 @@ const handleToLogIn = () => {
   error.value = "";
   account.value = "";
   password.value = "";
-  router.push({ path: route.path, query: { ...route.query, modal: 'login' } })
-}
+  router.push({ path: route.path, query: { ...route.query, modal: "login" } });
+};
 const handleToSignUp = () => {
   error.value = "";
   account.value = "";
   password.value = "";
-  router.push({ path: route.path, query: { ...route.query, modal: 'signup' } })
-}
+  router.push({ path: route.path, query: { ...route.query, modal: "signup" } });
+};
 
 const initModal = () => {
   account.value = "";
@@ -127,7 +138,7 @@ const initModal = () => {
   resetError.value = "";
   resetSuccess.value = "";
   isForgetPassword.value = false;
-}
+};
 
 watch(showModal, (val) => {
   if (val) {
@@ -140,19 +151,27 @@ watch(showModal, (val) => {
   <div
     v-if="showModal"
     class="fixed inset-0 bg-black/50 flex justify-center items-start z-150"
-    @mousedown="startClick" @mouseup="checkClose"
+    @mousedown="startClick"
+    @mouseup="checkClose"
   >
     <div
       ref="modal"
       class="relative bg-white rounded-xl mt-8 w-90 md:w-80 shadow-lg flex flex-col md:min-w-lg min-md-h-[70vh] max-h-[90vh] md:max-h-[80vh] pt-7.5 md:px-15 p-8 overflow-y-auto"
     >
-      <div class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"></div>
-      <button class="absolute top-5 right-4 hover:text-gray-700 z-20" @click="close">
-        <Close class="w-3 h-3 cursor-pointer text-slate-700"/>
+      <div
+        class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"
+      ></div>
+      <button
+        class="absolute top-5 right-4 hover:text-gray-700 z-20"
+        @click="close"
+      >
+        <Close class="w-3 h-3 cursor-pointer text-slate-700" />
       </button>
 
       <div>
-        <h2 class="font-bold mb-4 text-slate-700 text-center text-4xl">Hold up!</h2>
+        <h2 class="font-bold mb-4 text-slate-700 text-center text-4xl">
+          Hold up!
+        </h2>
         <p class="text-slate-400 text-center text-sm mb-4 tracking-tight">
           You’ll have to Log In or Sign Up (for free!) to save your Dose.<br />
           Don’t worry! All your work will be saved to your account.
@@ -181,8 +200,19 @@ watch(showModal, (val) => {
               v-model="password"
             />
           </div>
-          <button type="submit" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer" @click="handleLogIn">Log In</button>
-          <a href="#" class="text-slate-400 text-center" @click.prevent="toggleIsForgetPassword">Forget Password?</a>
+          <button
+            type="submit"
+            class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer"
+            @click="handleLogIn"
+          >
+            Log In
+          </button>
+          <a
+            href="#"
+            class="text-slate-400 text-center"
+            @click.prevent="toggleIsForgetPassword"
+            >Forget Password?</a
+          >
         </form>
 
         <div
@@ -199,7 +229,11 @@ watch(showModal, (val) => {
               class="p-2.5 mt-1 mb-3 bg-gray-100 w-full rounded-md h-12 outline-none focus:ring-2 focus:ring-stone-300 text-black"
               v-model="emailForResetPassword"
             />
-            <button type="button" class="w-full h-10 bg-slate-500 text-white hover:bg-slate-400 rounded-md" @click="handleResetPassword">
+            <button
+              type="button"
+              class="w-full h-10 bg-slate-500 text-white hover:bg-slate-400 rounded-md"
+              @click="handleResetPassword"
+            >
               Send Password Reset Email
             </button>
           </form>
@@ -207,7 +241,10 @@ watch(showModal, (val) => {
       </main>
 
       <main v-else-if="modalType === 'signup'" class="flex-1 mb-4">
-        <form class="flex flex-col gap-4 text-zinc-900 text-sm" @submit.prevent="handleSignUp">
+        <form
+          class="flex flex-col gap-4 text-zinc-900 text-sm"
+          @submit.prevent="handleSignUp"
+        >
           <div>
             <label for="email" class="text-slate-700">Email</label>
             <input
@@ -226,16 +263,31 @@ watch(showModal, (val) => {
               v-model="password"
             />
           </div>
-          <button type="submit" class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer">Sign Up</button>
+          <button
+            type="submit"
+            class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer"
+          >
+            Sign Up
+          </button>
         </form>
       </main>
 
-      <div class="relative w-full text-zinc-900 bg-white text-center pt-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]">
-        <a v-if="modalType === 'login'" href="#" @click.prevent="handleToSignUp">
+      <div
+        class="relative w-full text-zinc-900 bg-white text-center pt-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]"
+      >
+        <a
+          v-if="modalType === 'login'"
+          href="#"
+          @click.prevent="handleToSignUp"
+        >
           Need to create an account?
           <span class="text-teal-700 text-sm">Sign Up for Codecaine</span>
         </a>
-        <a v-else-if="modalType === 'signup'" href="#" @click.prevent="handleToLogIn">
+        <a
+          v-else-if="modalType === 'signup'"
+          href="#"
+          @click.prevent="handleToLogIn"
+        >
           Already have an account?
           <span class="text-teal-700 text-sm">Log In</span>
         </a>
