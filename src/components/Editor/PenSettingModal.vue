@@ -39,7 +39,7 @@ const tabs = [
 const workStore = useWorkStore()
 const { currentWork } = storeToRefs(workStore)
 
-const htmlStyle = ref(currentWork.value.htmlStyle)
+const htmlClass = ref(currentWork.value.htmlClass)
 const headStuff = ref(currentWork.value.headStuff)
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
@@ -60,8 +60,8 @@ watch(tags, (newTags) => {
   workStore.updateTags(newTags)
 }, { deep: true })
 
-watch(htmlStyle, (newHtmlStyle) => {
-  workStore.updatehtmlStyle(newHtmlStyle)
+watch(htmlClass, (newhtmlClass) => {
+  workStore.updatehtmlClass(newhtmlClass)
 }, { deep: true })
 
 watch(headStuff, (newStuff) => {
@@ -184,7 +184,7 @@ const handleSaveAndClose = () => {
               <div class="relative">
                 <input
                   id="addClassToHtml"
-                  v-model="currentWork.htmlStyle"
+                  v-model="currentWork.htmlClass"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
                   placeholder="e.g. single post post-1234"/>
               </div>

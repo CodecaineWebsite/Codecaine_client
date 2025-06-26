@@ -12,7 +12,7 @@ export const useWorkStore = defineStore('work', () => {
     html: "",
     css: "",
     javascript: "",
-    htmlStyle: "",
+    htmlClass: "",
     links:[],
     cdns: [], 
     headStuff: "",
@@ -35,8 +35,8 @@ export const useWorkStore = defineStore('work', () => {
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
   }
-  const updatehtmlStyle = (newhtmlStyle) => {
-  currentWork.value.htmlStyle = newhtmlStyle
+  const updatehtmlClass = (newhtmlClass) => {
+  currentWork.value.htmlClass = newhtmlClass
   }
   const updateHeadStuff = (newStuff) => {
   currentWork.value.headStuff = newStuff
@@ -77,7 +77,7 @@ export const useWorkStore = defineStore('work', () => {
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
-        htmlStyle: data.html_style || '',
+        htmlClass: data.html_style || '',
         headStuff: data.head_stuff || '',
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
@@ -119,13 +119,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const { htmlStyle, headStuff } = currentWork.value;
+    const { htmlClass, headStuff } = currentWork.value;
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en" style="${htmlStyle}">
+      <html lang="en" class="${htmlClass}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -227,13 +227,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
     const htmlCode = code.html;
-    const { htmlStyle, headStuff } = code;
+    const { htmlClass, headStuff } = code;
     const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en" style="${htmlStyle}">
+      <html lang="en" class="${htmlClass}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -345,7 +345,7 @@ export const useWorkStore = defineStore('work', () => {
         js_code: currentWork.value.javascript,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
-        html_style: currentWork.value.htmlStyle || "",
+        html_style: currentWork.value.htmlClass || "",
         head_stuff: currentWork.value.headStuff || "",
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
@@ -416,7 +416,7 @@ export const useWorkStore = defineStore('work', () => {
     updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
-    updatehtmlStyle,
+    updatehtmlClass,
     updateHeadStuff,
     updateTags,
     fetchWorks,

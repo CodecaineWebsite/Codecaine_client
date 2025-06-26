@@ -38,7 +38,7 @@ const hasAnyContent = (work) => {
     work.html?.trim() ||
     work.css?.trim() ||
     work.javascript?.trim() ||
-    work.htmlStyle?.trim() ||
+    work.htmlClass?.trim() ||
     work.headStuff?.trim()
   );
 }
@@ -61,7 +61,7 @@ watch(
     props.currentWork?.html,
     props.currentWork?.css,
     props.currentWork?.javascript,
-    props.currentWork?.htmlStyle,
+    props.currentWork?.htmlClass,
     props.currentWork?.headStuff,
     JSON.stringify(props.currentWork?.cdns || []),
     JSON.stringify(props.currentWork?.links || []),
