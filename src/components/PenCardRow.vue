@@ -138,7 +138,7 @@ const handleDelete = async () => {
   } catch (error) {
     console.error("Delete failed", error);
     showToast({
-      message: "Only Pro members can make doses private.",
+      message: "Failed to delete pen. Please try again later.",
     });
   }
 };

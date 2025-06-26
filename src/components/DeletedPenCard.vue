@@ -79,7 +79,7 @@ async function handleDelete() {
     await emit("delete");
   } catch (err) {
     showToast({
-      massage: "An error occurred. Please try again later.",
+      message: "An error occurred. Please try again later.",
       variant: "danger",
     });
   } finally {
@@ -92,7 +92,7 @@ async function handleRestore() {
     restoring.value = true;
     await emit("restore");
     showToast({
-      massage: "Restored!",
+      message: "Restored!",
       variant: "success",
     });
   } catch (err) {
