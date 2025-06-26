@@ -30,26 +30,27 @@
       </button>
     </div>
 
-     <ConfirmModal 
-     v-if="showDeleteModal"
-     variant="danger"
-     :confirm-text="'Delete'"
-     :cancelText="'Cancel'"
-     :confirming="deleting"
-     :loadingText="'Deleting...'"
-     @confirm="handleDelete"
-     @cancel="showDeleteModal = false"
-     >
-    <template #title>
-      Are you sure you want to PERMANENTLY delete this work?
-    </template>
+    <ConfirmModal
+      v-if="showDeleteModal"
+      variant="danger"
+      :confirm-text="'Delete'"
+      :cancelText="'Cancel'"
+      :confirming="deleting"
+      :loadingText="'Deleting...'"
+      @confirm="handleDelete"
+      @cancel="showDeleteModal = false"
+    >
+      <template #title>
+        Are you sure you want to PERMANENTLY delete this work?
+      </template>
 
-    <template #message>
-      <p>
-        “<strong>{{ pen.title }}</strong>” will be gone forever. Even Codecaine support has no
-          way to get it back.<br />Be sure!
-      </p>
-    </template>
+      <template #message>
+        <p>
+          “<strong>{{ pen.title }}</strong
+          >” will be gone forever. Even Codecaine support has no way to get it
+          back.<br />Be sure!
+        </p>
+      </template>
     </ConfirmModal>
   </div>
 </template>
@@ -57,6 +58,10 @@
 import { ref } from "vue";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
+import { useToastStore } from "@/stores/useToastStore";
+
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 
 defineProps({
   pen: Object, // 單一作品資料
@@ -72,9 +77,11 @@ async function handleDelete() {
     deleting.value = true;
     showDeleteModal.value = false;
     await emit("delete");
-    // 改成 Toast
   } catch (err) {
-    alert("An error occurred. Please try again later.");
+    showToast({
+      massage: "An error occurred. Please try again later.",
+      variant: "danger",
+    });
   } finally {
     deleting.value = false;
   }
@@ -84,13 +91,15 @@ async function handleRestore() {
   try {
     restoring.value = true;
     await emit("restore");
-
-    // 還原成功後可以加 toast
-    // showToast({ type: "success", message: "Restored!" });
+    showToast({
+      massage: "Restored!",
+      variant: "success",
+    });
   } catch (err) {
-    alert("An error occurred. Please try again later.");
-    // 還原失敗可以加 toast
-    // showToast({ type: "error", message: "Restore failed." });
+    showToast({
+      massage: "An error occurred. Please try again later.",
+      variant: "danger",
+    });
   } finally {
     restoring.value = false;
   }
