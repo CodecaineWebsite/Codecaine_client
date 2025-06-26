@@ -35,7 +35,7 @@ export const useWorkStore = defineStore('work', () => {
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
   }
-  const updatehtmlClass = (newhtmlClass) => {
+  const updateHtmlClass = (newhtmlClass) => {
   currentWork.value.htmlClass = newhtmlClass
   }
   const updateHeadStuff = (newStuff) => {
@@ -414,7 +414,7 @@ export const useWorkStore = defineStore('work', () => {
     updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
-    updatehtmlClass,
+    updateHtmlClass,
     updateHeadStuff,
     updateTags,
     fetchWorks,

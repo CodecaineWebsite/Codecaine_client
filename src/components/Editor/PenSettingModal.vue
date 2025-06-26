@@ -61,7 +61,7 @@ watch(tags, (newTags) => {
 }, { deep: true })
 
 watch(htmlClass, (newhtmlClass) => {
-  workStore.updatehtmlClass(newhtmlClass)
+  workStore.updateHtmlClass(newhtmlClass)
 }, { deep: true })
 
 watch(headStuff, (newStuff) => {
