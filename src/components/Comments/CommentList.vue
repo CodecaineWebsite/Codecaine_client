@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
+import { useToastStore } from "@/stores/useToastStore";
 import api from "@/config/api.js";
 import { useAuthStore } from "@/stores/useAuthStore";
 import CommentForm from "@/components/Comments/CommentForm.vue";
@@ -14,6 +15,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const toastStore = useToastStore()
 const goSignup = () => {
   emit("close");
   router.push("/signup");
@@ -55,8 +58,10 @@ const fetchComments = async () => {
     });
     comments.value = res.data;
   } catch (err) {
-    error.value = "Failed to load comments, please try again later.";
-    console.error(err);
+    toastStore.showToast({
+      message: "Failed to load comments",
+      variant: "danger"
+    });
   } finally {
     loading.value = false;
   }
@@ -64,11 +69,17 @@ const fetchComments = async () => {
 
 const submitComment = async (content) => {
   if (!authStore.user) {
-    error.value = "Please log in before leaving a comment.";
+    toastStore.showToast({
+      message: "Please log in before leaving a comment",
+      variant: "danger"
+    });
     return;
   }
   if (!content.trim()) {
-    error.value = "The comment content cannot be empty.";
+    toastStore.showToast({
+      message: "The comment content cannot be empty",
+      variant: "danger"
+    });
     return;
   }
   sending.value = true;
@@ -83,9 +94,15 @@ const submitComment = async (content) => {
     error.value = "";
   } catch (err) {
     if (err.response?.status === 429) {
-      error.value = "You are commenting too quickly, please try again later.";
+      toastStore.showToast({
+      message: "You are commenting too quickly, please try again later",
+      variant: "danger"
+    });
     } else {
-      error.value = "Failed to post the comment, please try again later.";
+      toastStore.showToast({
+      message: "Failed to post the comment, please try again later",
+      variant: "danger"
+    })
     }
   } finally {
     sending.value = false;

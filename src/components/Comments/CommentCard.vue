@@ -2,6 +2,8 @@
 import { ref, computed } from "vue";
 import api from "@/config/api";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useToastStore } from "@/stores/useToastStore";
+import { useMsgStore } from "@/stores/useMsgStore";
 import { useRouter } from "vue-router";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -32,6 +34,7 @@ const createdTimeAgo = computed(() => {
 });
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 const editing = ref(false);
 const editContent = ref(props.comment.content);
 
@@ -69,8 +72,10 @@ const submitEdit = async () => {
     emit("update", props.comment.id, res.data);
     cancelEdit();
   } catch (err) {
-    console.error("Failed to edit comment", err);
-    alert("Failed to update comment. Please try again later.");
+    toastStore.showToast({
+      message: "Failed to update comment. Please try again later.",
+      variant: "danger"
+    })
   }
 };
 
@@ -80,10 +85,14 @@ const deleteComment = async () => {
     await api.delete(`/api/comments/${props.comment.id}`);
     emit("delete", props.comment.id);
   } catch (err) {
-    console.error("Failed to delete comment", err);
-    alert("Failed to delete comment. Please try again later.");
+    toastStore.showToast({
+      message: "Failed to delete comment. Please try again later.",
+      variant: "danger"
+    })
   }
 };
+
+// deleteComment 要跳 confirmModal
 </script>
 
 <template>
