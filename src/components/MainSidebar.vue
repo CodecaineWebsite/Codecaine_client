@@ -146,7 +146,7 @@ const isSidebarOpen = ref(
 const emit = defineEmits(["toggle"]);
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
-  localStorage.setItem("sidebarOpen", isSidebarOpen.value); // 同步寫入 localStorage
+  localStorage.setItem("sidebarOpen", isSidebarOpen.value);
   emit("toggle", isSidebarOpen.value);
 }
 </script>
