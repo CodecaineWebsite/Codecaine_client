@@ -26,7 +26,7 @@
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
-  const { currentWork, currentId } = storeToRefs(workStore); //放資料
+  const { currentWork, currentId, isSaved } = storeToRefs(workStore); //放資料
   const { handleSave } = useHandleSave();
   const isPro = ref(false)
 
@@ -51,7 +51,7 @@
 
   onMounted( async() => {
     await handleCurrentIdChange(route.params.id);
-
+    isSaved.value = true;
     const userProfile = authStore.userProfile;
     if(!userProfile) return;
     if (!route.params.id) {

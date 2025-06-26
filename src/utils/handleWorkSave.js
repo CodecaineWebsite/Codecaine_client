@@ -11,7 +11,7 @@ export function useHandleSave() {
   const authStore = useAuthStore();
   const workStore = useWorkStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork } = storeToRefs(workStore);
+  const { currentWork, isSaved } = storeToRefs(workStore);
 
   const handleSave = async () => {
     const work = currentWork.value;

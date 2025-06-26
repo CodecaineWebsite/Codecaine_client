@@ -33,13 +33,11 @@
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork } = storeToRefs(workStore); //放資料
-
+  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
   const isAutoPreview = ref(true);
   const userName = ref('');
   const isPro = ref(true);
-  const isEdited = ref(false);
-
+  
   // 判斷是否為作者
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
@@ -48,7 +46,6 @@
 
     // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
     if (!authorId) return true;
-
     return isNewWork || userId === authorId;
   });
 
@@ -66,7 +63,7 @@
     userName.value = newWork.userName ?? '';
   }, { deep: true });
 
-  watch( () => [
+  watch(() => [
       currentWork.value.title,
       currentWork.value.description,
       currentWork.value.html,
@@ -81,7 +78,7 @@
       currentWork.value.tags,
     ],
     () => {
-      isEdited.value = true
+      isSaved.value = false
     }
   )
   
@@ -108,14 +105,12 @@
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
       handleSave()
-      isEdited.value = false;
     }
   };
-
+  
   const handleWorkAutoSave = async () => {
     if (isLoggedIn.value) {
       handleSave()
-      isEdited.value = false;
     }
   };
 
@@ -292,8 +287,8 @@
             <span  
               class="h-[3px] bg-yellow-300 absolute mx-auto left-1 right-1 top-0.5 origin-center rounded-t-md transition-all duration-500"
               :class="{
-                'w-21': isEdited,
-                'w-0': !isEdited,
+                'w-21': !isSaved,
+                'w-0': isSaved,
               }">
             </span>
             <div class="h-7 flex items-center gap-1 ">

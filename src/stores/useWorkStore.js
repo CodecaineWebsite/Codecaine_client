@@ -50,36 +50,9 @@ export const useWorkStore = defineStore('work', () => {
     }
   
     currentId.value = id;
-  
-    try {
-      const data = await fetchWorkFromId(id);
+    await fetchWorkFromId(id);
+    addViews(id);
 
-      api.put(`/api/pens/${id}/view`).catch((err) => {
-        console.warn('Failed to increase views count:', err);
-      });
-
-      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
-
-      currentWork.value = {
-        ...rest,
-        userName: data.username,
-        userId: data.user_id,
-        isPro: data.is_pro,
-        isPrivate: data.is_private,
-        html: data.html_code,
-        css: data.css_code,
-        javascript: data.js_code,
-        isAutoSave: data.is_autosave,
-        isAutoPreview: data.is_autopreview,
-        tabSize: data.tab_size ?? 2,
-        cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
-        links: Array.isArray(data.resources_css) ? data.resources_css : [],
-        tags: Array.isArray(data.tags) ? data.tags : [],
-      };
-    } catch (err) {
-      console.error('Failed to fetch work by ID:', err);
-      // 可加入錯誤處理
-    }
   };
   
   // 更新CurrentCode 
@@ -271,19 +244,58 @@ export const useWorkStore = defineStore('work', () => {
     window.currentPreviewBlob = blobUrl;
     return blobUrl;
   };
+  
+  const isSaved = ref(true)
+  console.log(isSaved.value);
 
-  const fetchWorks = async () => {
+  const addViews = (id) => {
     try {
-      const res = await api.get(`/api/pens`);
-      works.value = res.data;
+      api.put(`/api/pens/${id}/view`).catch((err) => {
+        console.warn('Failed to increase views count:', err);
+      });
     } catch (err) {
-      console.error('Failed to fetch works', err);
+      console.error('Failed to fetch work by ID:', err);
+      // 可加入錯誤處理
     }
-  };
 
+  }
+  
   const fetchWorkFromId = async (id) => {
     try {
       const res = await api.get(`/api/pens/${id}`);
+      const { 
+        html_code, 
+        css_code, 
+        js_code, 
+        username, 
+        user_id, 
+        is_pro, 
+        is_private, 
+        is_autosave, 
+        is_autopreview, 
+        tab_size, 
+        resources_js, 
+        resources_css, 
+        tags, 
+        ...rest 
+      } = res.data;
+      
+      currentWork.value = {
+        ...rest,
+        userName: username,
+        userId: user_id,
+        isPro: is_pro,
+        isPrivate: is_private,
+        html: html_code,
+        css: css_code,
+        javascript: js_code,
+        isAutoSave: is_autosave,
+        isAutoPreview: is_autopreview,
+        tabSize: tab_size ?? 2,
+        cdns: Array.isArray(resources_js) ? resources_js : [],
+        links: Array.isArray(resources_css) ? resources_css : [],
+        tags: Array.isArray(tags) ? tags : [],
+      }
       return res.data;
     } catch (err) {
       console.error('Failed to fetch work', err);
@@ -311,6 +323,7 @@ export const useWorkStore = defineStore('work', () => {
     works.value.unshift(res.data.data);
     currentId.value = res.data.data.id;
     currentWork.value.id = res.data.data.id;
+    isSaved.value = true;
     console.log('Work created successfully');
     return createdWork;
   } catch (err) {
@@ -337,6 +350,7 @@ export const useWorkStore = defineStore('work', () => {
       };
       await api.put(`/api/pens/${currentId.value}`, payload);
       currentWork.value.lastSavedTime = new Date();
+      isSaved.value = true;
       console.log('Work saved successfully');
       return true;
     } catch (err) {
@@ -389,6 +403,7 @@ export const useWorkStore = defineStore('work', () => {
     works,
     currentWork,
     currentId,
+    isSaved,
     handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,
@@ -399,7 +414,6 @@ export const useWorkStore = defineStore('work', () => {
     updateCDNs,
     updateLinks,
     updateTags,
-    fetchWorks,
     fetchWorkFromId,
     createNewWork,
     saveCurrentWork,
