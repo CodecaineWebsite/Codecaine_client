@@ -92,7 +92,7 @@
           </div>
           <div class="mt-1.5">
             <div class="text-xl p-3 px-4 cursor-pointer btn" @click="goSearch">
-              Search Pains
+              Search Doses
             </div>
           </div>
         </nav>
@@ -105,7 +105,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
-import CodecaineIcon from "@/components/icons/CodecaineIcon.vue"
+import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
