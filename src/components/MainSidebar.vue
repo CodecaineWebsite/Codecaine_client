@@ -121,7 +121,7 @@ const goTrending = () => {
   router.push("/trending");
 };
 const goPen = () => {
-  router.push("/pen");
+  router.push("/dose");
 };
 const goHome = () => {
   router.push("/");

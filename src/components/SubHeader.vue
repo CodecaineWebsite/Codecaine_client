@@ -140,7 +140,7 @@
         Trending
       </div>
 
-      <!-- 未登入：Search  -->
+      <!-- 未登入：Search Doses -->
       <div
         v-if="!authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"

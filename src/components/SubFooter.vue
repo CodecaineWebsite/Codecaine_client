@@ -8,7 +8,7 @@
           <span
             class="font-bold text-white tracking-wide text-sm md:text-base mr-2 mb-2"
           >
-            CodeCaine Members
+            Codecaine Members
           </span>
           <a
             href="https://github.com/ViviSun0725"
@@ -89,7 +89,7 @@
         <div class="flex items-center justify-center h-10">
           <CodecaineIcon class="w-24 md:w-36 cursor-pointer" @click="goHome" />
         </div>
-        <p class="text-white text-xs md:text-lg">©2025 CodeCaine</p>
+        <p class="text-white text-xs md:text-lg">©2025 Codecaine</p>
         <p class="italic mt-1 text-xs md:text-sm">
           Ideas are cute. Tools are real.
         </p>

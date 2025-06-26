@@ -144,7 +144,7 @@ const comments = props.pen.comments_count;
 const views = props.pen.views_count;
 
 // 連結
-const editorPageLink = `/${userName}/pen/${workId}`;
+const editorPageLink = `/${userName}/dose/${workId}`;
 const userPageLink = `/${userName}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
