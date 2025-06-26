@@ -142,7 +142,6 @@ export const useWorkStore = defineStore('work', () => {
         ${linkTags}
         <style>
           body {
-            background-color: white;
             margin: 0;
           }
           ${cssCode}
@@ -250,7 +249,6 @@ export const useWorkStore = defineStore('work', () => {
         ${linkTags}
         <style>
           body {
-            background-color: white;
             margin: 0;
           }
           ${cssCode}
