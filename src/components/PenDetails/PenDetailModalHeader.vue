@@ -62,7 +62,7 @@
 
       <button
         @click="goToEditor"
-        class="inline-flex items-center justify-center relative text-base font-normal truncate cursor-pointer py-[7px] px-[10px] border border-transparent rounded bg-cc-13 hover:bg-cc-12 text-sm text-cc-1"
+        class="inline-flex items-center justify-center relative font-normal truncate cursor-pointer py-[7px] px-[10px] border border-transparent rounded bg-cc-13 hover:bg-cc-12 text-sm text-cc-1"
       >
         View in Editor
       </button>
@@ -87,7 +87,7 @@ const props = defineProps({
 });
 
 const authStore = useAuthStore();
-const modalStore = useAuthStore();
+const modalStore = useModalStore();
 const router = useRouter();
 const isLiked = ref(false);
 const isDropdownOpen = ref(false);
@@ -102,6 +102,7 @@ const checkFavorite = async () => {
 
 const handleFavorite = async () => {
   if (!authStore.userProfile) {
+    modalStore.closeModal();
     return router.push("/login");
   }
 
