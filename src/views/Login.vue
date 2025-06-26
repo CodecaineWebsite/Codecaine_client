@@ -191,11 +191,13 @@ import {
   getResetErrorMessage,
   getSocialSignInErrorMessage,
 } from "@/utils/errorHandlers";
+import { useToastStore } from "@/stores/useToastStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useMsgStore } from "@/stores/useMsgStore";
 import GoogleIcon from "@/components/icons/GoogleIcon.vue";
 import GithubIcon from "@/components/icons/GithubIcon.vue";
 
+const toastStore = useToastStore();
 const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
@@ -210,6 +212,7 @@ const resetEmail = ref("");
 const resetError = ref("");
 const resetSuccess = ref("");
 const msg = useMsgStore();
+const { showToast } = toastStore;
 
 const goSignup = () => {
   router.push("/signup");
@@ -220,15 +223,13 @@ const login = async () => {
     const { token } = await loginWithEmail(auth, email.value, password.value);
     authStore.setToken(token);
     await syncUser();
-    msg.open({
-      title: "Success",
+    showToast({
       message: "Login successful！",
       variant: "success",
-      confirmText: "OK",
-      onConfirm: () => {
-        router.push(route.query.redirect || "/");
-      },
     });
+    setTimeout(() => {
+      router.push(route.query.redirect || "/");
+    }, 1500);
   } catch (e) {
     error.value = getLoginErrorMessage(e.code);
     msg.open({
