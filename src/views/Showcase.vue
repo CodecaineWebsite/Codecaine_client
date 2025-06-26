@@ -23,7 +23,7 @@
     >
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
         ⚠️ No Caines found.
-        <a href="/pen" class="text-blue-200 hover:text-blue-400">
+        <a href="/dose" class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
       </p>
@@ -43,7 +43,7 @@ const pens = ref([]);
 const isLoading = ref(true);
 
 const goAllCaines = () => {
-  router.push({ name: "cainesPublic" });
+  router.push({ name: "dosesPublic" });
 };
 const fetchCaines = async () => {
   isLoading.value = true;

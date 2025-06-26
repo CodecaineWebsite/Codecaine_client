@@ -147,14 +147,14 @@ watch(showModal, (val) => {
       class="relative bg-white rounded-xl mt-8 w-90 md:w-80 shadow-lg flex flex-col md:min-w-lg min-md-h-[70vh] max-h-[90vh] md:max-h-[80vh] pt-7.5 md:px-15 p-8 overflow-y-auto"
     >
       <div class="absolute top-0 left-0 right-0 h-2 rounded-t-xl bg-green-400"></div>
-      <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10" @click="close">
-        <Close class="w-3 h-3 cursor-pointer" />
+      <button class="absolute top-5 right-4 hover:text-gray-700 z-20" @click="close">
+        <Close class="w-3 h-3 cursor-pointer text-slate-700"/>
       </button>
 
       <div>
         <h2 class="font-bold mb-4 text-slate-700 text-center text-4xl">Hold up!</h2>
         <p class="text-slate-400 text-center text-sm mb-4 tracking-tight">
-          You’ll have to Log In or Sign Up (for free!) to save your Pen.<br />
+          You’ll have to Log In or Sign Up (for free!) to save your Dose.<br />
           Don’t worry! All your work will be saved to your account.
         </p>
       </div>
@@ -233,7 +233,7 @@ watch(showModal, (val) => {
       <div class="relative w-full text-zinc-900 bg-white text-center pt-5 before:content-[''] before:absolute before:top-0 before:h-[1px] before:bg-zinc-200 before:left-[-60px] before:right-[-60px]">
         <a v-if="modalType === 'login'" href="#" @click.prevent="handleToSignUp">
           Need to create an account?
-          <span class="text-teal-700 text-sm">Sign Up for CodePen</span>
+          <span class="text-teal-700 text-sm">Sign Up for Codecaine</span>
         </a>
         <a v-else-if="modalType === 'signup'" href="#" @click.prevent="handleToLogIn">
           Already have an account?

@@ -101,10 +101,10 @@
           >
             <button
               class="cursor-pointer hover:text-white p-2 flex-shrink-0"
-              @click="caines"
-              :class="route.path.includes('caines') ? 'text-white' : ''"
+              @click="doses"
+              :class="route.path.includes('doses') ? 'text-white' : ''"
             >
-              Caines
+              Doses
             </button>
             <button
               class="cursor-pointer hover:text-white p-2 flex-shrink-0"
@@ -146,8 +146,8 @@ const userInfo = ref(null);
 const authStore = useAuthStore();
 const userFollowers = ref(0);
 const userFollowings = ref(0);
-const caines = () => {
-  router.push(`/${route.params.username}/caines`);
+const doses = () => {
+  router.push(`/${route.params.username}/doses`);
 };
 const Following = () => {
   router.push(`/${route.params.username}/following`);

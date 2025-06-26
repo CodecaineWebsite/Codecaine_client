@@ -57,45 +57,51 @@ const router = createRouter({
           },
         },
         {
+          path: "notifications",
+          name: "notifications",
+          component: () => import("../views/Notifications.vue"),
+          meta: { requiresAuth: true },
+        },
+        {
           path: ":username",
           component: () => import("../layouts/ProfileLayout.vue"),
           children: [
             {
               path: "",
               redirect: (to) => {
-                return `/${to.params.username}/caines`;
+                return `/${to.params.username}/doses`;
               },
             },
             {
-              path: "caines",
+              path: "doses",
               component: () => import("../views/UsersCaines.vue"),
               children: [
                 {
                   path: "",
-                  name: "Profilecaines",
+                  name: "Profiledoses",
                   redirect: (to) => {
-                    return `/${to.params.username}/caines/showcase`;
+                    return `/${to.params.username}/doses/showcase`;
                   },
                 },
                 {
                   path: "showcase",
-                  name: "cainesShowcase",
+                  name: "dosesShowcase",
                   component: () => import("../views/Showcase.vue"),
                 },
                 {
                   path: "public",
-                  name: "cainesPublic",
+                  name: "dosesPublic",
                   component: () => import("../views/Public.vue"),
                 },
                 {
                   path: "private",
-                  name: "cainesPrivate",
+                  name: "dosesPrivate",
                   component: () => import("../views/Private.vue"),
                   meta: { requiresPrivate: true },
                 },
                 {
                   path: "loved",
-                  name: "cainesLoved",
+                  name: "dosesLoved",
                   component: () => import("../views/Loved.vue"),
                 },
               ],
@@ -136,19 +142,20 @@ const router = createRouter({
               path: "billing",
               name: "billing",
               component: () => import("../views/Billing.vue"),
+              meta: { requiresAuth: true },
             },
           ],
         },
       ],
     },
     {
-      path: "/pen",
-      name: "newPen",
+      path: "/dose",
+      name: "newDose",
       component: () => import("../views/Pen.vue"),
     },
     {
-      path: "/:username/pen/:id",
-      name: "pen",
+      path: "/:username/dose/:id",
+      name: "dose",
       component: () => import("../views/Pen.vue"),
     },
     {
@@ -158,15 +165,15 @@ const router = createRouter({
     },
     {
       path: "/:username/details/:pen_id",
-      name: "pen-details",
+      name: "dose-details",
       component: () => import("../views/PenDetailPage.vue"),
       meta: { canBeModal: true },
     },
     {
-      path: '/:pathMatch(.*)*',
-      name: 'not-found',
-      component: () => import("../views/NotFound.vue")
-    }
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("../views/NotFound.vue"),
+    },
   ],
 });
 

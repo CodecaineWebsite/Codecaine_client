@@ -22,19 +22,16 @@
     <!-- Tabs（登入 + 大於 634px） -->
     <div
       v-if="authStore.idToken && !isVerySmallScreen"
-      class="flex items-center space-x-px flex-shrink-0"
-    >
+      class="flex items-center space-x-px flex-shrink-0">
       <button
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
-      >
+        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r">
         {{ tab }}
         <span
           class="absolute bottom-0 left-0 h-1 bg-cc-green transition-all duration-300"
-          :class="activeTab === tab ? 'w-full' : 'w-0'"
-        ></span>
+          :class="activeTab === tab ? 'w-full' : 'w-0'"></span>
       </button>
     </div>
 
@@ -69,12 +66,12 @@
             Your Work
           </button>
           <button
-            @mousedown="selectSearchTab('pens')"
+            @mousedown="selectSearchTab('doses')"
             class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
           >
             <PensIcon
               class="fill-current w-3 mr-1"
-              :class="searchTab === 'pens' ? 'text-cc-pens' : 'text-cc-10'"
+              :class="searchTab === 'doses' ? 'text-cc-pens' : 'text-cc-10'"
             />
             Doses
           </button>
@@ -87,19 +84,18 @@
       <template v-if="!authStore.idToken">
         <button
           class="bg-green-500 text-cc-20 h-9 px-4 rounded hover:bg-green-400 font-semibold"
-          @click="goToPath('/signup')"
-        >
+          @click="goToPath('/signup')">
           Sign Up
         </button>
         <button
           v-if="route.name !== 'login'"
           class="bg-cc-13 h-9 px-4 rounded hover:bg-cc-12 font-semibold"
-          @click="goToPath('/login')"
-        >
+          @click="goToPath('/login')">
           Log In
         </button>
       </template>
       <template v-else>
+        <Notify />
         <UserMenu />
       </template>
     </div>
@@ -107,22 +103,27 @@
     <!-- 下拉選單：830px 以下 -->
     <div
       v-if="isMenuOpen && isCompactScreen"
-      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2"
-    >
+      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2">
       <div class="text-[10px] text-gray-400 px-4 mb-2">CREATE</div>
 
       <!-- ✏️ 登入顯示 Caine，未登入顯示 Start Coding -->
       <div
-        @click="goToPath('/pen')"
-        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2"
-      >
+        @click="goToPath('/dose')"
+        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2">
         <div
-          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"
-        ></div>
+          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"></div>
         <div
-          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center"
+          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
         >
-          {{ authStore.idToken ? "✏️ Dose" : "Start Coding" }}
+          <Layout
+            class="w-4 h-4 text-cc-1"
+          />
+          <div>
+            {{ authStore.idToken ? 
+              "Dose" : 
+              "Start Coding" 
+            }}
+          </div>
         </div>
       </div>
 
@@ -130,26 +131,23 @@
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/your-work')"
-      >
+        @click="goToPath('/your-work')">
         Your Work
       </div>
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/following')"
-      >
+        @click="goToPath('/following')">
         Following
       </div>
       <div
         v-if="authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/trending')"
-      >
+        @click="goToPath('/trending')">
         Trending
       </div>
 
-      <!-- 未登入：Search  -->
+      <!-- 未登入：Search Doses -->
       <div
         v-if="!authStore.idToken"
         class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
@@ -170,6 +168,8 @@ import UserMenu from "./UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import LogoIcon from '@/components/icons/LogoIcon.vue';
+import Notify from "@/components/Notify.vue";
+import Layout from "@/assets/layout.vue";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -184,7 +184,7 @@ const dropdownRef = ref(null);
 const tabs = ["Your Work", "Following", "Trending"];
 const searchKeyword = ref("");
 const searchFocused = ref(false);
-const searchTab = ref("pens");
+const searchTab = ref("doses");
 
 const activeTab = computed(() => {
   const path = route.path;
@@ -207,7 +207,7 @@ const handleSearchSubmit = () => {
   const trimmed = searchKeyword.value.trim().toLowerCase();
   if (trimmed) {
     router.push({
-      path: "/search/pens",
+      path: "/search/doses",
       query: { q: trimmed },
     });
   }
@@ -216,7 +216,7 @@ const handleSearchSubmit = () => {
 const selectSearchTab = (tab) => {
   searchTab.value = tab;
   if (tab === "your-work") goToPath("/your-work");
-  else if (tab === "pens") goToPath({ path: "/search/pens", query: { q: "" } });
+  else if (tab === "doses") goToPath({ path: "/search/doses", query: { q: "" } });
 };
 
 const handleResize = () => {

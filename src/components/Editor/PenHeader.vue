@@ -251,9 +251,15 @@
               <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
             </button>
           </div>
-          <a href="#" class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis">
-            {{ userName ? userName : "Captain Anonymous" }}
-          </a>
+          <router-link
+            v-if="userName"
+            :to="`/${userName}/doses/showcase`"
+            :title="userName"
+            class="text-xs md:text-11 text-gray-400 whitespace-nowrap leading-none overflow-hidden text-ellipsis"
+          >
+            {{ userName }}
+          </router-link>
+          <span v-else class="text-xs md:text-11 text-gray-400">Captain Anonymous</span>
         </div>
       </div>
 
@@ -434,7 +440,7 @@
               >
                 <a href="#" class="flex justify-between w-full">
                   <div>Editor View</div>
-                  <div>/pen/</div>
+                  <div>/dose/</div>
                 </a>
               </li>
               <li

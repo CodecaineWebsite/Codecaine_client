@@ -1,5 +1,5 @@
 <template>
-  <a :href="`/${props.username}/caines/showcase`" class="no-underline">
+  <a :href="`/${props.username}/doses/showcase`" class="no-underline">
     <div
       class="flex flex-row items-center gap-1 bg-gray-700 h-[60px] rounded-md group hover:text-white p-1"
     >

@@ -118,7 +118,6 @@ const props = defineProps({
 // 作品資訊
 const workId = props.pen.id;
 const title = props.pen.title || "Untitled";
-console.log("PenCard props", props.pen);
 // 作者資訊
 const userName = props.pen.username;
 const userDisplayName = props.pen.user_display_name;
@@ -145,7 +144,7 @@ const comments = props.pen.comments_count;
 const views = props.pen.views_count;
 
 // 連結
-const editorPageLink = `/${userName}/pen/${workId}`;
+const editorPageLink = `/${userName}/dose/${workId}`;
 const userPageLink = `/${userName}`;
 const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
 
