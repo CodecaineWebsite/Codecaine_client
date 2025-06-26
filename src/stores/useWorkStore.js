@@ -66,7 +66,7 @@ export const useWorkStore = defineStore('work', () => {
         console.warn('Failed to increase views count:', err);
       });
 
-      const { html_code, css_code, js_code, html_style, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
+      const { html_code, css_code, js_code, html_class, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
 
       currentWork.value = {
         ...rest,
@@ -77,7 +77,7 @@ export const useWorkStore = defineStore('work', () => {
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
-        htmlClass: data.html_style || '',
+        htmlClass: data.html_class || '',
         headStuff: data.head_stuff || '',
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
@@ -312,7 +312,7 @@ export const useWorkStore = defineStore('work', () => {
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
-      html_style: newWorkData.html_style || '',
+      html_class: newWorkData.html_class || '',
       head_stuff: newWorkData.head_stuff || '',
       view_mode: newWorkData.view_mode,
       tab_size: newWorkData.tab_size,
@@ -345,7 +345,7 @@ export const useWorkStore = defineStore('work', () => {
         js_code: currentWork.value.javascript,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
-        html_style: currentWork.value.htmlClass || "",
+        html_class: currentWork.value.htmlClass || "",
         head_stuff: currentWork.value.headStuff || "",
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
