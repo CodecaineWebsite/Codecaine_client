@@ -4,6 +4,8 @@
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
+  import { useToastStore } from "@/stores/useToastStore";
+
   import api from "@/config/api";
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
@@ -32,8 +34,10 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
+  const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
   const { currentWork } = storeToRefs(workStore); //放資料
+  const { showToast } = toastStore;
 
   const isAutoPreview = ref(true);
   const userName = ref('');
@@ -107,7 +111,7 @@
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
-      handleSave()
+      await handleSave()
       isEdited.value = false;
     }
   };

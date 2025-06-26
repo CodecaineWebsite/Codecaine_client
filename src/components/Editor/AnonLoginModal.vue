@@ -70,7 +70,10 @@ const handleLogIn = async () => {
     const { token } = await loginWithEmail(auth, account.value, password.value);
     authStore.setToken(token);
     await syncUser();
-
+    showToast({
+      message: "Login successful！",
+      variant: "success",
+    });
     handleSave();
 
     account.value = "";
@@ -88,6 +91,10 @@ const handleSignUp = async () => {
   try {
     await registerWithEmail(auth, account.value, password.value);
     success.value = "You have successfully registered!";
+    showToast({
+      message: "Registration successful！",
+      variant: "success",
+    });
     handleLogIn();
   } catch (e) {
     const msg = getRegisterErrorMessage(e.code);
@@ -183,7 +190,7 @@ watch(showModal, (val) => {
       </div>
 
       <main v-if="modalType === 'login'" class="flex-1">
-        <form class="flex flex-col gap-4 text-zinc-900 text-sm">
+        <form class="flex flex-col gap-4 text-zinc-900 text-sm" @submit.prevent="handleLogIn">
           <div>
             <label for="account" class="text-slate-700">Email</label>
             <input
@@ -203,7 +210,6 @@ watch(showModal, (val) => {
           <button
             type="submit"
             class="w-full h-10 bg-emerald-400 rounded-md cursor-pointer"
-            @click="handleLogIn"
           >
             Log In
           </button>
