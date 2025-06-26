@@ -1,14 +1,18 @@
 <script setup>
 import { inject, ref, watch } from "vue";
-import Arrow from "../../assets/arrow.vue";
 import { useWorkStore } from "@/stores/useWorkStore";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
-import ProTag from "@/components/Editor/ProTag.vue";
-import Cdnjs from "@/components/Editor/Cdnjs.vue";
 import { useHandleSave } from "@/utils/handleWorkSave";
-import EditorSmallButton from "@/components/Editor/EditorSmallButton.vue";
 import { useToastStore } from "@/stores/useToastStore";
+import SettingCard from "@/components/Editor/SettingCard.vue";
+import SettingInput from "@/components/Editor/SettingInput.vue";
+import SettingTagInput from "@/components/Editor/SettingTagInput.vue";
+import SettingTextarea from "@/components/Editor/SettingTextarea.vue";
+import SettingSelect from "@/components/Editor/SettingSelect.vue";
+import Cdnjs from "@/components/Editor/Cdnjs.vue";
+import ProTag from "@/components/Editor/ProTag.vue";
+import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
 
 const toastStore = useToastStore();
 const { showToast } = toastStore;
@@ -29,7 +33,7 @@ const props = defineProps({
 });
 
 const title = inject("title");
-const emit = defineEmits(["close", "update:cdns", "update:links"]);
+const emit = defineEmits(["close", "update:cdns", "update:links", "update:modelValue"]);
 const tabs = [
   { label: "HTML", key: "html" },
   { label: "CSS", key: "css" },
@@ -41,11 +45,9 @@ const tabs = [
 ];
 const workStore = useWorkStore();
 const { currentWork } = storeToRefs(workStore);
-
 const cdns = ref(currentWork.value.cdns);
 const links = ref(currentWork.value.links);
 const isPro = ref(currentWork.value.isPro);
-const tags = ref(currentWork.value.tags);
 const tabSize = ref(currentWork.value.tabSize);
 const doseDescription = ref(currentWork.value.description);
 
@@ -65,14 +67,6 @@ watch(
   { deep: true }
 );
 
-watch(
-  tags,
-  (newTags) => {
-    workStore.updateTags(newTags);
-  },
-  { deep: true }
-);
-
 watch(doseDescription, (newVal) => {
   currentWork.value.description = newVal;
 });
@@ -80,7 +74,6 @@ watch(doseDescription, (newVal) => {
 const activeTab = ref(props.selectedTab);
 const cdnInput = ref([]);
 const linkInput = ref("");
-const tagInput = ref("");
 const srcDoc = ref("");
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
@@ -148,33 +141,6 @@ const removeLink = (index) => {
   links.value.splice(index, 1);
 };
 
-const addTag = async () => {
-  if (!tagInput.value.trim()) return;
-  const tag = tagInput.value.trim();
-  if (tags.value.includes(tag)) {
-    showToast({
-      message: "This tag has already been added!",
-      variant: "danger",
-    });
-    return;
-  }
-  if (tags.value.length >= 5) {
-    showToast({
-      message: "You can only add up to 5 tags.",
-      variant: "danger",
-    });
-    return;
-  }
-  tags.value.push(tag);
-  tagInput.value = "";
-  await workStore.saveCurrentWork();
-};
-
-const removeTag = async (index) => {
-  tags.value.splice(index, 1);
-  await workStore.saveCurrentWork();
-};
-
 const { handleSave } = useHandleSave();
 const handleSaveAndClose = () => {
   handleSave();
@@ -209,7 +175,6 @@ const handleSaveAndClose = () => {
         </div>
         <div class="w-full h-0.5 bg-gray-600 mb-4"></div>
       </div>
-
       <div class="md:flex h-full md:pr-4 block overflow-y-auto mx-4 md:mx-0">
         <ul
           class="md:w-1/4 flex md:flex-col md:overflow-y-auto md:pl-0 overflow-y-auto"
@@ -235,349 +200,109 @@ const handleSaveAndClose = () => {
         ></div>
         <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
           <div v-show="activeTab === 'html'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="htmlPreprocessor">HTML Preprocessor</label>
-              </div>
-              <div class="relative">
-                <select
-                  id="htmlPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Haml">Haml</option>
-                  <option value="Markdown">Markdown</option>
-                  <option value="Slim">Slim</option>
-                  <option value="Pug">Pug</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="">
-                <label for="addClassToHtml"
-                  >Add Class(es) to &lt;html&gt;</label
-                >
-              </div>
-              <div class="relative">
-                <input
-                  id="addClassToHtml"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
-                  placeholder="e.g. single post post-1234"
-                />
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="">
-                <label for="stuffForHead">Stuff for &lt;head&gt;</label>
-              </div>
-              <div class="relative">
-                <textarea
-                  id="stuffForHead"
-                  type="area"
-                  class="appearance-none w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
-                  placeholder="e.g. <meta>, <link>, <script>"
-                ></textarea>
-              </div>
-            </div>
+            <SettingInput
+              id="addClassToHtml"
+              label="Add Class(es) to <html>"
+              placeholder="e.g. single post post-1234"
+              v-model="currentWork.htmlClass"
+            />
+            <SettingTextarea
+              id="stuffForHead"
+              label="Stuff for <head>"
+              placeholder="e.g. <meta>, <link>, <script>"
+              v-model="currentWork.headStuff"
+            />
           </div>
 
           <div v-show="activeTab === 'css'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
+            <SettingInput
+              id="addExternalStylesheets"
+              label="Add External Stylesheets / Doses"
+              placeholder="Enter Link script URL"
+              v-model="linkInput"
+              @keyup.enter="addLink"
             >
-              <div class="">
-                <label for="cssPreprocessor">CSS Preprocessor</label>
-              </div>
-              <div class="relative">
-                <select
-                  id="cssPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Less">Less</option>
-                  <option value="SCSS">SCSS</option>
-                  <option value="Sass">Sass</option>
-                  <option value="Stylus">Stylus</option>
-                  <option value="PostCSS">PostCSS</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="">
-                <label for="cssBase">CSS Base</label>
-              </div>
-              <div class="flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    name="CSS Base"
-                    value="Normalize"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Normalize
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="CSS Base"
-                    value="Reset"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Reset
-                </label>
-                <label>
-                  <input
-                    checked
-                    type="radio"
-                    name="CSS Base"
-                    value="Neither"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Neither
-                </label>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="Vender Prefixing">Vender Prefixing</label>
-              </div>
-              <div class="flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Autoprefixer"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Autoprefixer
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Prefixfree"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Prefixfree
-                </label>
-                <label>
-                  <input
-                    checked
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Neither"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Neither
-                </label>
-              </div>
-            </div>
-
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="addExternalStylesheets"
-                  >Add External Stylesheets / Doses</label
-                >
-              </div>
-              <div class="flex flex-col">
-                <label>
-                  <input
-                    id="addExternalStylesheets"
-                    v-model="linkInput"
-                    @keyup.enter="addLink"
-                    type="text"
-                    placeholder="Enter Link script URL"
-                    class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"
-                  />
-                </label>
-                <button
-                  @click="addLink"
-                  class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700"
-                >
-                  ➕ 加入 CDN
-                </button>
-                <ul class="mb-4 list-disc list-inside">
+              <button
+                @click="addLink"
+                class="mb-4 bg-gray-600 text-white w-full mt-3 px-3 py-1 rounded hover:bg-gray-700 "
+              >
+                ➕ 加入 Link
+              </button>
+              <ul class="mb-4 list-disc list-inside">
                   <li
                     v-for="(link, index) in links"
                     :key="link"
                     class="flex items-center justify-between gap-2"
                   >
                     <span class="break-words max-w-[80%]">{{ link }}</span>
-                    <button
-                      @click="removeLink(index)"
-                      class="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      刪除
-                    </button>
+                  <button
+                  @click="removeLink(index)"
+                    class="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    <TrashCanIcon class="w-4"/>
+                  </button>
                   </li>
                 </ul>
-              </div>
-            </div>
+            </SettingInput>
           </div>
 
           <div v-show="activeTab === 'js'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
+            <SettingCard
+              id="addExternalScripts"
+              label="Add External Scripts / Doses"
             >
-              <div>
-                <label for="javaScriptPreprocessor"
-                  >JavaScript Preprocessor</label
+              <Cdnjs @select="handleSelectedPackage" />
+              <label>
+                <input
+                  v-model="cdnInput"
+                  @keyup.enter="addCDN"
+                  type="text"
+                  placeholder="Enter CDN script URL"
+                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3 placeholder:text-gray-500"
+                />
+              </label>
+              <button
+                @click="addCDN"
+                class="mb-4 bg-gray-600 text-white w-full px-3 py-1 rounded hover:bg-gray-700"
+              >
+                ➕ Add CDN
+              </button>
+              <ul class="mb-4">
+                <li
+                  v-for="(cdn, index) in cdns"
+                  :key="cdn"
+                  class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between"
                 >
-              </div>
-              <div class="relative">
-                <select
-                  id="javaScriptPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Script">Script</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="addExternalScripts"
-                  >Add External Scripts / Doses</label
-                >
-              </div>
-              <div class="flex flex-col">
-                <Cdnjs @select="handleSelectedPackage" />
-                <label>
-                  <input
-                    id="addExternalScripts"
-                    v-model="cdnInput"
-                    @keyup.enter="addCDN"
-                    type="text"
-                    placeholder="Enter CDN script URL"
-                    class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"
-                  />
-                </label>
-                <button
-                  @click="addCDN"
-                  class="mb-4 bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700"
-                >
-                  ➕ Add CDN
-                </button>
-                <ul class="mb-4">
-                  <li
-                    v-for="(cdn, index) in cdns"
-                    :key="cdn"
-                    class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between"
+                  <span class="max-w-[90%] text-xs truncate">{{ cdn }}</span>
+                  <button
+                    @click="removeCDN(index)"
+                    class="text-red-500 hover:text-red-700 text-sm"
                   >
-                    <span class="max-w-[90%] text-xs truncate">{{ cdn }}</span>
-                    <button
-                      @click="removeCDN(index)"
-                      class="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      Delete
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
+                    <TrashCanIcon class="w-4"/>
+                  </button>
+                </li>
+              </ul>
+            </SettingCard>
           </div>
 
           <div
             v-show="activeTab === 'detail'"
             class="w-full flex flex-col gap-4"
           >
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="penTitle">Dose Title</label>
-              </div>
-              <div class="relative">
-                <input
-                  id="penTitle"
-                  type="text"
-                  v-model="title"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
-                  placeholder="Untitled"
-                />
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="penDescription">Dose Description</label>
-              </div>
-              <div class="relative">
-                <textarea
-                  id="penDescription"
-                  v-model="doseDescription"
-                  class="w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500 placeholder:text-xs"
-                  placeholder="Explain what's going on in your Dose here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported."
-                />
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="flex justify-between">
-                <label for="tags">Tags</label>
-                <span class="text-xs align-text-bottom"
-                  >comma separated, max of five</span
-                >
-              </div>
-              <div class="relative">
-                <input
-                  id="tags"
-                  type="text"
-                  v-model="tagInput"
-                  @keyup.enter="addTag"
-                  class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500"
-                />
-              </div>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <EditorSmallButton
-                  v-for="(tag, index) in tags"
-                  :key="`${tag}-${index}`"
-                  class="mt-2 flex flex-wrap gap-2 bg-cc-13"
-                  >{{ tag }}
-                  <button
-                    @click="removeTag(index)"
-                    class="text-cc-9 hover:text-red-500"
-                  >
-                    ✕
-                  </button>
-                </EditorSmallButton>
-              </div>
-            </div>
+            <SettingInput
+              id="penTitle"
+              v-model="title"
+              label="Dose Title"
+              placeholder="Untitled"
+            />
+            <SettingTextarea
+              id="penDescription"
+              label="Dose Description"
+              placeholder="Explain what's going on in your Dose here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported."
+              v-model="doseDescription"
+              class="placeholder:text-xs h-24"
+            />
+            <SettingTagInput/>
           </div>
 
           <div
@@ -610,7 +335,6 @@ const handleSaveAndClose = () => {
                 currentWork.isPrivate ? "On" : "Off"
               }}</span>
             </div>
-
             <div
               v-else
               class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-gray-500 before:content-[''] before:absolute before:top-0 before:left-0"
@@ -698,37 +422,23 @@ const handleSaveAndClose = () => {
               }}</span>
             </div>
           </div>
+
           <div
             v-show="activeTab === 'editor'"
             class="w-full flex flex-col gap-4"
           >
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
+            <SettingSelect
+              id="codeIndentWidth"
+              v-model="currentWork.tabSize"
+              label="Code Indent width"
             >
-              <div class="">
-                <label for="codeIndentWidth">Code Indent width</label>
-              </div>
-              <div class="relative">
-                <select
-                  id="codeIndentWidth"
-                  v-model="currentWork.tabSize"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option :value="1">1</option>
-                  <option :value="2">2</option>
-                  <option :value="3">3</option>
-                  <option :value="4">4</option>
-                  <option :value="5">5</option>
-                  <option :value="6">6</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
+              <option :value="1">1</option>
+              <option :value="2">2</option>
+              <option :value="3">3</option>
+              <option :value="4">4</option>
+              <option :value="5">5</option>
+              <option :value="6">6</option>
+            </SettingSelect>
           </div>
         </div>
       </div>
