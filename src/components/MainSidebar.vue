@@ -49,7 +49,7 @@
               class="bg-[#2c303a] font-medium text-lg text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
             >
               <li class="cursor-pointer btn p-3 px-4" @click="goPen">
-                ✏️ Caine
+                ✏️ Dose
               </li>
             </ul>
           </div>
