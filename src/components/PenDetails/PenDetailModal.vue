@@ -24,6 +24,7 @@ import { ref, onMounted, computed } from "vue";
 import api from "@/config/api.js";
 import { useModalStore } from "@/stores/useModalStore.js";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useToastStore } from "@/stores/useToastStore";
 import PenDetailModalHeader from "@/components/PenDetails/PenDetailModalHeader.vue";
 import PenDetailPreviewIframe from "@/components/PenDetails/PenDetailPreviewIframe.vue";
 import PenDetailContent from "@/components/PenDetails/PenContent.vue";
@@ -34,10 +35,9 @@ const props = defineProps({
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
-
+const toastStore = useToastStore()
 const pen = ref(null);
 const isOwner = computed(() => authStore.userProfile?.username === pen.value.username);
-console.log("isOwner?", isOwner)
 function close() {
   modalStore.closeModal();
 }
@@ -51,7 +51,10 @@ async function fetchPenDetail() {
     const res = await api.get(`/api/pens/${props.penId}`);
     pen.value = res.data;
   } catch (err) {
-    console.error("Failed to load works", err);
+    toastStore.showToast({
+      message: "Failed to load works",
+      variant: "danger"
+    })
   }
 }
 
