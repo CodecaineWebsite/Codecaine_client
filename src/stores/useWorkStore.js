@@ -267,6 +267,8 @@ export const useWorkStore = defineStore('work', () => {
         html_code, 
         css_code, 
         js_code, 
+        html_class,
+        head_stuff,
         username, 
         user_id, 
         is_pro, 
@@ -279,7 +281,7 @@ export const useWorkStore = defineStore('work', () => {
         tags, 
         ...rest 
       } = res.data;
-      
+
       currentWork.value = {
         ...rest,
         userName: username,
@@ -288,6 +290,8 @@ export const useWorkStore = defineStore('work', () => {
         isPrivate: is_private,
         html: html_code,
         css: css_code,
+        htmlClass: html_class,
+        headStuff: head_stuff,
         javascript: js_code,
         isAutoSave: is_autosave,
         isAutoPreview: is_autopreview,
@@ -310,6 +314,8 @@ export const useWorkStore = defineStore('work', () => {
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
+      html_class: newWorkData.htmlClass || '',
+      head_stuff: newWorkData.headStuff || '',
       view_mode: newWorkData.view_mode,
       tab_size: newWorkData.tab_size,
       is_autosave: newWorkData.isAutoSave ?? false,
@@ -340,6 +346,8 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
+        html_class: currentWork.value.htmlClass,
+        head_stuff: currentWork.value.headStuff,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
         is_autosave: currentWork.value.isAutoSave ?? false,
