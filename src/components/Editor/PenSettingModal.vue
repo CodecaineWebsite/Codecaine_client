@@ -264,7 +264,7 @@ const handleSaveAndClose = () => {
             <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="flex justify-between">
                 <label for="tags">Tags</label>
-                <span class="text-xs align-text-bottom">comma separated, max of five</span>
+                <span class="text-xs align-text-bottom">Press Enter to add tag, max of five</span>
               </div>
               <div class="relative">
                 <input id="tags" type="text" v-model="tagInput" @keyup.enter="addTag" class="w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-gray-500 placeholder-gray-500" />
