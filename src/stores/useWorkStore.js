@@ -12,8 +12,10 @@ export const useWorkStore = defineStore('work', () => {
     html: "",
     css: "",
     javascript: "",
+    htmlStyle: "",
     links:[],
     cdns: [], 
+    headStuff: "",
     viewsCount: "",
     viewMode: "center",
     tabSize: 2,
@@ -32,6 +34,12 @@ export const useWorkStore = defineStore('work', () => {
   }
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
+  }
+  const updatehtmlStyle = (newhtmlStyle) => {
+  currentWork.value.htmlStyle = newhtmlStyle
+  }
+  const updateHeadStuff = (newStuff) => {
+  currentWork.value.headStuff = newStuff
   }
   const currentWork = ref(workTemplate)
   const handleInitWork = (user) => {
@@ -58,7 +66,7 @@ export const useWorkStore = defineStore('work', () => {
         console.warn('Failed to increase views count:', err);
       });
 
-      const { html_code, css_code, js_code, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
+      const { html_code, css_code, js_code, html_style, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
 
       currentWork.value = {
         ...rest,
@@ -69,6 +77,8 @@ export const useWorkStore = defineStore('work', () => {
         html: data.html_code,
         css: data.css_code,
         javascript: data.js_code,
+        htmlStyle: data.html_style || '',
+        headStuff: data.head_stuff || '',
         isAutoSave: data.is_autosave,
         isAutoPreview: data.is_autopreview,
         tabSize: data.tab_size ?? 2,
@@ -109,12 +119,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
+    const { htmlStyle, headStuff } = currentWork.value;
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="en" style="${htmlStyle}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -126,6 +137,7 @@ export const useWorkStore = defineStore('work', () => {
           connect-src 'self' https:;
           frame-src https:;
         ">
+        ${headStuff}
         ${cdnTags}
         ${linkTags}
         <style>
@@ -215,12 +227,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
     const htmlCode = code.html;
+    const { htmlStyle, headStuff } = code;
     const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="en" style="${htmlStyle}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -232,6 +245,7 @@ export const useWorkStore = defineStore('work', () => {
           connect-src 'self' https:;
           frame-src https:;
         ">
+        ${headStuff}
         ${cdnTags}
         ${linkTags}
         <style>
@@ -298,6 +312,8 @@ export const useWorkStore = defineStore('work', () => {
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
+      html_style: newWorkData.html_style || '',
+      head_stuff: newWorkData.head_stuff || '',
       view_mode: newWorkData.view_mode,
       tab_size: newWorkData.tab_size,
       is_autosave: newWorkData.isAutoSave ?? false,
@@ -398,6 +414,8 @@ export const useWorkStore = defineStore('work', () => {
     updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
+    updatehtmlStyle,
+    updateHeadStuff,
     updateTags,
     fetchWorks,
     fetchWorkFromId,

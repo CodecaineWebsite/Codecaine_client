@@ -37,7 +37,9 @@ const hasAnyContent = (work) => {
   return Boolean(
     work.html?.trim() ||
     work.css?.trim() ||
-    work.javascript?.trim()
+    work.javascript?.trim() ||
+    work.htmlStyle?.trim() ||
+    work.headStuff?.trim()
   );
 }
 const isFirstRenderDone = ref(false);
@@ -59,6 +61,8 @@ watch(
     props.currentWork?.html,
     props.currentWork?.css,
     props.currentWork?.javascript,
+    props.currentWork?.htmlStyle,
+    props.currentWork?.headStuff,
     JSON.stringify(props.currentWork?.cdns || []),
     JSON.stringify(props.currentWork?.links || []),
   ],
