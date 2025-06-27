@@ -39,7 +39,7 @@
         Loved
       </button>
     </div>
-    <ViewModeChange class="mt-6" />
+    <ViewModeChange class="mt-6" v-if="route.name !== 'dosesShowcase'" />
     <RouterView />
   </div>
 </template>
