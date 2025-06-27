@@ -12,7 +12,7 @@
       class="justify-center flex mt-12"
     >
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
-        ⚠️ No Caines found.
+        ⚠️ No Doses found.
         <a href="/pen" class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
@@ -37,7 +37,7 @@ import api from "@/config/api";
 
 const router = useRouter();
 const route = useRoute();
-const viewMode = useLocalStorage("dosesViewMode", "grid"); // VueUse 自動處理 localStorage
+const viewMode = useLocalStorage("dosesViewMode", "grid");
 const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(0);
