@@ -117,10 +117,13 @@ import {
 } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
+import { useToastStore } from "@/stores/useToastStore";
 import "swiper/css";
 import "swiper/css/navigation";
 import PenCard from "@/components/PenCards/PenCard.vue";
 
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 const isTop = ref(false);
 
 const pages = ref([]);
@@ -152,16 +155,17 @@ const loadPage = async (pageNum) => {
     const newCards = res.data.results || [];
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("Loaded the last page.");
     }
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`Loaded page ${pageNum}`, newCards);
     nextTick(() => {
       swiperRef.value?.swiper?.update();
     });
   } catch (err) {
-    console.error(`Failed to retrieve data for page ${pageNum}`, err);
+    showToast({
+      message: "System error. Please try again later",
+      variant: "danger",
+    });
     hasMore.value = false;
   }
 };
@@ -206,7 +210,6 @@ function handleDeletePen(deletedId) {
 }
 
 function handleClickOutside(event) {
-  // 點擊不是按鈕或選單內容時，關閉 dropdown
   if (
     !event.target.closest(".dropdown-toggle") &&
     !event.target.closest(".dropdown-menu")
@@ -216,7 +219,6 @@ function handleClickOutside(event) {
 }
 
 function handlePrivacyChanged({ id, is_private }) {
-  console.log("handlePrivacyChanged", id, is_private);
   if (props.filter === "private" && !is_private) {
     const index = props.pens.findIndex((pen) => pen.id === id);
     if (index !== -1) {

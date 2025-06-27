@@ -27,7 +27,7 @@
           <a :href="userPageLink" class="shrink-0">
             <img
               :src="userProfileImage"
-              class="w-10 h-10 rounded-sm"
+              class="w-10 h-10 rounded-sm object-cover"
               :alt="userDisplayName + ' 的頭像'"
             />
           </a>
@@ -95,7 +95,6 @@ import api from "@/config/api"; // API 請求配置
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
-import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
@@ -104,8 +103,10 @@ import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
+import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
 
+const msgStore = useMsgStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
 const workStore = useWorkStore();
@@ -186,18 +187,45 @@ const handleFollow = async () => {
   }
 };
 
-const handleDelete = async () => {
-  if (!confirm("Are you sure you want to delete this dose?")) return;
-
-  try {
-    await api.put(`/api/pens/${workId}/trash`);
-    emit("delete", workId);
-  } catch (error) {
-    showToast({
-      message: "Delete failed, please try again later",
-      variant: "danger",
-    });
-  }
+const handleDelete = () => {
+  msgStore.open({
+    title: "Are you sure you want to delete this Dose?",
+    message: `
+      <p class="mb-5">Here's what happens when you delete a Dose:</p>
+      <ul class="list-disc list-outside pl-4">
+        <li>This Dose will no longer be accessible on Codecaine.</li>
+        <li>
+          This Dose will be moved to the
+          <a class="text-cc-blue underline" href="#" onclick="window.toDeleteLink?.()">Deleted Items section of Your Work</a>
+          for 3 days.
+        </li>
+        <li>
+          After 3 days, the Dose is permanently deleted.
+          You can also manually delete it from your Deleted Items.
+        </li>
+      </ul>
+    `,
+    variant: "danger",
+    confirmText: "I understand, delete my Dose",
+    cancelText: "Cancel",
+    confirming: false,
+    loadingText: "Deleting...",
+    onConfirm: async () => {
+      try {
+        msgStore.confirming = true;
+        await api.put(`/api/pens/${workId}/trash`);
+        emit("delete", workId);
+      } catch (error) {
+        showToast({
+          message: "Delete failed, please try again later",
+          variant: "danger",
+        });
+      } finally {
+        msgStore.confirming = false;
+        msgStore.close();
+      }
+    },
+  });
 };
 
 const togglePrivacy = async () => {
@@ -233,12 +261,5 @@ const openDetailModal = () => {
   modalStore.openModal(props.pen.id, "card");
 };
 
-/**
- * TODO:
- * 1. 完成追蹤作者功能
- * 2. 若作品卡為使用者的作品，則顯示刪除按鈕
- * API:
- * 按追蹤將作者加入追蹤清單
- * 按刪除將作品從使用者的作品清單中刪除
- */
+// 需要改為用 store 管理收藏狀態，因為PenCard的收藏按鈕與Modal收藏按鈕狀態不同步
 </script>
