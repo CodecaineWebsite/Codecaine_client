@@ -7,9 +7,6 @@
       @click.stop
       class="mx-auto mt-16 mb-10 w-[90%] max-w-[800px] bg-cc-16 rounded-lg shadow-lg relative"
     >
-      <button class="absolute top-2 right-2" @click="$emit('close')">✕</button>
-
-      <!-- modal 版 Header -->
       <PenDetailModalHeader v-if="from === 'card'" :pen="pen" />
       <!-- iframe 預覽 -->
       <!-- <PenDetailPreviewIframe v-if="from === 'card'" :pen="pen" /> -->
@@ -61,6 +58,4 @@ async function fetchPenDetail() {
 onMounted(() => {
   fetchPenDetail();
 });
-
-//在這層檢查作品是不是自己的
 </script>
