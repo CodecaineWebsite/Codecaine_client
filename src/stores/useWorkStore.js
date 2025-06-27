@@ -85,109 +85,154 @@ export const useWorkStore = defineStore('work', () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
   }
   // 更新作品Preview
-  const updatePreviewSrc = () => {
-    const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
-    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-    const cssCode = currentWork.value.css;
-    const htmlCode = currentWork.value.html;
-    const { htmlClass = '', headStuff = '' } = currentWork.value || {};
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
+
+
+  // const updatePreviewSrc = () => {
+  //   const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
+  //   const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
+  //   const cssCode = currentWork.value.css;
+  //   const htmlCode = currentWork.value.html;
+  //   const { htmlClass = '', headStuff = '' } = currentWork.value || {};
+  //   const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n');
+  //   const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n');
   
-    const previewData = `
-      <!DOCTYPE html>
-      <html lang="en" class="${htmlClass}">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="
-          default-src 'self';
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
-          style-src 'self' 'unsafe-inline' https:;
-          img-src 'self' data: blob: https:;
-          font-src 'self' https: data:;
-          connect-src 'self' https:;
-          frame-src https:;
-        ">
-        ${headStuff}
-        ${cdnTags}
-        ${linkTags}
-        <style>
-          ${cssCode}
-        </style>
-        <script type="module">
-          const originalConsole = {
-            log: console.log,
-            error: console.error,
-            warn: console.warn,
-            info: console.info
-          };
+  //   const previewData = `
+  //     <!DOCTYPE html>
+  //     <html lang="en" class="${htmlClass}">
+  //     <head>
+  //       <meta charset="UTF-8">
+  //       ${headStuff}
+  //       ${cdnTags}
+  //       ${linkTags}
+  //       <style>
+  //         ${cssCode}
+  //       </style>
   
-          ['log', 'error', 'warn', 'info'].forEach(method => {
-            console[method] = (...args) => {
-              window.parent.postMessage({
-                type: 'log',
-                message: args.map(arg =>
-                  typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' '),
-                level: method
-              }, '*');
-              originalConsole[method](...args);
-            };
-          });
+  //       <script>
+  //         (function () {
+  //           const proxyStorage = {
+  //             setItem(key, value) {
+  //               try {
+  //                 if (typeof window.localStorage !== 'undefined') {
+  //                   window.localStorage.setItem('__test__', '1');
+  //                   window.localStorage.removeItem('__test__');
+  //                   window.localStorage.setItem(key, value);
+  //                   return Promise.resolve();
+  //                 }
+  //               } catch (_) {}
+  //               return new Promise((resolve) => {
+  //                 const id = Math.random().toString(36).slice(2);
+  //                 window.addEventListener('message', function handler(event) {
+  //                   if (event.data.type === 'storage-response' && event.data.requestId === id) {
+  //                     window.removeEventListener('message', handler);
+  //                     resolve();
+  //                   }
+  //                 });
+  //                 window.parent.postMessage({ type: 'storage-set', key, value, requestId: id }, '*');
+  //               });
+  //             },
   
-          window.onerror = function(message, source, lineno, colno, error) {
-            const errorMsg = error
-              ? \`\${error.name}: \${error.message}\`
-              : message;
-            window.parent.postMessage({
-              type: 'log',
-              message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
-              level: 'error'
-            }, '*');
-            return true;
-          };
+  //             getItem(key) {
+  //               try {
+  //                 if (typeof window.localStorage !== 'undefined') {
+  //                   window.localStorage.setItem('__test__', '1');
+  //                   window.localStorage.removeItem('__test__');
+  //                   return Promise.resolve(window.localStorage.getItem(key));
+  //                 }
+  //               } catch (_) {}
+  //               return new Promise((resolve) => {
+  //                 const id = Math.random().toString(36).slice(2);
+  //                 window.addEventListener('message', function handler(event) {
+  //                   if (event.data.type === 'storage-response' && event.data.requestId === id) {
+  //                     window.removeEventListener('message', handler);
+  //                     resolve(event.data.value);
+  //                   }
+  //                 });
+  //                 window.parent.postMessage({ type: 'storage-get', key, requestId: id }, '*');
+  //               });
+  //             }
+  //           };
   
-          window.addEventListener('unhandledrejection', function(event) {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
-              level: 'error'
-            }, '*');
-          });
+  //           // 掛到 window
+  //           window.setStorage = proxyStorage.setItem.bind(proxyStorage);
+  //           window.getStorage = proxyStorage.getItem.bind(proxyStorage);
+  //         })();
+  //       </script>
   
-          const code = ${JSON.stringify(safeJS)};
-          const blob = new Blob([code], { type: 'application/javascript' });
-          const blobUrl = URL.createObjectURL(blob);
+  //       <script type="module">
+  //         const originalConsole = {
+  //           log: console.log,
+  //           error: console.error,
+  //           warn: console.warn,
+  //           info: console.info
+  //         };
   
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = blobUrl;
-          script.onload = () => URL.revokeObjectURL(blobUrl);
-          script.onerror = () => {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Script loading error',
-              level: 'error'
-            }, '*');
-          };
+  //         ['log', 'error', 'warn', 'info'].forEach(method => {
+  //           console[method] = (...args) => {
+  //             window.parent.postMessage({
+  //               type: 'log',
+  //               message: args.map(arg =>
+  //                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+  //               ).join(' '),
+  //               level: method
+  //             }, '*');
+  //             originalConsole[method](...args);
+  //           };
+  //         });
   
-          document.head.appendChild(script);
-        <\/script>
-      </head>
-      <body>
-        ${htmlCode}
-      </body>
-      </html>
-    `.trim();
+  //         window.onerror = function(message, source, lineno, colno, error) {
+  //           const errorMsg = error
+  //             ? \`\${error.name}: \${error.message}\`
+  //             : message;
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
+  //             level: 'error'
+  //           }, '*');
+  //           return true;
+  //         };
   
-    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    if (window.currentPreviewBlob) {
-      URL.revokeObjectURL(window.currentPreviewBlob);
-    }
-    window.currentPreviewBlob = blobUrl;
-    return blobUrl;
-  };
+  //         window.addEventListener('unhandledrejection', function(event) {
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
+  //             level: 'error'
+  //           }, '*');
+  //         });
+  
+  //         const code = ${JSON.stringify(safeJS)};
+  //         const blob = new Blob([code], { type: 'application/javascript' });
+  //         const blobUrl = URL.createObjectURL(blob);
+  
+  //         const script = document.createElement('script');
+  //         script.type = 'module';
+  //         script.src = blobUrl;
+  //         script.onload = () => URL.revokeObjectURL(blobUrl);
+  //         script.onerror = () => {
+  //           window.parent.postMessage({
+  //             type: 'log',
+  //             message: 'Script loading error',
+  //             level: 'error'
+  //           }, '*');
+  //         };
+  
+  //         document.head.appendChild(script);
+  //       <\/script>
+  //     </head>
+  //     <body>
+  //       ${htmlCode}
+  //     </body>
+  //     </html>
+  //   `.trim();
+  
+  //   const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
+  //   const blobUrl = URL.createObjectURL(blob);
+  //   if (window.currentPreviewBlob) {
+  //     URL.revokeObjectURL(window.currentPreviewBlob);
+  //   }
+  //   window.currentPreviewBlob = blobUrl;
+  //   return blobUrl;
+  // };
 
   const updateCardPreviewSrc = (code) => {
     const rawJS = code.javascript + '\n//# sourceURL=user-code.js';
@@ -203,15 +248,6 @@ export const useWorkStore = defineStore('work', () => {
       <html lang="en" class="${htmlClass}">
       <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="
-          default-src 'self';
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
-          style-src 'self' 'unsafe-inline' https:;
-          img-src 'self' data: blob: https:;
-          font-src 'self' https: data:;
-          connect-src 'self' https:;
-          frame-src https:;
-        ">
         ${headStuff}
         ${cdnTags}
         ${linkTags}
@@ -219,6 +255,31 @@ export const useWorkStore = defineStore('work', () => {
           ${cssCode}
         </style>
         <script type="module">
+        function getStorage(key) {
+          return new Promise((resolve) => {
+            const id = Math.random().toString(36).slice(2);
+            window.addEventListener("message", function handler(event) {
+              if (event.data.type === "storage-response" && event.data.requestId === id) {
+                window.removeEventListener("message", handler);
+                resolve(event.data.value);
+              }
+            });
+            window.parent.postMessage({ type: "storage-get", key, requestId: id }, "*");
+          });
+        }
+        
+        function setStorage(key, value) {
+          return new Promise((resolve) => {
+            const id = Math.random().toString(36).slice(2);
+            window.addEventListener("message", function handler(event) {
+              if (event.data.type === "storage-response" && event.data.requestId === id) {
+                window.removeEventListener("message", handler);
+                resolve();
+              }
+            });
+            window.parent.postMessage({ type: "storage-set", key, value, requestId: id }, "*");
+          });
+        }
           window.console = {
             log: () => {},
             error: () => {},

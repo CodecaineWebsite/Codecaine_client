@@ -5,11 +5,13 @@
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
+          v-if="iframeSrc"
           :src="iframeSrc"
           sandbox="allow-scripts"
+          referrerpolicy="no-referrer"
           class="w-full h-full border-0"
-          loading="lazy"
         ></iframe>
+
       </div>
 
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
