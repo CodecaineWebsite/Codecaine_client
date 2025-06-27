@@ -1,7 +1,8 @@
 <script setup>
-import { inject, ref, watch } from "vue";
+import { inject, ref, watch, computed } from "vue";
 import Arrow from "../../assets/arrow.vue";
 import { useWorkStore } from "@/stores/useWorkStore";
+import { useAuthStore } from '@/stores/useAuthStore';
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 import ProTag from "@/components/Editor/ProTag.vue";
@@ -11,7 +12,11 @@ import EditorSmallButton from "@/components/Editor/EditorSmallButton.vue";
 import { useToastStore } from "@/stores/useToastStore";
 
 const toastStore = useToastStore();
+const workStore = useWorkStore();
+const authStore = useAuthStore();
 const { showToast } = toastStore;
+const { currentWork } = storeToRefs(workStore);
+const { userProfile } = storeToRefs(authStore);
 const router = useRouter();
 const props = defineProps({
   cdns: {
@@ -28,19 +33,28 @@ const props = defineProps({
   },
 });
 
+const isAuthor = computed(() => {
+  const userId = userProfile.value?.id;
+  const authorId = currentWork.value?.userId;
+  const isNewWork = !currentWork.value?.id;
+
+  // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
+  if (!authorId) return true;
+  return isNewWork || userId === authorId;
+});
+
 const title = inject("title");
 const emit = defineEmits(["close", "update:cdns", "update:links"]);
 const tabs = [
   { label: "HTML", key: "html" },
   { label: "CSS", key: "css" },
   { label: "JS", key: "js" },
-  { label: "Dose Detail", key: "detail", gapBefore: true },
-  { label: "Privacy", key: "privacy" },
-  { label: "Behavior", key: "behavior" },
+...(isAuthor.value ? [{ label: "Dose Detail", key: "detail", gapBefore: true }] : []),
+...(isAuthor.value ? [{ label: "Privacy", key: "privacy"}] : []),
+...(isAuthor.value ? [{ label: "Behavior", key: "behavior"}] : [{ label: "Behavior", key: "behavior", gapBefore: true }]),
   { label: "Editor", key: "editor" },
 ];
-const workStore = useWorkStore();
-const { currentWork } = storeToRefs(workStore);
+
 
 const cdns = ref(currentWork.value.cdns);
 const links = ref(currentWork.value.links);
@@ -180,6 +194,9 @@ const handleSaveAndClose = () => {
   handleSave();
   emit("close");
 };
+const closeModal = () => {
+  emit("close");
+}
 </script>
 <template>
   <div
@@ -735,11 +752,20 @@ const handleSaveAndClose = () => {
     </div>
     <div class="bg-cc-15 rounded-b-md shadow-lg w-full flex flex-col py-4 px-2">
       <button
+        v-if="isAuthor"
         type="button"
         @click.prevent="handleSaveAndClose"
         class="self-end bg-green-400 text-black rounded-md p-3"
-      >
+        >
         Save & Close
+      </button>
+      <button
+          v-if="!isAuthor"
+          type="button"
+          @click.prevent="closeModal"
+          class="self-end bg-green-400 text-black rounded-md p-3"
+        >
+        Close
       </button>
     </div>
   </div>
