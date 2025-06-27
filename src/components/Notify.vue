@@ -51,7 +51,7 @@
               <template v-else-if="n.type === 'favorite'">
                 Favorited your pen
                 <span class="font-semibold text-[#05DF72]">{{
-                  n.pen?.title
+                  n.pen?.title || "Untitled Pen"
                 }}</span>
               </template>
               <template v-else-if="n.type === 'follow'">

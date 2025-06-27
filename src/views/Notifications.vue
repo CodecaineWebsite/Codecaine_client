@@ -23,13 +23,18 @@
           </div>
           <div class="text-sm text-gray-300">
             <template v-if="n.type === 'comment'">
-              Commented on <span class="font-semibold">{{ n.pen?.title }}</span
+              Commented on
+              <span class="font-semibold">{{
+                n.pen?.title || "Untitled Pen"
+              }}</span
               >:
               <span class="italic">"{{ n.comment?.content }}"</span>
             </template>
             <template v-else-if="n.type === 'favorite'">
               Favorited your pen
-              <span class="font-semibold">{{ n.pen?.title }}</span>
+              <span class="font-semibold">{{
+                n.pen?.title || "Untitled Pen"
+              }}</span>
             </template>
             <template v-else-if="n.type === 'follow'">
               Started following you
