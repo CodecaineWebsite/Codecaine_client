@@ -22,17 +22,7 @@ const props = defineProps({
   comment: Object,
 });
 const emit = defineEmits(["delete", "update"]);
-
-const goToProfile = () => {
-  const username = props.comment.user?.username;
-  if (username) {
-    emit("close");
-    router.push(`/${username}`);
-  }
-};
-const createdTimeAgo = computed(() => {
-  return dayjs.utc(props.comment.created_at).local().fromNow();
-});
+const showActions = ref(false);
 
 const authStore = useAuthStore();
 const toastStore = useToastStore();
@@ -106,10 +96,25 @@ const deleteComment = () => {
     },
   });
 };
+
+const toggleActions = () => {
+  showActions.value = !showActions.value;
+};
+
+const goToProfile = () => {
+  const username = props.comment.user?.username;
+  if (username) {
+    emit("close");
+    router.push(`/${username}`);
+  }
+};
+const createdTimeAgo = computed(() => {
+  return dayjs.utc(props.comment.created_at).local().fromNow();
+});
 </script>
 
 <template>
-  <div class="rounded group">
+  <div class="rounded group" @click="toggleActions">
     <div
       class="grid grid-cols-[40px_1fr_44px] grid-rows-[18px_12px] relative gap-x-2 mb-4"
     >
@@ -154,7 +159,7 @@ const deleteComment = () => {
           @click="cancelEdit"
           class="bg-cc-13 text-white text-sm px-4 py-2 rounded hover:bg-cc-12 transition"
         >
-          Cancle
+          Cancel
         </button>
       </div>
     </div>
@@ -169,6 +174,10 @@ const deleteComment = () => {
       <div
         v-if="isOwner"
         class="ml-auto space-x-2 text-xs transform transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
+        :class="{
+          'opacity-100 translate-y-0': showActions,
+          'opacity-0 translate-y-2': !showActions,
+        }"
       >
         <button
           @click="startEdit"
