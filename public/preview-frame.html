@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Preview Frame</title>
-  <!-- <style>
+  <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
     }
-  </style> -->
+  </style>
 </head>
 <body>
   <script>
@@ -22,35 +21,11 @@
     };
   
     ['log', 'error', 'warn', 'info'].forEach(method => {
-      console[method] = (...args) => {
-        parent.postMessage({
-          type: 'log',
-          level: method,
-          message: args.map(arg =>
-            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-          ).join(' ')
-        }, '*');
-        originalConsole[method](...args);
-      };
+      console[method] = () => {};
     });
-  
-    window.onerror = function(message, source, lineno, colno, error) {
-      parent.postMessage({
-        type: 'log',
-        level: 'error',
-        message: error 
-          ? `${error.name}: ${error.message}\nSource: ${source}\nLine: ${lineno}, Column: ${colno}`
-          : `${message}\nSource: ${source}\nLine: ${lineno}, Column: ${colno}`
-      }, '*');
-    };
+    window.onerror = () => {};
+    window.addEventListener('unhandledrejection', () => {});
 
-    window.addEventListener('unhandledrejection', (event) => {
-      parent.postMessage({
-        type: 'log',
-        level: 'error',
-        message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason)
-      }, '*');
-    });
   
     // 監聽父層傳來的資料，更新預覽內容
     window.addEventListener('message', async (event) => {

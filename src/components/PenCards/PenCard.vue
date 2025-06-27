@@ -5,11 +5,12 @@
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          v-if="iframeSrc"
-          :src="iframeSrc"
+          ref="iframeEl"
+          src="/preview-frame.html"
           sandbox="allow-scripts"
           referrerpolicy="no-referrer"
-          class="w-full h-full border-0"
+          class="h-full w-full bg-cc-1"
+          title="Preview Frame"
         ></iframe>
 
       </div>
@@ -103,17 +104,19 @@ import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
-import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
+// import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
 import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
+import { usePreviewStore } from '@/stores/usePreviewStore'
 
 const msgStore = useMsgStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
-const workStore = useWorkStore();
-const { updateCardPreviewSrc } = workStore;
+// const workStore = useWorkStore();
+// const { updateCardPreviewSrc } = workStore;
 const authStore = useAuthStore();
+const previewStore = usePreviewStore()
 
 const router = useRouter();
 const modalStore = useModalStore();
@@ -139,17 +142,28 @@ const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
-const iframeSrc = ref("");
-const code = {
-  html: props.pen.html_code || "",
-  css: props.pen.css_code || "",
-  javascript: props.pen.js_code || "",
-  cdns: props.resources_js || [],
-  links: props.resources_css || [],
-};
-onMounted(async () => {
-  const newBlobUrl = updateCardPreviewSrc(code);
-  iframeSrc.value = newBlobUrl;
+const iframeEl = ref(null);
+
+onMounted(() => {
+  iframeEl.value.addEventListener("load", () => {
+    const code = {
+      html: props.pen.html_code || "",
+      css: props.pen.css_code || "",
+      javascript: `
+        try {
+          ${props.pen.js_code || ""}
+        } catch (err) {
+          console.error("User JS Error:", err);
+        }
+      `,
+      htmlClass: props.pen.html_class || "",
+      headStuff: props.pen.head_stuff || "",
+      cdns: Array.isArray(props.pen.resources_js) ? props.pen.resources_js : [],
+      links: Array.isArray(props.pen.resources_css) ? props.pen.resources_css : [],
+    };
+
+    previewStore.sendPreviewCode(iframeEl.value, code);
+  });
 });
 
 // 統計資料
