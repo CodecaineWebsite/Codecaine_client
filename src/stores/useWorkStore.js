@@ -90,7 +90,7 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const { htmlClass, headStuff } = currentWork.value;
+    const { htmlClass = '', headStuff = '' } = currentWork.value || {};
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
@@ -194,7 +194,7 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
     const htmlCode = code.html;
-    const { htmlClass, headStuff } = code;
+    const { htmlClass = '', headStuff = '' } = code || {};
     const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
@@ -350,8 +350,6 @@ export const useWorkStore = defineStore('work', () => {
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
         js_code: currentWork.value.javascript,
-        html_class: currentWork.value.htmlClass,
-        head_stuff: currentWork.value.headStuff,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
         html_class: currentWork.value.htmlClass || "",
