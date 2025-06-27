@@ -12,10 +12,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import PenIcon from "@/components/icons/PenIcon.vue";
 import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
+import { useToastStore } from "@/stores/useToastStore";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 const router = useRouter();
 const msgStore = useMsgStore();
 const props = defineProps({
@@ -25,7 +28,7 @@ const emit = defineEmits(["delete", "update"]);
 const showActions = ref(false);
 
 const authStore = useAuthStore();
-const toastStore = useToastStore();
+
 const editing = ref(false);
 const editContent = ref(props.comment.content);
 
@@ -63,7 +66,7 @@ const submitEdit = async () => {
     emit("update", props.comment.id, res.data);
     cancelEdit();
   } catch (err) {
-    toastStore.showToast({
+    showToast({
       message: "Failed to update comment. Please try again later.",
       variant: "danger",
     });
@@ -85,7 +88,7 @@ const deleteComment = () => {
         await api.delete(`/api/comments/${props.comment.id}`);
         emit("delete", props.comment.id);
       } catch (err) {
-        toastStore.showToast({
+        showToast({
           message: "Failed to delete comment. Please try again later.",
           variant: "danger",
         });

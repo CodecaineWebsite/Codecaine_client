@@ -13,11 +13,15 @@
         class="opacity-0 group-hover:opacity-100 transition"
       />
     </td>
-    <td class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap">
+    <td
+      class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap"
+    >
       <div class="lg:hidden text-xs">Created on</div>
       <div>{{ formatDate(pen.created_at) }}</div>
     </td>
-    <td class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap">
+    <td
+      class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap"
+    >
       <div class="lg:hidden text-xs">Updated on</div>
       <div>{{ formatDate(pen.updated_at) }}</div>
     </td>
@@ -58,15 +62,18 @@ import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
+import { useToastStore } from "@/stores/useToastStore";
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "./PenCards/PenCommentButton.vue";
 import PenViewButton from "./PenCards/PenViewButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
 
+const toastStore = useToastStore();
 const modalStore = useModalStore();
 const authStore = useAuthStore();
 const router = useRouter();
+const { showToast } = toastStore;
 const props = defineProps({
   pen: {
     type: Object,
@@ -104,7 +111,9 @@ const handleFollow = async () => {
 
 const handleTogglePrivacy = async () => {
   if (!isPro && isPrivate.value === false) {
-    alert("Only Pro members can make doses private.");
+    showToast({
+      message: "Only Pro members can make doses private.",
+    });
     return;
   }
   try {
@@ -128,7 +137,9 @@ const handleDelete = async () => {
     console.log("Deleted successfully");
   } catch (error) {
     console.error("Delete failed", error);
-    alert("Delete failed, please try again later");
+    showToast({
+      message: "Failed to delete pen. Please try again later.",
+    });
   }
 };
 

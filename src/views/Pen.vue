@@ -20,6 +20,7 @@
   import { useHandleSave } from '@/utils/handleWorkSave';
   import { useRoute, useRouter } from 'vue-router';
   import DoseFooter from '@/components/Editor/DoseFooter.vue';
+  import ToastContainer from "@/components/Toast/ToastContainer.vue";
 
   const route = useRoute();
   const router = useRouter();
@@ -457,6 +458,7 @@
 </script>
 
 <template>
+  <ToastContainer />
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
     <AIChatButton ref="aiChatButtonRef" @handleOpenAIChat = "handleOpenAIChat" v-if="isPro"/>
