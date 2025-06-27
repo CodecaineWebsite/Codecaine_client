@@ -17,7 +17,7 @@
         </RouterLink>
         <span
           v-if="pen.is_pro"
-          class="ml-1 bg-cc-yellow text-black text-[10px] font-bold px-1 py-[1px] rounded text-xs font-bold"
+          class="ml-1 bg-cc-yellow text-black text-[10px] font-bold px-1 py-[1px] rounded text-xs"
         >
           PRO
         </span>

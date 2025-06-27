@@ -67,8 +67,8 @@ import { useToastStore } from "@/stores/useToastStore";
 import { useMsgStore } from "@/stores/useMsgStore";
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
-import PenCommentButton from "./PenCards/PenCommentButton.vue";
-import PenViewButton from "./PenCards/PenViewButton.vue";
+import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
+import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
 
 const toastStore = useToastStore();
