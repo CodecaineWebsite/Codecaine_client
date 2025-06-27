@@ -7,7 +7,7 @@
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <div class="w-8 bg-white h-8 rounded-full flex justify-center items-center">
+      <div class="w-8 bg-white h-8 rounded-full flex justify-center items-center" @click="goToHome">
         <LogoIcon alt="icon" class="w-6 h-6 text-black" />
       </div>
       <button
@@ -193,6 +193,10 @@ const activeTab = computed(() => {
   if (path.startsWith("/trending")) return "Trending";
   return "";
 });
+
+const goToHome = () => {
+  router.push('/');
+}
 
 const goToPath = (pathOrLocation) => {
   isMenuOpen.value = false;

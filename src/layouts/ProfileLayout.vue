@@ -3,8 +3,8 @@
     <div class="pt-4" v-if="userInfo">
       <header class="profile-header">
         <div class="md:pt-[110px] md:pb-[75px] relative pt-5 pb-5">
-          <div class="text-center text-4xl pb-3">
-            {{ userInfo.display_name }}
+          <div class="text-center text-4xl pb-3 min-h-[2.5rem]">
+            {{ userInfo.display_name || "\u00A0" }}
             <span
               v-if="userInfo.is_pro"
               class="bg-yellow-300 text-black text-xl font-bold px-1 py-[1px] rounded"

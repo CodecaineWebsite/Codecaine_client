@@ -4,6 +4,8 @@
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
+  import { useToastStore } from "@/stores/useToastStore";
+
   import api from "@/config/api";
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
@@ -32,8 +34,11 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
+  const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
   const { currentWork, isSaved } = storeToRefs(workStore); //放資料
+  const { showToast } = toastStore;
+
   const isAutoPreview = ref(true);
   const userName = ref('');
   const isPro = ref(true);
@@ -48,7 +53,6 @@
     if (!authorId) return true;
     return isNewWork || userId === authorId;
   });
-
   // 初始化 userName
   userName.value =
     currentWork.value?.userName ??
@@ -242,7 +246,7 @@
                 {{ title.length ? title : "Untitled" }}
               </span>
             </template>
-            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing">
+            <button type="button" class="ml-1" @click="toggleEdit" v-if="!isEditing && isAuthor" >
               <Edit class="w-[13px] h-[13px] hover:cursor-pointer" />
             </button>
           </div>

@@ -12,8 +12,10 @@ export const useWorkStore = defineStore('work', () => {
     html: "",
     css: "",
     javascript: "",
+    htmlClass: "",
     links:[],
     cdns: [], 
+    headStuff: "",
     viewsCount: "",
     viewMode: "center",
     tabSize: 2,
@@ -32,6 +34,12 @@ export const useWorkStore = defineStore('work', () => {
   }
   const updateTags = (newTags) => {
   currentWork.value.tags = newTags
+  }
+  const updateHtmlClass = (newhtmlClass) => {
+  currentWork.value.htmlClass = newhtmlClass
+  }
+  const updateHeadStuff = (newStuff) => {
+  currentWork.value.headStuff = newStuff
   }
   const currentWork = ref(workTemplate)
   const handleInitWork = (user) => {
@@ -82,12 +90,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
+    const { htmlClass, headStuff } = currentWork.value;
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="en" class="${htmlClass}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -99,13 +108,10 @@ export const useWorkStore = defineStore('work', () => {
           connect-src 'self' https:;
           frame-src https:;
         ">
+        ${headStuff}
         ${cdnTags}
         ${linkTags}
         <style>
-          body {
-            background-color: white;
-            margin: 0;
-          }
           ${cssCode}
         </style>
         <script type="module">
@@ -188,12 +194,13 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
     const htmlCode = code.html;
+    const { htmlClass, headStuff } = code;
     const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
     const previewData = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="en" class="${htmlClass}">
       <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="
@@ -205,13 +212,10 @@ export const useWorkStore = defineStore('work', () => {
           connect-src 'self' https:;
           frame-src https:;
         ">
+        ${headStuff}
         ${cdnTags}
         ${linkTags}
         <style>
-          body {
-            background-color: white;
-            margin: 0;
-          }
           ${cssCode}
         </style>
         <script type="module">
@@ -314,8 +318,8 @@ export const useWorkStore = defineStore('work', () => {
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
       js_code: newWorkData.javascript || '',
-      html_class: newWorkData.htmlClass || '',
-      head_stuff: newWorkData.headStuff || '',
+      html_class: newWorkData.html_class || '',
+      head_stuff: newWorkData.head_stuff || '',
       view_mode: newWorkData.view_mode,
       tab_size: newWorkData.tab_size,
       is_autosave: newWorkData.isAutoSave ?? false,
@@ -350,6 +354,8 @@ export const useWorkStore = defineStore('work', () => {
         head_stuff: currentWork.value.headStuff,
         view_mode: currentWork.value.viewMode,
         tab_size: currentWork.value.tabSize,
+        html_class: currentWork.value.htmlClass || "",
+        head_stuff: currentWork.value.headStuff || "",
         is_autosave: currentWork.value.isAutoSave ?? false,
         is_autopreview: currentWork.value.isAutoPreview ?? true,
         resources_css: currentWork.value.links || [],
@@ -421,6 +427,8 @@ export const useWorkStore = defineStore('work', () => {
     updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
+    updateHtmlClass,
+    updateHeadStuff,
     updateTags,
     fetchWorkFromId,
     createNewWork,

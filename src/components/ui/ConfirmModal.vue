@@ -1,7 +1,7 @@
 <template>
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50">
     <div
-      class="p-6 rounded-md max-w-sm w-full border-8"
+      class="p-6 rounded-md max-w-lg w-full border-8 mt-20"
       :class="styleClasses.container">
       <p
         class="font-bold mb-2 text-lg"
@@ -24,7 +24,7 @@
         <button
           v-if="cancelText"
           @click="onCancel"
-          class="bg-cc-13 px-4.5 py-2.5 rounded cursor-pointer hover:bg-cc-14 text-cc-1">
+          class="bg-cc-13 px-4 py-2 px-md-4.5 py-md-2.5 rounded cursor-pointer hover:bg-cc-14 text-cc-1">
           {{ cancelText }}
         </button>
       </div>
@@ -70,17 +70,17 @@ const styleClasses = computed(() => {
     case "danger":
       container = "bg-cc-17 border-cc-red text-cc-1";
       confirm =
-        "bg-cc-red text-white px-4.5 py-2.5 rounded hover:bg-cc-red-dark";
+        "bg-cc-red text-white px-4 py-2 px-md-4.5 py-md-2.5 rounded hover:bg-cc-red-dark";
       break;
     case "warning":
       container = "bg-cc-17 border-cc-yellow text-cc-1";
       confirm =
-        "bg-cc-yellow text-black px-4.5 py-2.5 rounded hover:bg-cc-yellow-dark hover:text-white";
+        "bg-cc-yellow text-black px-4 py-2 px-md-4.5 py-md-2.5 rounded hover:bg-cc-yellow-dark hover:text-white";
       break;
     case "success":
       container = "bg-cc-17 border-cc-green text-cc-1";
       confirm =
-        "bg-cc-green text-white px-4.5 py-2.5 rounded hover:bg-cc-green-dark hover:text-white";
+        "bg-cc-green text-white px-4 py-2 px-md-4.5 py-md-2.5 rounded hover:bg-cc-green-dark hover:text-white";
       break;
   }
 
