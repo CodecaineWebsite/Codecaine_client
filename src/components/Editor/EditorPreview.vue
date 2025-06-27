@@ -12,9 +12,11 @@ const previewStore = usePreviewStore()
 const iframeEl = ref(null)
 const isFirstRenderDone = ref(false)
 
+
+
 watch(iframeEl, (el) => {
   if (el) previewStore.setIframeEl(el)
-})
+}, { immediate: true })
 
 const hasAnyContent = (work) => {
   return Boolean(
@@ -27,11 +29,11 @@ const hasAnyContent = (work) => {
 }
 
 const autoSendToIframe = debounce(() => {
-  previewStore.sendPreviewCode(currentWork.value)
+  previewStore.sendAutoPreviewCode(currentWork.value)
 }, 2000)
 
 function runPreview() {
-  previewStore.sendPreviewCode(currentWork.value)
+  previewStore.sendAutoPreviewCode(currentWork.value)
 }
 defineExpose({ runPreview })
 
@@ -40,7 +42,7 @@ watch(
   (work) => {
     if (!work || isFirstRenderDone.value) return
     if (work.isAutoPreview && hasAnyContent(work)) {
-      previewStore.sendPreviewCode(work)
+      previewStore.sendAutoPreviewCode(work)
     }
     isFirstRenderDone.value = true
   },
@@ -69,7 +71,7 @@ watch(
 <template>
   <iframe
     ref="iframeEl"
-    src="/preview-frame.html"
+    src="/auto-preview-frame.html"
     sandbox="allow-scripts"
     referrerpolicy="no-referrer"
     class="h-full w-full"

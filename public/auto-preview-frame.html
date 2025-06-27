@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // 攔截 console 輸出
+    const originalConsole = {
+      log: console.log,
+      error: console.error,
+      warn: console.warn,
+      info: console.info
+    };
+  
+    ['log', 'error', 'warn', 'info'].forEach(method => {
+      console[method] = (...args) => {
+        parent.postMessage({
+          type: 'log',
+          level: method,
+          message: args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+          ).join(' ')
+        }, '*');
+        originalConsole[method](...args);
+      };
+    });
+  
+    window.onerror = function(message, source, lineno, colno, error) {
+      parent.postMessage({
+        type: 'log',
+        level: 'error',
+        message: error 
+          ? `${error.name}: ${error.message}\nSource: ${source}\nLine: ${lineno}, Column: ${colno}`
+          : `${message}\nSource: ${source}\nLine: ${lineno}, Column: ${colno}`
+      }, '*');
+    };
+
+    window.addEventListener('unhandledrejection', (event) => {
+      parent.postMessage({
+        type: 'log',
+        level: 'error',
+        message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason)
+      }, '*');
+    });
+  
+    // 監聽父層傳來的資料，更新預覽內容
+    window.addEventListener('message', async (event) => {
+      if (!event.data || event.data.type !== 'render') return;
+  
+      const {
+        html = '',
+        css = '',
+        javascript = '',
+        htmlClass = '',
+        headStuff = '',
+        cdns = [],
+        links = [],
+      } = event.data.payload;
+  
+      document.documentElement.className = htmlClass || '';
+  
+      document.head.innerHTML = `<meta charset="UTF-8">`;
+  
+      // 插入 headStuff
+      const tmpDiv = document.createElement('div');
+      tmpDiv.innerHTML = headStuff;
+      Array.from(tmpDiv.childNodes).forEach(node => {
+        document.head.appendChild(node);
+      });
+  
+      // 插入 links
+      links.forEach(url => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        document.head.appendChild(link);
+      });
+  
+      // 插入 cdns
+      cdns.forEach(url => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = false;
+        document.head.appendChild(script);
+      });
+  
+      // 插入 CSS
+      const style = document.createElement('style');
+      style.textContent = css;
+      document.head.appendChild(style);
+  
+      // 插入 HTML
+      document.body.innerHTML = html;
+  
+      // 插入使用者 JS
+      const jsBlob = new Blob([javascript + '\n//# sourceURL=user-code.js'], {
+        type: 'application/javascript'
+      });
+      const blobUrl = URL.createObjectURL(jsBlob);
+  
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = blobUrl;
+      script.onload = () => URL.revokeObjectURL(blobUrl);
+      script.onerror = () => {
+        parent.postMessage({
+          type: 'log',
+          message: 'Script loading error',
+          level: 'error'
+        }, '*');
+      };
+  
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
