@@ -11,9 +11,12 @@
       v-else-if="!isLoading && pens.length === 0"
       class="justify-center flex mt-12"
     >
-      <p class="text-4xl bg-gray-800 p-12 rounded-lg">
-        ⚠️ No Loved Caines found.
-      </p>
+      <div>
+        <h1 class="mb-2 leading-[1.1] font-archivo text-4xl">No Results</h1>
+        <p>
+          ⚠️ No Loved Doses found.
+        </p>
+      </div>
     </div>
     <PaginationNav
       :currentPage="page"
