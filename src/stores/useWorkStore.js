@@ -250,7 +250,7 @@ export const useWorkStore = defineStore('work', () => {
   };
   
   const isSaved = ref(true)
-  console.log(isSaved.value);
+  const isAuthor = ref()
 
   const addViews = (id) => {
     try {
@@ -416,6 +416,7 @@ export const useWorkStore = defineStore('work', () => {
     currentWork,
     currentId,
     isSaved,
+    isAuthor,
     handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,

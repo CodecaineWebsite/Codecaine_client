@@ -36,7 +36,7 @@
   const authStore = useAuthStore();
   const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
+  const { currentWork, isSaved, isAuthor } = storeToRefs(workStore); //放資料
   const { showToast } = toastStore;
 
   const isAutoPreview = ref(true);
@@ -44,15 +44,14 @@
   const isPro = ref(true);
   
   // 判斷是否為作者
-  const isAuthor = computed(() => {
+  workStore.isAuthor = computed(() => {
     const userId = userProfile.value?.id;
     const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
 
-    // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
     if (!authorId) return true;
     return isNewWork || userId === authorId;
-  });
+});
   // 初始化 userName
   userName.value =
     currentWork.value?.userName ??
