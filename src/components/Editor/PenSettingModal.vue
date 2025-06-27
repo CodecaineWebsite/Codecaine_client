@@ -55,13 +55,14 @@ const tabs = [
   { label: "Editor", key: "editor" },
 ];
 
-
-const cdns = ref(currentWork.value.cdns);
-const links = ref(currentWork.value.links);
-const isPro = ref(currentWork.value.isPro);
-const tags = ref(currentWork.value.tags);
-const tabSize = ref(currentWork.value.tabSize);
-const doseDescription = ref(currentWork.value.description);
+const htmlClass = ref(currentWork.value.htmlClass)
+const headStuff = ref(currentWork.value.headStuff)
+const cdns = ref(currentWork.value.cdns)
+const links = ref(currentWork.value.links)
+const tags = ref(currentWork.value.tags)
+const isPro = ref(currentWork.value.isPro)
+const tabSize = ref(currentWork.value.tabSize)
+const doseDescription = ref(currentWork.value.description)
 
 watch(
   cdns,
@@ -86,6 +87,14 @@ watch(
   },
   { deep: true }
 );
+
+watch(htmlClass, (newhtmlClass) => {
+  workStore.updateHtmlClass(newhtmlClass)
+}, { deep: true })
+
+watch(headStuff, (newStuff) => {
+  workStore.updateHeadStuff(newStuff)
+}, { deep: true })
 
 watch(doseDescription, (newVal) => {
   currentWork.value.description = newVal;
@@ -251,35 +260,9 @@ const closeModal = () => {
           class="md:hidden w-full flex mb-1 md:before:content-none before:content-[''] before:relative before:w-full before:h-0.5 before:bg-gray-700"
         ></div>
         <div class="md:w-3/4 md:pl-6 w-full h-11/12 overflow-y-auto">
-          <div v-show="activeTab === 'html'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="htmlPreprocessor">HTML Preprocessor</label>
-              </div>
-              <div class="relative">
-                <select
-                  id="htmlPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Haml">Haml</option>
-                  <option value="Markdown">Markdown</option>
-                  <option value="Slim">Slim</option>
-                  <option value="Pug">Pug</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
+
+          <div v-show="activeTab === 'html'" class=" w-full flex flex-col gap-4">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div class="">
                 <label for="addClassToHtml"
                   >Add Class(es) to &lt;html&gt;</label
@@ -288,6 +271,7 @@ const closeModal = () => {
               <div class="relative">
                 <input
                   id="addClassToHtml"
+                  v-model="currentWork.htmlClass"
                   class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
                   placeholder="e.g. single post post-1234"
                 />
@@ -303,6 +287,7 @@ const closeModal = () => {
                 <textarea
                   id="stuffForHead"
                   type="area"
+                  v-model="currentWork.headStuff"
                   class="appearance-none w-full h-24 border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 placeholder-gray-500"
                   placeholder="e.g. <meta>, <link>, <script>"
                 ></textarea>
@@ -310,111 +295,8 @@ const closeModal = () => {
             </div>
           </div>
 
-          <div v-show="activeTab === 'css'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="">
-                <label for="cssPreprocessor">CSS Preprocessor</label>
-              </div>
-              <div class="relative">
-                <select
-                  id="cssPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Less">Less</option>
-                  <option value="SCSS">SCSS</option>
-                  <option value="Sass">Sass</option>
-                  <option value="Stylus">Stylus</option>
-                  <option value="PostCSS">PostCSS</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div class="">
-                <label for="cssBase">CSS Base</label>
-              </div>
-              <div class="flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    name="CSS Base"
-                    value="Normalize"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Normalize
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="CSS Base"
-                    value="Reset"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Reset
-                </label>
-                <label>
-                  <input
-                    checked
-                    type="radio"
-                    name="CSS Base"
-                    value="Neither"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Neither
-                </label>
-              </div>
-            </div>
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="Vender Prefixing">Vender Prefixing</label>
-              </div>
-              <div class="flex flex-col">
-                <label>
-                  <input
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Autoprefixer"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Autoprefixer
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Prefixfree"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Prefixfree
-                </label>
-                <label>
-                  <input
-                    checked
-                    type="radio"
-                    name="Vender Prefixing"
-                    value="Neither"
-                    class="appearance-none w-3.5 h-3.5 border-1 border-gray-400 rounded-full checked:bg-blue-300 checked:border-gray-500"
-                  />
-                  Neither
-                </label>
-              </div>
-            </div>
-
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
+          <div v-show="activeTab === 'css'" class=" w-full flex flex-col gap-4">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
                 <label for="addExternalStylesheets"
                   >Add External Stylesheets / Doses</label
@@ -455,40 +337,10 @@ const closeModal = () => {
               </div>
             </div>
           </div>
-
-          <div v-show="activeTab === 'js'" class="w-full flex flex-col gap-4">
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
+          <div v-show="activeTab === 'js'" class=" w-full flex flex-col gap-4">
+            <div class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0">
               <div>
-                <label for="javaScriptPreprocessor"
-                  >JavaScript Preprocessor</label
-                >
-              </div>
-              <div class="relative">
-                <select
-                  id="javaScriptPreprocessor"
-                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500"
-                >
-                  <option value="" selected>None</option>
-                  <option value="Script">Script</option>
-                </select>
-                <div
-                  class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 flex flex-col justify-around text-gray-500 text-xs leading-tight h-1/2"
-                >
-                  <Arrow class="w-3 h-3 fill-current rotate-180" />
-                  <Arrow class="w-3 h-3 fill-current" />
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="relative editorSettingCard-linear-bgc py-3 px-4 w-full before:h-full before:w-1 before:bg-cc-13 before:content-[''] before:absolute before:top-0 before:left-0"
-            >
-              <div>
-                <label for="addExternalScripts"
-                  >Add External Scripts / Doses</label
-                >
+                <label for="addExternalScripts">Add External Scripts / Doses</label>
               </div>
               <div class="flex flex-col">
                 <Cdnjs @select="handleSelectedPackage" />
@@ -567,9 +419,7 @@ const closeModal = () => {
             >
               <div class="flex justify-between">
                 <label for="tags">Tags</label>
-                <span class="text-xs align-text-bottom"
-                  >comma separated, max of five</span
-                >
+                <span class="text-xs align-text-bottom">Press Enter to add tag, max of five</span>
               </div>
               <div class="relative">
                 <input
