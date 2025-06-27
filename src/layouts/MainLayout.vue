@@ -68,7 +68,6 @@ const { width: screenWidth } = useWindowSize();
 
 const isCompactScreen = computed(() => screenWidth.value <= 830);
 
-// 計算 layout 的 gridTemplateColumns
 const layoutColumns = computed(() => {
   if (isCompactScreen.value) {
     return "1fr";
