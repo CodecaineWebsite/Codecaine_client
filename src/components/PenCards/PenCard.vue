@@ -27,7 +27,7 @@
           <a :href="userPageLink" class="shrink-0">
             <img
               :src="userProfileImage"
-              class="w-10 h-10 rounded-sm"
+              class="w-10 h-10 rounded-sm object-cover"
               :alt="userDisplayName + ' 的頭像'"
             />
           </a>
