@@ -43,15 +43,15 @@
               <template v-if="n.type === 'comment'">
                 Commented on
                 <span class="font-semibold text-[#05DF72]">{{
-                  n.pen?.title || "Untitled Pen"
+                  n.pen?.title || "Untitled Dose"
                 }}</span
                 >:
                 <span class="italic">"{{ n.comment?.content }}"</span>
               </template>
               <template v-else-if="n.type === 'favorite'">
-                Favorited your pen
+                Favorited your dose
                 <span class="font-semibold text-[#05DF72]">{{
-                  n.pen?.title || "Untitled Pen"
+                  n.pen?.title || "Untitled Dose"
                 }}</span>
               </template>
               <template v-else-if="n.type === 'follow'">
