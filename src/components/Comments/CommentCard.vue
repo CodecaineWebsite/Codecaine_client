@@ -116,7 +116,11 @@ const createdTimeAgo = computed(() => {
 </script>
 
 <template>
-  <div class="rounded group" @click="toggleActions">
+  <div
+    class="rounded group"
+    @click="toggleActions"
+    @mouseleave="showActions = false"
+  >
     <div
       class="grid grid-cols-[40px_1fr_44px] grid-rows-[18px_12px] relative gap-x-2 mb-4"
     >
