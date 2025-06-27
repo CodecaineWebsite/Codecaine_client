@@ -9,6 +9,7 @@
         v-for="n in pagedNotifications"
         class="flex gap-3 items-start p-4 mb-2 rounded-lg transition bg-[#23262f] hover:bg-[#2C303A] border border-transparent hover:border-[#05DF72] cursor-pointer"
         :class="{ 'opacity-80': n.is_read }"
+        @click="handleNotificationClick(n)"
       >
         <img
           v-if="n.sender && n.sender.profile_image_url"
@@ -63,12 +64,16 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useNotifyStore } from "@/stores/useNotifyStore";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/useAuthStore";
 import PaginationNav from "@/components/PaginationNav.vue";
 
+const authStore = useAuthStore();
 const notifyStore = useNotifyStore();
 
+const router = useRouter();
 const page = ref(1);
 const pageSize = 8;
 const totalPages = computed(() =>
@@ -83,6 +88,26 @@ const pagedNotifications = computed(() => {
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString();
+};
+const handleNotificationClick = (n) => {
+  if (n.type === "comment" || n.type === "favorite") {
+    if (n.pen.id) {
+      router.push({
+        name: "dose",
+        params: {
+          username: authStore.userProfile.username,
+          id: n.pen.id,
+        },
+      });
+    }
+  } else if (n.type === "follow") {
+    if (n.sender.username) {
+      router.push({
+        name: "dosesShowcase",
+        params: { username: n.sender.username },
+      });
+    }
+  }
 };
 
 onMounted(async () => {
