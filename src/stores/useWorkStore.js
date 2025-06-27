@@ -313,7 +313,7 @@ export const useWorkStore = defineStore('work', () => {
   const createNewWork = async (newWorkData) => {
     try {
     const payload = {
-      title: newWorkData.title.trim() || 'Untitled',
+      title: (newWorkData.title || '').trim() || 'Untitled',
       description: newWorkData.description || '',
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
@@ -346,7 +346,7 @@ export const useWorkStore = defineStore('work', () => {
   const saveCurrentWork = async () => {
     try {
       const payload = {
-        title: currentWork.value.title || "Untitled",
+        title: (currentWork.value.title || '').trim() || 'Untitled',
         description: currentWork.value.description,
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
