@@ -1,4 +1,3 @@
-<!-- ViewModeChange.vue -->
 <template>
   <div class="inline-flex rounded overflow-hidden">
     <button
