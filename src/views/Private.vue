@@ -33,7 +33,9 @@ import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
 import { useLocalStorage } from "@vueuse/core";
 import api from "@/config/api";
+import { useToastStore } from "@/stores/useToastStore";
 
+const toastStore = useToastStore();
 const router = useRouter();
 const route = useRoute();
 const viewMode = useLocalStorage("dosesViewMode", "grid");
@@ -41,6 +43,7 @@ const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(0);
 const isLoading = ref(true);
+const { showToast } = toastStore;
 
 const fetchCaines = async () => {
   isLoading.value = true;
@@ -57,7 +60,10 @@ const fetchCaines = async () => {
     pens.value = res.data.results || [];
     totalPages.value = res.data.totalPages || 0;
   } catch (error) {
-    console.error("Failed to load private Caines:", error);
+    showToast({
+      message: "Failed to load private Doses. Please try again later",
+      variant: "danger",
+    });
     pens.value = [];
   } finally {
     isLoading.value = false;
