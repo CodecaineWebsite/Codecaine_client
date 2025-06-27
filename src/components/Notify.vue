@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative" ref="dropdownRef">
     <button
       class="relative focus:outline-none cursor-pointer"
       @click="toggleDropdown"
@@ -19,54 +19,50 @@
     >
       <ul>
         <li
-          v-for="notification in notifyStore.notifications.slice(0, 7)"
+          v-for="n in notifyStore.notifications.slice(0, 7)"
+          :key="n.id"
           class="px-4 py-2 hover:bg-[#2C303A] cursor-pointer flex gap-2 items-start transition"
+          @click="handleNotificationClick(n)"
         >
           <img
-            v-if="notification.sender && notification.sender.profile_image_url"
-            :src="notification.sender.profile_image_url"
+            v-if="n.sender && n.sender.profile_image_url"
+            :src="n.sender.profile_image_url"
             class="w-8 h-8 object-cover rounded"
             alt="avatar"
           />
           <div class="flex-1">
             <div class="font-medium text-[#ececf1] flex items-center gap-1">
-              {{
-                notification.sender?.display_name ||
-                notification.sender?.username ||
-                "System"
-              }}
+              {{ n.sender?.display_name || n.sender?.username || "System" }}
               <span
-                v-if="!notification.is_read"
+                v-if="!n.is_read"
                 class="ml-1 w-2 h-2 rounded-full bg-red-500 inline-block"
                 title="Unread"
               ></span>
             </div>
             <div class="text-sm text-gray-300">
-              <template v-if="notification.type === 'comment'">
+              <template v-if="n.type === 'comment'">
                 Commented on
                 <span class="font-semibold text-[#05DF72]">{{
-                  notification.pen?.title || "Untitled Pen"
+                  n.pen?.title || "Untitled Dose"
                 }}</span
                 >:
-                <span class="italic"
-                  >"{{ notification.comment?.content }}"</span
-                >
+                <span class="italic">"{{ n.comment?.content }}"</span>
               </template>
-              <template v-else-if="notification.type === 'favorite'">
-                Favorited your pen
+              <template v-else-if="n.type === 'favorite'">
+                Favorited your dose
                 <span class="font-semibold text-[#05DF72]">{{
-                  notification.pen?.title
+                  n.pen?.title || "Untitled Dose"
                 }}</span>
               </template>
-              <template v-else-if="notification.type === 'follow'">
+              <template v-else-if="n.type === 'follow'">
                 Started following you
               </template>
               <template v-else>
-                {{ notification.message || "New notification" }}
+                {{ n.message || "New notification" }}
               </template>
             </div>
             <div class="text-xs text-gray-500">
-              {{ formatDate(notification.created_at) }}
+              {{ formatDate(n.created_at) }}
             </div>
           </div>
         </li>
@@ -94,11 +90,16 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useNotifyStore } from "@/stores/useNotifyStore";
+import { onClickOutside } from "@vueuse/core";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { navigateByNotification } from "@/utils/notify";
 import BellIcon from "@/components/icons/BellIcon.vue";
 
+const authStore = useAuthStore();
 const router = useRouter();
 const notifyStore = useNotifyStore();
 const showDropdown = ref(false);
+const dropdownRef = ref(null);
 
 const notify = () => {
   showDropdown.value = !showDropdown.value;
@@ -115,7 +116,15 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 
+const handleNotificationClick = (n) => {
+  navigateByNotification(n, router, authStore);
+};
+
 onMounted(async () => {
   await notifyStore.fetchNotifications();
+});
+
+onClickOutside(dropdownRef, () => {
+  showDropdown.value = false;
 });
 </script>
