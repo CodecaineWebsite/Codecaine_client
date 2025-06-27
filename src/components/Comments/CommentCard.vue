@@ -12,7 +12,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import PenIcon from "@/components/icons/PenIcon.vue";
 import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
-import { useToastStore } from "@/stores/useToastStore";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
