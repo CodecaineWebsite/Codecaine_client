@@ -9,7 +9,7 @@ export const usePreviewStore = defineStore('preview', () => {
     iframeEl.value = el
   }
 
-  const sendPreviewCode = (work) => {
+  const sendAutoPreviewCode = (work) => {
     if (!iframeEl.value || !iframeEl.value.contentWindow) return;
   
     // 濾除非字串的元素
@@ -26,8 +26,32 @@ export const usePreviewStore = defineStore('preview', () => {
       cdns,
       links,
     }));
-  
+
     iframeEl.value.contentWindow.postMessage({
+      type: 'render',
+      payload,
+    }, '*');
+  }
+
+  function sendPreviewCode(iframe, work) {
+    if (!iframe || !iframe.contentWindow) return;
+  
+    // 濾除非字串的元素
+    const cdns = Array.isArray(work.cdns) ? work.cdns.filter(i => typeof i === 'string') : [];
+    const links = Array.isArray(work.links) ? work.links.filter(i => typeof i === 'string') : [];
+  
+    // 序列化 payload，避免 postMessage 傳參時出現 clone 錯誤
+    const payload = JSON.parse(JSON.stringify({
+      html: work.html || '',
+      css: work.css || '',
+      javascript: work.javascript || '',
+      htmlClass: work.htmlClass || '',
+      headStuff: work.headStuff || '',
+      cdns,
+      links,
+    }));
+  
+    iframe.contentWindow.postMessage({
       type: 'render',
       payload,
     }, '*');
@@ -35,6 +59,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
   return { 
     setIframeEl,
+    sendAutoPreviewCode,
     sendPreviewCode
   };
 });
