@@ -58,38 +58,9 @@ export const useWorkStore = defineStore('work', () => {
     }
   
     currentId.value = id;
-  
-    try {
-      const data = await fetchWorkFromId(id);
+    await fetchWorkFromId(id);
+    addViews(id);
 
-      api.put(`/api/pens/${id}/view`).catch((err) => {
-        console.warn('Failed to increase views count:', err);
-      });
-
-      const { html_code, css_code, js_code, html_class, username, user_id, is_pro, is_private, is_autosave, is_autopreview, tabSize, resources_js, resources_css, tags, ...rest } = data;
-
-      currentWork.value = {
-        ...rest,
-        userName: data.username,
-        userId: data.user_id,
-        isPro: data.is_pro,
-        isPrivate: data.is_private,
-        html: data.html_code,
-        css: data.css_code,
-        javascript: data.js_code,
-        htmlClass: data.html_class || '',
-        headStuff: data.head_stuff || '',
-        isAutoSave: data.is_autosave,
-        isAutoPreview: data.is_autopreview,
-        tabSize: data.tab_size ?? 2,
-        cdns: Array.isArray(data.resources_js) ? data.resources_js : [],
-        links: Array.isArray(data.resources_css) ? data.resources_css : [],
-        tags: Array.isArray(data.tags) ? data.tags : [],
-      };
-    } catch (err) {
-      console.error('Failed to fetch work by ID:', err);
-      // 可加入錯誤處理
-    }
   };
   
   // 更新CurrentCode 
@@ -119,7 +90,7 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = currentWork.value.css;
     const htmlCode = currentWork.value.html;
-    const { htmlClass, headStuff } = currentWork.value;
+    const { htmlClass = '', headStuff = '' } = currentWork.value || {};
     const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
@@ -223,7 +194,7 @@ export const useWorkStore = defineStore('work', () => {
     const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
     const cssCode = code.css;
     const htmlCode = code.html;
-    const { htmlClass, headStuff } = code;
+    const { htmlClass = '', headStuff = '' } = code || {};
     const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
     const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
   
@@ -277,19 +248,62 @@ export const useWorkStore = defineStore('work', () => {
     window.currentPreviewBlob = blobUrl;
     return blobUrl;
   };
+  
+  const isSaved = ref(true)
+  console.log(isSaved.value);
 
-  const fetchWorks = async () => {
+  const addViews = (id) => {
     try {
-      const res = await api.get(`/api/pens`);
-      works.value = res.data;
+      api.put(`/api/pens/${id}/view`).catch((err) => {
+        console.warn('Failed to increase views count:', err);
+      });
     } catch (err) {
-      console.error('Failed to fetch works', err);
+      console.error('Failed to fetch work by ID:', err);
+      // 可加入錯誤處理
     }
-  };
 
+  }
+  
   const fetchWorkFromId = async (id) => {
     try {
       const res = await api.get(`/api/pens/${id}`);
+      const { 
+        html_code, 
+        css_code, 
+        js_code, 
+        html_class,
+        head_stuff,
+        username, 
+        user_id, 
+        is_pro, 
+        is_private, 
+        is_autosave, 
+        is_autopreview, 
+        tab_size, 
+        resources_js, 
+        resources_css, 
+        tags, 
+        ...rest 
+      } = res.data;
+
+      currentWork.value = {
+        ...rest,
+        userName: username,
+        userId: user_id,
+        isPro: is_pro,
+        isPrivate: is_private,
+        html: html_code,
+        css: css_code,
+        htmlClass: html_class,
+        headStuff: head_stuff,
+        javascript: js_code,
+        isAutoSave: is_autosave,
+        isAutoPreview: is_autopreview,
+        tabSize: tab_size ?? 2,
+        cdns: Array.isArray(resources_js) ? resources_js : [],
+        links: Array.isArray(resources_css) ? resources_css : [],
+        tags: Array.isArray(tags) ? tags : [],
+      }
       return res.data;
     } catch (err) {
       console.error('Failed to fetch work', err);
@@ -319,6 +333,7 @@ export const useWorkStore = defineStore('work', () => {
     works.value.unshift(res.data.data);
     currentId.value = res.data.data.id;
     currentWork.value.id = res.data.data.id;
+    isSaved.value = true;
     console.log('Work created successfully');
     return createdWork;
   } catch (err) {
@@ -347,6 +362,7 @@ export const useWorkStore = defineStore('work', () => {
       };
       await api.put(`/api/pens/${currentId.value}`, payload);
       currentWork.value.lastSavedTime = new Date();
+      isSaved.value = true;
       console.log('Work saved successfully');
       return true;
     } catch (err) {
@@ -399,6 +415,7 @@ export const useWorkStore = defineStore('work', () => {
     works,
     currentWork,
     currentId,
+    isSaved,
     handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,
@@ -411,7 +428,6 @@ export const useWorkStore = defineStore('work', () => {
     updateHtmlClass,
     updateHeadStuff,
     updateTags,
-    fetchWorks,
     fetchWorkFromId,
     createNewWork,
     saveCurrentWork,

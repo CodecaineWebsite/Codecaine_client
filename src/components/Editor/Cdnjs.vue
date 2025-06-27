@@ -104,7 +104,7 @@ onUnmounted(() => {
     v-model="keyword" 
     @keydown="handleKeydown"
     placeholder="Search CDNjs" 
-    class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3"
+    class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3 placeholder:text-gray-500"
     >
     <ul
       v-if="showSelectList && packages.length"

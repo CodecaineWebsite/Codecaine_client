@@ -36,14 +36,13 @@
   const authStore = useAuthStore();
   const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork } = storeToRefs(workStore); //放資料
+  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
   const { showToast } = toastStore;
 
   const isAutoPreview = ref(true);
   const userName = ref('');
   const isPro = ref(true);
-  const isEdited = ref(false);
-
+  
   // 判斷是否為作者
   const isAuthor = computed(() => {
     const userId = userProfile.value?.id;
@@ -68,12 +67,14 @@
     userName.value = newWork.userName ?? '';
   }, { deep: true });
 
-  watch( () => [
+  watch(() => [
       currentWork.value.title,
       currentWork.value.description,
       currentWork.value.html,
       currentWork.value.css,
       currentWork.value.javascript,
+      currentWork.value.htmlClass,
+      currentWork.value.headStuff,
       currentWork.value.cdns,
       currentWork.value.links,
       currentWork.value.viewMode,
@@ -81,9 +82,10 @@
       currentWork.value.isAutoPreview,
       currentWork.value.isPrivate,
       currentWork.value.tags,
+      currentWork.value.tabSize,
     ],
     () => {
-      isEdited.value = true
+      isSaved.value = false
     }
   )
   
@@ -109,15 +111,13 @@
       isLoginModalShow.value = true;
       router.push({ path: route.path, query: { modal: 'login' } })
     } else {
-      await handleSave()
-      isEdited.value = false;
+      handleSave()
     }
   };
-
+  
   const handleWorkAutoSave = async () => {
     if (isLoggedIn.value) {
       handleSave()
-      isEdited.value = false;
     }
   };
 
@@ -294,8 +294,8 @@
             <span  
               class="h-[3px] bg-yellow-300 absolute mx-auto left-1 right-1 top-0.5 origin-center rounded-t-md transition-all duration-500"
               :class="{
-                'w-21': isEdited,
-                'w-0': !isEdited,
+                'w-21': !isSaved,
+                'w-0': isSaved,
               }">
             </span>
             <div class="h-7 flex items-center gap-1 ">
