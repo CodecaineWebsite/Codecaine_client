@@ -44,7 +44,9 @@
                 :href="userPageLink"
                 class="block text-sm text-gray-300 hover:underline truncate"
               >
-                <span class="font-medium">{{ userDisplayName }}</span>
+                <span class="font-medium">{{
+                  userDisplayName || userName
+                }}</span>
               </a>
               <a
                 v-if="isPro"
