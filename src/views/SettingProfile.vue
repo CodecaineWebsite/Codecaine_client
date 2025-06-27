@@ -1,7 +1,7 @@
 <template>
   <div class="h-full w-full bg-[#131417] p-6 grid grid-rows-12">
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-3 flex-1 mb-8"
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] row-span-3 flex-1 mb-8"
     >
       <div>
         <h3 class="text-xl font-bold mb-2">Profile Image</h3>
@@ -62,7 +62,7 @@
       </div>
     </section>
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-5 flex-1 mb-8"
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] row-span-5 flex-1 mb-8"
     >
       <div>
         <h3 class="text-xl font-bold mb-2">About You</h3>
@@ -133,7 +133,7 @@
       </div>
     </section>
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] row-span-4 flex-1 mb-8"
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] row-span-4 flex-1 mb-8"
     >
       <div>
         <h3 class="text-xl font-bold mb-2">Profile Links</h3>
