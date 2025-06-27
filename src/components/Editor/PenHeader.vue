@@ -74,6 +74,8 @@
       currentWork.value.html,
       currentWork.value.css,
       currentWork.value.javascript,
+      currentWork.value.htmlClass,
+      currentWork.value.headStuff,
       currentWork.value.cdns,
       currentWork.value.links,
       currentWork.value.viewMode,
@@ -81,6 +83,7 @@
       currentWork.value.isAutoPreview,
       currentWork.value.isPrivate,
       currentWork.value.tags,
+      currentWork.value.tabSize,
     ],
     () => {
       isEdited.value = true
