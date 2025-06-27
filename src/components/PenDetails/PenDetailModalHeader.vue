@@ -33,7 +33,6 @@
 
     <!-- 右區：按鈕區 -->
     <div class="flex shrink-0 -mt-[0.125rem] gap-2 items-center">
-      <!-- ❤️ 收藏按鈕 -->
       <button
         @click="handleFavorite"
         class="inline-flex items-center justify-center relative text-base font-normal truncate cursor-pointer py-[7px] px-[10px] border border-transparent rounded bg-cc-13 hover:bg-cc-12"
@@ -44,7 +43,7 @@
           :class="isLiked ? 'fill-cc-red' : 'fill-white'"
         />
       </button>
-
+      <!-- 暫時隱藏元件 功能做好再開啟 -->
       <!-- <PenDetailDropdown
         class="dropdown-menu"
         :is-open="isDropdownOpen"
@@ -166,5 +165,4 @@ const onFollow = () => {};
 const onTogglePrivacy = () => {};
 const onDelete = () => {};
 
-// Dropdown 行為
 </script>
