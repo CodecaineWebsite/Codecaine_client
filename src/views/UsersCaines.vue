@@ -39,6 +39,7 @@
         Loved
       </button>
     </div>
+    <ViewModeChange class="mt-6" />
     <RouterView />
   </div>
 </template>
@@ -47,6 +48,7 @@
 import { RouterView } from "vue-router";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import ViewModeChange from "@/components/ViewModeChange.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
