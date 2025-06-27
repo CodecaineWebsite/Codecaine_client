@@ -68,6 +68,7 @@ import { ref, computed, onMounted } from "vue";
 import { useNotifyStore } from "@/stores/useNotifyStore";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { navigateByNotification } from "@/utils/notify";
 import PaginationNav from "@/components/PaginationNav.vue";
 
 const authStore = useAuthStore();
@@ -90,24 +91,7 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 const handleNotificationClick = (n) => {
-  if (n.type === "comment" || n.type === "favorite") {
-    if (n.pen.id) {
-      router.push({
-        name: "dose",
-        params: {
-          username: authStore.userProfile.username,
-          id: n.pen.id,
-        },
-      });
-    }
-  } else if (n.type === "follow") {
-    if (n.sender.username) {
-      router.push({
-        name: "dosesShowcase",
-        params: { username: n.sender.username },
-      });
-    }
-  }
+  navigateByNotification(n, router, authStore);
 };
 
 onMounted(async () => {
