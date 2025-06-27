@@ -32,7 +32,7 @@ const props = defineProps({
 });
 
 function copyLink() {
-  const url = `${window.location.origin}/${props.username}/pen/${props.penId}`;
+  const url = `${window.location.origin}/${props.username}/dose/${props.penId}`;
 
   navigator.clipboard
     .writeText(url)

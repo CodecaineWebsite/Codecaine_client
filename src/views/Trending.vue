@@ -65,9 +65,6 @@
         </svg>
       </div>
     </button>
-    <!-- <p v-if="!hasMore && atLastPage" class="text-center text-gray-400 mt-8">
-      That's all the trending works for now!
-    </p> -->
   </section>
 </template>
 
@@ -97,7 +94,7 @@ const openedDropdownId = ref(null);
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
 };
-// 載入特定頁數資料
+
 const loadPage = async (pageNum) => {
   if (!hasMore.value || loadedPages.value.has(pageNum)) return;
   try {
@@ -106,12 +103,10 @@ const loadPage = async (pageNum) => {
 
     if (res.data.currentPage >= res.data.totalPages) {
       hasMore.value = false;
-      console.log("Loaded the last page.");
     }
 
     pages.value[pageNum - 1] = newCards;
     loadedPages.value.add(pageNum);
-    console.log(`Loaded page ${pageNum}`, newCards);
 
     nextTick(() => {
       swiperRef.value?.swiper?.update();
@@ -121,12 +116,11 @@ const loadPage = async (pageNum) => {
       message: "System error. Please try again later",
       variant: "danger",
     });
-    console.error(`Failed to retrieve data for page ${pageNum}`, err);
-    hasMore.value = false; // 防止一直 retry
+    hasMore.value = false;
   }
 };
 
-// 當滑動頁面時觸發：自動載入下一頁
+
 const handleSlideChange = async () => {
   const swiper = swiperInstance.value;
   if (!swiper || !hasMore.value) return;
@@ -146,7 +140,6 @@ const chunkedCards = computed(() =>
   pages.value.filter((page) => Array.isArray(page))
 );
 
-// 預載入前兩頁
 onMounted(async () => {
   await loadPage(1);
   await loadPage(2);
@@ -164,7 +157,6 @@ function handleDeletePen(deletedId) {
 }
 
 function handleClickOutside(event) {
-  // 點擊不是按鈕或選單內容時，關閉 dropdown
   if (
     !event.target.closest(".dropdown-toggle") &&
     !event.target.closest(".dropdown-menu")
@@ -174,7 +166,6 @@ function handleClickOutside(event) {
 }
 
 function handlePrivacyChanged({ id, is_private }) {
-  console.log("handlePrivacyChanged", id, is_private);
   if (props.filter === "private" && !is_private) {
     const index = props.pens.findIndex((pen) => pen.id === id);
     if (index !== -1) {
@@ -191,10 +182,8 @@ function handlePrivacyChanged({ id, is_private }) {
 
 function toggleDropdown(id) {
   if (openedDropdownId.value === id) {
-    // 如果點的是已經開啟的那一筆，就關掉
     openedDropdownId.value = null;
   } else {
-    // 否則就打開這一筆
     openedDropdownId.value = id;
   }
 }
