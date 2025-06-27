@@ -17,6 +17,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 const router = useRouter();
+const msgStore = useMsgStore();
 const props = defineProps({
   comment: Object,
 });
@@ -74,25 +75,37 @@ const submitEdit = async () => {
   } catch (err) {
     toastStore.showToast({
       message: "Failed to update comment. Please try again later.",
-      variant: "danger"
-    })
+      variant: "danger",
+    });
   }
 };
 
-const deleteComment = async () => {
-  if (!confirm("Are you sure you want to delete this comment?")) return;
-  try {
-    await api.delete(`/api/comments/${props.comment.id}`);
-    emit("delete", props.comment.id);
-  } catch (err) {
-    toastStore.showToast({
-      message: "Failed to delete comment. Please try again later.",
-      variant: "danger"
-    })
-  }
+const deleteComment = () => {
+  msgStore.open({
+    title: "Delete Confirmation",
+    message: "This will permanently delete this Comment.",
+    variant: "danger",
+    confirmText: "I understand, delete the comment.",
+    cancelText: "Cancel",
+    confirming: false,
+    loadingText: "Deleting...",
+    onConfirm: async () => {
+      try {
+        msgStore.confirming = true;
+        await api.delete(`/api/comments/${props.comment.id}`);
+        emit("delete", props.comment.id);
+      } catch (err) {
+        toastStore.showToast({
+          message: "Failed to delete comment. Please try again later.",
+          variant: "danger",
+        });
+      } finally {
+        msgStore.confirming = false;
+        msgStore.close(); // 最後關掉 modal
+      }
+    },
+  });
 };
-
-// deleteComment 要跳 confirmModal
 </script>
 
 <template>
