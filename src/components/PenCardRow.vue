@@ -49,7 +49,7 @@
           :is-logged-in="authStore.user !== null"
           :user-name="userName"
           @follow="handleFollow"
-          @togglePrivacy="handleTogglePrivacy"
+          @togglePrivacy="togglePrivacy"
           @delete="handleDelete"
           @toggle="() => emit('toggle', pen.id)"
         />
@@ -58,11 +58,13 @@
   </tr>
 </template>
 <script setup>
+import api from "@/config/api.js"
 import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "vue-router";
 import { useToastStore } from "@/stores/useToastStore";
+import { useMsgStore } from "@/stores/useMsgStore";
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
 import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "./PenCards/PenCommentButton.vue";
@@ -72,6 +74,7 @@ import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue";
 const toastStore = useToastStore();
 const modalStore = useModalStore();
 const authStore = useAuthStore();
+const msgStore = useMsgStore();
 const router = useRouter();
 const { showToast } = toastStore;
 const props = defineProps({
@@ -109,7 +112,7 @@ const handleFollow = async () => {
   }
 };
 
-const handleTogglePrivacy = async () => {
+const togglePrivacy = async () => {
   if (!isPro && isPrivate.value === false) {
     showToast({
       message: "Only Pro members can make doses private.",
@@ -128,19 +131,46 @@ const handleTogglePrivacy = async () => {
   }
 };
 
-const handleDelete = async () => {
-  if (!confirm("Are you sure you want to delete this dose?")) return;
-
-  try {
-    await api.put(`/api/pens/${workId}/trash`);
-    emit("delete", workId);
-    console.log("Deleted successfully");
-  } catch (error) {
-    console.error("Delete failed", error);
-    showToast({
-      message: "Failed to delete pen. Please try again later.",
-    });
-  }
+const handleDelete = () => {
+  msgStore.open({
+    title: "Are you sure you want to delete this Dose?",
+    message: `
+      <p class="mb-5">Here's what happens when you delete a Dose:</p>
+      <ul class="list-disc list-outside pl-4">
+        <li>This Dose will no longer be accessible on Codecaine.</li>
+        <li>
+          This Dose will be moved to the
+          <a class="text-cc-blue underline" href="#" onclick="window.toDeleteLink?.()">Deleted Items section of Your Work</a>
+          for 3 days.
+        </li>
+        <li>
+          After 3 days, the Dose is permanently deleted.
+          You can also manually delete it from your Deleted Items.
+        </li>
+      </ul>
+    `,
+    variant: "danger",
+    confirmText: "I understand, delete my Dose",
+    cancelText: "Cancel",
+    confirming: false,
+    loadingText: "Deleting...",
+    onConfirm: async () => {
+      try {
+        msgStore.confirming = true;
+        await api.put(`/api/pens/${workId}/trash`);
+        emit("delete", workId);
+      } catch (error) {
+        showToast({
+          message: "Delete failed, please try again later",
+          variant: "danger",
+        });
+        console.log(error)
+      } finally {
+        msgStore.confirming = false;
+        msgStore.close();
+      }
+    },
+  });
 };
 
 const goToFullPage = () => {

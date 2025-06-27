@@ -101,8 +101,10 @@ import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
 import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
+import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
 
+const msgStore = useMsgStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
 const workStore = useWorkStore();
@@ -183,18 +185,45 @@ const handleFollow = async () => {
   }
 };
 
-const handleDelete = async () => {
-  if (!confirm("Are you sure you want to delete this dose?")) return;
-
-  try {
-    await api.put(`/api/pens/${workId}/trash`);
-    emit("delete", workId);
-  } catch (error) {
-    showToast({
-      message: "Delete failed, please try again later",
-      variant: "danger",
-    });
-  }
+const handleDelete = () => {
+  msgStore.open({
+    title: "Are you sure you want to delete this Dose?",
+    message: `
+      <p class="mb-5">Here's what happens when you delete a Dose:</p>
+      <ul class="list-disc list-outside pl-4">
+        <li>This Dose will no longer be accessible on Codecaine.</li>
+        <li>
+          This Dose will be moved to the
+          <a class="text-cc-blue underline" href="#" onclick="window.toDeleteLink?.()">Deleted Items section of Your Work</a>
+          for 3 days.
+        </li>
+        <li>
+          After 3 days, the Dose is permanently deleted.
+          You can also manually delete it from your Deleted Items.
+        </li>
+      </ul>
+    `,
+    variant: "danger",
+    confirmText: "I understand, delete my Dose",
+    cancelText: "Cancel",
+    confirming: false,
+    loadingText: "Deleting...",
+    onConfirm: async () => {
+      try {
+        msgStore.confirming = true;
+        await api.put(`/api/pens/${workId}/trash`);
+        emit("delete", workId);
+      } catch (error) {
+        showToast({
+          message: "Delete failed, please try again later",
+          variant: "danger",
+        });
+      } finally {
+        msgStore.confirming = false;
+        msgStore.close();
+      }
+    },
+  });
 };
 
 const togglePrivacy = async () => {

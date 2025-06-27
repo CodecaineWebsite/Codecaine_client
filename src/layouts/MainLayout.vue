@@ -39,9 +39,9 @@
     @cancel="msg.close(false)"
   >
     <template #title>{{ msg.title }}</template>
-    <template #message
-      ><p>{{ msg.message }}</p></template
-    >
+    <template #message>
+      <div v-html="msg.message" />
+    </template>
   </ConfirmModal>
 
   <ToastContainer />
