@@ -1,6 +1,5 @@
 <template>
   <div class="content mt-6">
-    <ViewModeChange @update:viewMode="viewMode = $event" class="mb-6" />
     <PenCardLayout
       v-if="!isLoading && pens.length > 0"
       :key="pens.length"
@@ -33,12 +32,12 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
-import ViewModeChange from "@/components/ViewModeChange.vue";
+import { useLocalStorage } from "@vueuse/core";
 import api from "@/config/api";
 
 const router = useRouter();
 const route = useRoute();
-const viewMode = ref(localStorage.getItem("cainesViewMode") || "grid");
+const viewMode = useLocalStorage("dosesViewMode", "grid"); // VueUse 自動處理 localStorage
 const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(0);
@@ -70,14 +69,13 @@ watch(page, (newPage) => {
   fetchCaines();
 });
 
-watch(viewMode, (newViewMode) => {
-  localStorage.setItem("cainesViewMode", newViewMode);
+watch(viewMode, () => {
   page.value = 1;
   router.replace({
     query: {
       ...route.query,
       page: 1,
-      viewMode: newViewMode,
+      viewMode: viewMode.value,
     },
   });
   fetchCaines();
