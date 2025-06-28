@@ -56,10 +56,13 @@
 import api from "@/config/api.js"
 import { ref, computed, watch } from "vue";
 import { useFavoritesStore } from "@/stores/useFavoritesStore";
+import { useToastStore } from "@/stores/useToastStore";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 
 const favoritesStore = useFavoritesStore();
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 const props = defineProps({
   pen: {
     type: Object,
@@ -78,9 +81,12 @@ const visibleLikes = computed(() => likes.value.slice(0, maxVisible));
 async function fetchLikes() {
   try {
     const res = await api.get(`/api/pens/${props.pen.id}`);
-    console.log(res.data.favorites);
     likes.value = res.data.favorites;
   } catch (err) {
+    showToast({
+      message: "Failed to fetch likes",
+      variant: "danger"
+    })
     console.error("Failed to fetch likes", err);
   }
 }
@@ -89,7 +95,6 @@ async function fetchLikes() {
 watch(
   () => favoritesStore.getFavorite(props.pen.id)?.isLiked,
   async (newVal, oldVal) => {
-    console.log(newVal, oldVal);
     if (newVal !== oldVal) {
       await fetchLikes();
     }

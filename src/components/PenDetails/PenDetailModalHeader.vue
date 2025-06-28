@@ -72,9 +72,9 @@
 import { ref, onMounted, watch, onBeforeUnmount, computed } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
+import { useToastStore } from "@/stores/useToastStore";
 import { useFavoritesStore } from "@/stores/useFavoritesStore";
 import { useRouter, RouterLink } from "vue-router";
-import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
@@ -90,6 +90,8 @@ const props = defineProps({
 const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 
 const favoritesStore = useFavoritesStore()
 const favorite = computed(() => favoritesStore.getFavorite(props.pen.id));
@@ -105,9 +107,11 @@ const handleFavorite = async () => {
 
   try {
     await favoritesStore.toggleFavorite(props.pen.id);
-
   } catch (error) {
-    console.error("Favorite action failed:", error);
+    showToast({
+      message: "Action failed",
+      variant: "danger"
+    });
   }
 };
 
@@ -136,8 +140,6 @@ const goToEditor = () => {
 
 onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
-
-    console.log("pen on mount", props.pen?.id);
   if (props.pen !== undefined) {
     const stored = favoritesStore.getFavorite(props.pen.id);
     if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
