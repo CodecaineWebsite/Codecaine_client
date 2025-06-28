@@ -327,8 +327,10 @@ import TagsIcon from "@/components/icons/TagsIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
 import { useToastStore } from "@/stores/useToastStore";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
 
 const toastStore = useToastStore();
+const favoritesStore = useFavoritesStore();
 const router = useRouter();
 const { showToast } = toastStore;
 // data
@@ -452,6 +454,10 @@ async function loadDoses() {
       },
     });
 
+    data.results.forEach((pen) => {
+      favoritesStore.setFavorite(pen.id, pen.is_liked, pen.favorites_count);
+    });
+
     pens.value = data.results;
     total.value = data.total;
     totalPages.value = data.totalPages;
@@ -541,12 +547,4 @@ async function restoreDose(penId) {
     });
   }
 }
-
-/**
- * TODO:
- * 頁面載入中狀態
- * 加上 toast 通知
- * 加上錯誤處理
- * 這頁太長了需要考慮拆分元件
- */
 </script>

@@ -1,29 +1,33 @@
 <template>
   <button
     @click="handleClick"
-    class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none cursor-pointer">
+    class="flex items-center gap-1 bg-card-button-primary hover-bg-card-hover text-white px-3 py-0.5 rounded-lg font-medium text-sm transition select-none cursor-pointer"
+  >
     <span>
       <HeartIcon
         class="w-4"
-        :class="isLiked ? 'fill-cc-red' : 'fill-current'" />
+        :class="isLiked ? 'fill-cc-red' : 'fill-current'"
+      />
     </span>
     <span> {{ favoritesCount }}</span>
   </button>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted, computed, watch } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useMsgStore } from "@/stores/useMsgStore";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
 import { useRouter } from "vue-router";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
-import api from "@/config/api";
 
+const router = useRouter();
 const msg = useMsgStore();
 const authStore = useAuthStore();
-const router = useRouter();
-const isLiked = ref(false);
-const favoritesCount = ref(0);
+const favoritesStore = useFavoritesStore();
+const favorite = computed(() => favoritesStore.getFavorite(props.targetPen));
+const isLiked = computed(() => favorite.value.isLiked);
+const favoritesCount = computed(() => favorite.value.favoritesCount);
 const props = defineProps({
   targetPen: {
     type: [String, Number],
@@ -47,40 +51,29 @@ const handleClick = async () => {
   }
 
   try {
-    if (isLiked.value == false) {
-      const res = await api.post(`/api/favorites/`, {
-        pen_id: props.targetPen,
-      });
-      isLiked.value = true;
-      favoritesCount.value += 1;
-    } else if (isLiked.value == true) {
-      const res = await api.delete(`/api/favorites/`, {
-        data: {
-          pen_id: props.targetPen,
-        },
-      });
-      isLiked.value = false;
-      favoritesCount.value -= 1;
-    }
+    await favoritesStore.toggleFavorite(props.targetPen);
   } catch (error) {
     console.error("fetch favorite error ", error);
   }
 };
-const checkFavorite = async () => {
-  if (!authStore.user) {
-    isLiked.value = false;
-    return;
-  }
-  const res = await api.get(`/api/favorites/check/${props.targetPen}/`);
-  isLiked.value = res.data.liked;
-};
-const countFavorite = async () => {
-  const res = await api.get(`/api/favorites/count/${props.targetPen}/`);
-  favoritesCount.value = res.data.favoritesCount || 0;
-};
 
-onMounted(() => {
-  checkFavorite();
-  countFavorite();
+onMounted(async () => {
+  console.log("targetPen on mount", props.targetPen);
+  if (props.targetPen !== undefined) {
+    const stored = favoritesStore.getFavorite(props.targetPen);
+    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
+      await favoritesStore.fetchFavoriteState(props.targetPen);
+    }
+  }
 });
+
+watch(
+  () => props.targetPen,
+  (newVal) => {
+    if (newVal) {
+      favoritesStore.fetchFavoriteState(newVal);
+    }
+  },
+  { immediate: true }
+);
 </script>

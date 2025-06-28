@@ -1,116 +1,57 @@
-import { ref } from "vue";
 import { defineStore } from "pinia";
-import {
-  addFavoriteAPI,
-  removeFavoriteAPI,
-  checkFavoriteAPI,
-  countFavoritesAPI,
-  initDoses,
-} from "@/api/favorites.js";
+import { ref } from "vue";
+import { addFavoriteAPI, removeFavoriteAPI, checkFavoriteAPI, countFavoritesAPI } from "@/api/favorites";
 
-export const useFavoriteStore = defineStore("favorites", () => {
-  const doses = ref(new Map());
+export const useFavoritesStore = defineStore("favorites", () => {
+  const favoritesMap = ref(new Map());
 
-  function setDose(dose) {
-    doses.value.set(dose.id, dose);
+  function setFavorite(penId, isLiked, favoritesCount) {
+    favoritesMap.value.set(penId, { isLiked, favoritesCount });
+    return favoritesMap.value.get(penId);
   }
 
-  function setDoses(doseList) {
-    doseList.forEach((dose) => doses.value.set(dose.id, dose));
+  function getFavorite(penId) {
+    return favoritesMap.value.get(penId) || { isLiked: false, favoritesCount: 0 };
   }
 
-  function getDose(id) {
-    return doses.value.get(id);
+  async function fetchFavoriteState(penId) {
+  try {
+    const likedRes = await checkFavoriteAPI(penId);
+    const countRes = await countFavoritesAPI(penId);
+    console.log("fetchFavoriteState資料",likedRes.data, countRes.data);
+    const newState = {
+      isLiked: likedRes.data.liked,
+      favoritesCount: countRes.data.favoritesCount ?? 0,
+    };
+    favoritesMap.value.set(penId, newState);
+    return newState;
+  } catch (err) {
+    console.error("Failed to fetch favorite state for pen:", penId, err);
+    return { isLiked: false, favoritesCount: 0 };
   }
+}
 
-  async function fetchFavoritesState() {
-    try {
-      const res = await checkFavoriteAPI(doseId);
-      const dose = doses.value.get(doseId);
-      if (dose) {
-        dose.isLiked = res.data.liked;
-        doses.value.set(doseId, { ...dose });
-      }
-    } catch (err) {
-      console.error("Fail to fetch favorites state", err);
+  async function toggleFavorite(penId) {
+    const current = getFavorite(penId);
+    const newState = { ...current };
+
+    if (current.isLiked) {
+      await removeFavoriteAPI(penId);
+      newState.isLiked = false;
+      newState.favoritesCount--;
+    } else {
+      await addFavoriteAPI(penId);
+      newState.isLiked = true;
+      newState.favoritesCount++;
     }
-  }
-  async function fetchFavoritesCount(doseId) {
-    try {
-      const res = await countFavoritesAPI(doseId);
-      const dose = DisposableStack.value.get(doseId);
-      if (dose) {
-        dose.favoritesCount = res.data.favoritesCount;
-        doses.value.set(doseId, { ...dose });
-      }
-    } catch (err) {
-      console.error("Fail to fetch favorites count", err);
-    }
-  }
-  async function initDoseState(doseId) {
-    const dose = doses.value.get(doseId);
-    if (!dose || doses.isInitialized) return;
 
-    try {
-      await Promise.all([
-        fetchFavoritesState(doseId),
-        fetchFavoritesCount(doseId),
-      ]);
-      doses.value.set(doseId, {
-        ...doses.value.get(doseId),
-        isInitialized: true,
-      });
-    } catch (err) {
-      console.error("Fail to initialize doses state")
-    }
-  }
-  async function toggleFavorite(doseId) {
-    const dose = doses.value.get(doseId);
-    if (!dose) return;
-
-    try {
-      if (dose.isLiked) {
-        await removeFavoriteAPI(doseId);
-        dose.isLiked = false;
-        dose.favoritesCount--;
-      } else {
-        await addFavoriteAPI(doseId);
-        dose.isLiked = true;
-        dose.favoritesCount++;
-      }
-      doses.value.set(doseId, { ...dose });
-    } catch (err) {
-      console.error("Fail to toggle favorites", err);
-    }
-  }
-
-  async function initDoseState(doseId) {
-    await Promise.all([
-      fetchFavoritesState(doseId),
-      fetchFavoritesCount(doseId),
-    ]);
-  }
-
-  function clearDoses() {
-    doses.value.clear();
-  }
-
-  function resetInitialization(id) {
-    const dose = doses.value.get(id);
-    if (dose) {
-      dose.isInitialized = false;
-      doses.value.set(id, { ...dose });
-    }
+    favoritesMap.value.set(penId, newState);
   }
 
   return {
-    doses,
-    setDose,
-    setDoses,
-    getDose,
+    setFavorite,
+    getFavorite,
+    fetchFavoriteState,
     toggleFavorite,
-    fetchFavoritesState,
-    fetchFavoritesCount,
-    initDoseState,
   };
 });
