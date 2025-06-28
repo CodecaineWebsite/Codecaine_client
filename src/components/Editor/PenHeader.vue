@@ -1,9 +1,10 @@
 <script setup>
-	import { provide, ref, watch, nextTick, computed} from 'vue';
+	import { provide, ref, watch, nextTick, computed, onMounted} from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
   import { useAuthStore } from '@/stores/useAuthStore';
+  import { useFavoritesStore } from '@/stores/useFavoritesStore';
   import { useToastStore } from "@/stores/useToastStore";
 
   import api from "@/config/api";
@@ -34,6 +35,7 @@
 
   const workStore = useWorkStore();
   const authStore = useAuthStore();
+  const favoritesStore = useFavoritesStore();
   const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
   const { currentWork, isSaved, isAuthor } = storeToRefs(workStore); //放資料
@@ -179,17 +181,9 @@
 
   // 收藏功能
 
-  const isLiked = ref(false);
- 
-  const checkFavorite = async () => {
-    if(!isLoggedIn.value || !currentWork.value?.id) return;
-    try {
-      const res = await api.get(`/api/favorites/check/${currentWork.value.id}`);
-      isLiked.value = res.data.liked;
-    } catch (err) {
-      console.log.err("checkFavorite error", error)
-    }
-  }
+  const favorite = computed(() => favoritesStore.getFavorite(currentWork.value?.id));
+  const isLiked = computed(() => favorite.value.isLiked);
+
 
   const toggleFavorite = async () => {
     if (!isLoggedIn.value) {
@@ -198,32 +192,30 @@
       return;
     }
 
-    try {
-      if(!isLiked.value) {
-        const res = await api.post(`/api/favorites/`, {
-          pen_id:currentWork.value.id,
-        });
-        isLiked.value = true;
-      } else {
-        const res = await api.delete(`/api/favorites`,{
-          data: {
-            pen_id: currentWork.value.id,
-          }
-        });
-        isLiked.value = false;
-      }
-    } catch(err) {
-      console.error("toggleFavorite error", err);
-    }
+  try {
+    await favoritesStore.toggleFavorite(currentWork.value?.id);
+  } catch (error) {
+    console.error("fetch favorite error ", error);
+  }
   }
 
+  onMounted(async () => {
+  if (currentWork.value?.id !== undefined) {
+    const stored = favoritesStore.getFavorite(currentWork.value?.id);
+    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
+      await favoritesStore.fetchFavoriteState(currentWork.value?.id);
+    }
+  }
+  });
   watch(
-    () => currentWork.value?.id,
-    (newId) => {
-      if (newId) checkFavorite();
-    },
-    { immediate: true }
-  );
+  () => currentWork.value?.id,
+  (newVal) => {
+    if (newVal) {
+      favoritesStore.fetchFavoriteState(newVal);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

@@ -58,7 +58,6 @@ const handleClick = async () => {
 };
 
 onMounted(async () => {
-  console.log("targetPen on mount", props.targetPen);
   if (props.targetPen !== undefined) {
     const stored = favoritesStore.getFavorite(props.targetPen);
     if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
