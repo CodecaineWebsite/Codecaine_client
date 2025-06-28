@@ -454,10 +454,6 @@ async function loadDoses() {
       },
     });
 
-    data.results.forEach((pen) => {
-      favoritesStore.setFavorite(pen.id, pen.is_liked, pen.favorites_count);
-    });
-
     pens.value = data.results;
     total.value = data.total;
     totalPages.value = data.totalPages;
