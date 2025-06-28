@@ -1,6 +1,5 @@
 <template>
   <div class="content mt-6">
-    <ViewModeChange @update:viewMode="viewMode = $event" class="mb-6" />
     <PenCardLayout
       v-if="!isLoading && pens.length > 0"
       :pens="pens"
@@ -12,7 +11,7 @@
       class="justify-center flex mt-12"
     >
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
-        ⚠️ No Private Caines found.
+        ⚠️ No Private Doses found.
         <a href="/pen" class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
@@ -32,16 +31,19 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PenCardLayout from "@/components/PenCardLayout.vue";
 import PaginationNav from "@/components/PaginationNav.vue";
-import ViewModeChange from "@/components/ViewModeChange.vue";
+import { useLocalStorage } from "@vueuse/core";
 import api from "@/config/api";
+import { useToastStore } from "@/stores/useToastStore";
 
+const toastStore = useToastStore();
 const router = useRouter();
 const route = useRoute();
-const viewMode = ref(localStorage.getItem("cainesViewMode") || "grid");
+const viewMode = useLocalStorage("dosesViewMode", "grid");
 const pens = ref([]);
 const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(0);
 const isLoading = ref(true);
+const { showToast } = toastStore;
 
 const fetchCaines = async () => {
   isLoading.value = true;
@@ -58,7 +60,10 @@ const fetchCaines = async () => {
     pens.value = res.data.results || [];
     totalPages.value = res.data.totalPages || 0;
   } catch (error) {
-    console.error("Failed to load private Caines:", error);
+    showToast({
+      message: "Failed to load private Doses. Please try again later",
+      variant: "danger",
+    });
     pens.value = [];
   } finally {
     isLoading.value = false;
@@ -71,15 +76,13 @@ watch(page, (newPage) => {
   });
   fetchCaines();
 });
-
-watch(viewMode, (newViewMode) => {
-  localStorage.setItem("cainesViewMode", newViewMode);
+watch(viewMode, () => {
   page.value = 1;
   router.replace({
     query: {
       ...route.query,
       page: 1,
-      viewMode: newViewMode,
+      viewMode: viewMode.value,
     },
   });
   fetchCaines();
