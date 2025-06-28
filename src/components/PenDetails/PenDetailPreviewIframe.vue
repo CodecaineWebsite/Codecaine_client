@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useWorkStore } from '@/stores/useWorkStore';
 import { usePreviewStore } from '@/stores/usePreviewStore';
 
@@ -49,27 +49,4 @@ watch(
   },
   { immediate: true }
 );
-// onMounted(() => {
-//   console.log(props.pen);
-//   iframeEl.value.addEventListener("load", () => {
-//     const code = {
-//       html: props.pen.html_code || "",
-//       css: props.pen.css_code || "",
-//       javascript: `
-//         try {
-//           ${props.pen.js_code || ""}
-//         } catch (err) {
-//           console.error("User JS Error:", err);
-//         }
-//       `,
-//       htmlClass: props.pen.html_class || "",
-//       headStuff: props.pen.head_stuff || "",
-//       cdns: Array.isArray(props.pen.resources_js) ? props.pen.resources_js : [],
-//       links: Array.isArray(props.pen.resources_css) ? props.pen.resources_css : [],
-//     };
-
-//     previewStore.sendPreviewCode(iframeEl.value, code);
-//   });
-// });
-
 </script>

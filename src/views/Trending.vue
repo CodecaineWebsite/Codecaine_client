@@ -32,7 +32,7 @@
       </Swiper>
 
       <button
-          class="h-full swiper-prev hidden relative sm:flex sm:absolute inset-y-0 left-0 z-[11] w-[90px] items-center justify-start group/swiper-prev"
+          class="h-full swiper-prev hidden relative sm:flex sm:absolute inset-y-0 left-0 z-[11] items-center justify-start group/swiper-prev"
         >
           <div
             class="sm:w-[38px] sm:h-[70px] -ml-2 relative z-10 w-[70px] h-[38px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover/swiper-prev:ring-2 group-hover/swiper-prev:ring-white"
@@ -49,7 +49,7 @@
         </button>
 
         <button
-          class="h-full swiper-next hidden relative sm:flex sm:absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group/swiper-next"
+          class="h-full swiper-next hidden relative sm:flex sm:absolute inset-y-0 right-0 z-[11] flex items-center justify-end group/swiper-next" 
         >
           <div
             class="relative w-[70px] h-[38px] -mr-2 z-10 sm:w-[38px] sm:h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover/swiper-next:ring-2 group-hover/swiper-next:ring-white"
@@ -68,7 +68,7 @@
       <div class="flex sm:hidden justify-center mt-4 gap-4">
         <!-- Prev Button -->
         <button
-          class="swiper-prev inline-block relative sm:flex sm:absolute inset-y-0 left-0 z-[11] w-[90px] items-center justify-start group"
+          class="swiper-prev inline-block relative sm:flex sm:absolute inset-y-0 left-0 z-[11] items-center justify-start group"
         >
           <div
             class="sm:w-[38px] sm:h-[70px] relative z-10 ml-3 w-[70px] h-[38px]  rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"
@@ -86,7 +86,7 @@
 
         <!-- Next Button -->
         <button
-          class="swiper-next inline-block relative sm:flex sm:absolute inset-y-0 right-0 z-[11] w-[90px] flex items-center justify-end group"
+          class="swiper-next inline-block relative sm:flex sm:absolute inset-y-0 right-0 z-[11] flex items-center justify-end group"
         >
           <div
             class="relative w-[70px] h-[38px] z-10 mr-3 sm:w-[38px] sm:h-[70px] rounded bg-[#2c2c2c] hover:bg-green-800 transition-colors flex items-center justify-center ring-0 group-hover:ring-2 group-hover:ring-white"

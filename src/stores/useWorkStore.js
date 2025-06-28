@@ -86,8 +86,6 @@ export const useWorkStore = defineStore('work', () => {
   }
 
   const isSaved = ref(true)
-  console.log(isSaved.value);
-
   const addViews = (id) => {
     try {
       api.put(`/api/pens/${id}/view`).catch((err) => {
@@ -170,7 +168,6 @@ export const useWorkStore = defineStore('work', () => {
     currentId.value = res.data.data.id;
     currentWork.value.id = res.data.data.id;
     isSaved.value = true;
-    console.log('Work created successfully');
     return createdWork;
   } catch (err) {
     console.error('Failed to create work', err);
@@ -199,7 +196,6 @@ export const useWorkStore = defineStore('work', () => {
       await api.put(`/api/pens/${currentId.value}`, payload);
       currentWork.value.lastSavedTime = new Date();
       isSaved.value = true;
-      console.log('Work saved successfully');
       return true;
     } catch (err) {
       console.error('Failed to save work', err);
@@ -229,7 +225,6 @@ export const useWorkStore = defineStore('work', () => {
     try {
       await api.put(`/api/pens/${id}/delete`);
       currentWork.value.is_deleted = true;
-      console.log('Work deleted');
     } catch (err) {
       console.error('Failed to delete this work', err);
       throw err;
@@ -239,7 +234,6 @@ export const useWorkStore = defineStore('work', () => {
   const deletePenPermanently = async (id) => {
     try {
       const res = await api.delete(`/api/pens/${id}`);
-      console.log('Work permanently deleted');
       return res.data;
     } catch (err) {
       console.error('Failed to permanently delete work', err);
