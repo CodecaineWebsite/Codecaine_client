@@ -172,7 +172,7 @@
           <!-- Right Controls -->
           <div class="flex items-stretch space-x-2">
             <!-- View Mode -->
-            <ViewModeChange @update:viewMode="viewMode = $event" />
+            <ViewModeChange />
 
             <!-- Sort Dropdown -->
             <select
@@ -327,10 +327,9 @@ import TagsIcon from "@/components/icons/TagsIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
 import { useToastStore } from "@/stores/useToastStore";
-import { useFavoritesStore } from "@/stores/useFavoritesStore";
+import { useLocalStorage } from "@vueuse/core";
 
 const toastStore = useToastStore();
-const favoritesStore = useFavoritesStore();
 const router = useRouter();
 const { showToast } = toastStore;
 // data
@@ -351,7 +350,7 @@ const showFilters = ref(false);
 const filters = ref({
   privacy: "all",
 });
-const viewMode = ref("grid");
+const viewMode = useLocalStorage("dosesViewMode", "grid");
 const sortOption = ref("created");
 const sortDirection = ref("desc");
 const showTags = ref(false);
