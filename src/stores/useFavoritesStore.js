@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { addFavoriteAPI, removeFavoriteAPI, checkFavoriteAPI, countFavoritesAPI } from "@/api/favorites";
 
+const authStore = useAuthStore();
 export const useFavoritesStore = defineStore("favorites", () => {
   const favoritesMap = ref(new Map());
 
@@ -16,11 +18,14 @@ export const useFavoritesStore = defineStore("favorites", () => {
 
   async function fetchFavoriteState(penId) {
   try {
-    const likedRes = await checkFavoriteAPI(penId);
+    let likedRes;
+    if(authStore.user){
+    likedRes = await checkFavoriteAPI(penId);
+    }
     const countRes = await countFavoritesAPI(penId);
-    console.log("fetchFavoriteState資料",likedRes.data, countRes.data);
+    console.log("fetchFavoriteState資料",likedRes?.data, countRes.data);
     const newState = {
-      isLiked: likedRes.data.liked,
+      isLiked: likedRes?.data?.liked || false,
       favoritesCount: countRes.data.favoritesCount ?? 0,
     };
     favoritesMap.value.set(penId, newState);
