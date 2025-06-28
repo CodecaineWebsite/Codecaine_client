@@ -18,7 +18,7 @@ const workStore = useWorkStore();
 const modalStore = useModalStore();
 const { showToast } = toastStore;
 const { moveToTrash } = workStore;
-const { currentId } = storeToRefs(workStore);
+const { currentId, isAuthor } = storeToRefs(workStore);
 
 const deleting = ref(false);
 
@@ -118,7 +118,7 @@ const handleToggleConsole = () => {
       <EditorSmallButton
         class="hover:bg-cc-red"
         @click.prevent="showDeleteModal = true"
-        v-if="currentId > 0"
+        v-if="currentId > 0 && isAuthor"
       >
         Delete
       </EditorSmallButton>
