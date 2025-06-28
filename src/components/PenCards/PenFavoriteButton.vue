@@ -25,17 +25,15 @@ const router = useRouter();
 const msg = useMsgStore();
 const authStore = useAuthStore();
 const favoritesStore = useFavoritesStore();
-
+const favorite = computed(() => favoritesStore.getFavorite(props.targetPen));
+const isLiked = computed(() => favorite.value.isLiked);
+const favoritesCount = computed(() => favorite.value.favoritesCount);
 const props = defineProps({
   targetPen: {
     type: [String, Number],
     required: true,
   },
 });
-
-const favorite = computed(() => favoritesStore.getFavorite(props.targetPen));
-const isLiked = computed(() => favorite.value.isLiked);
-const favoritesCount = computed(() => favorite.value.favoritesCount);
 
 const handleClick = async () => {
   if (!authStore.user) {
@@ -60,6 +58,7 @@ const handleClick = async () => {
 };
 
 onMounted(async () => {
+  console.log("targetPen on mount", props.targetPen);
   if (props.targetPen !== undefined) {
     const stored = favoritesStore.getFavorite(props.targetPen);
     if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
