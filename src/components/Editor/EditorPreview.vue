@@ -12,8 +12,6 @@ const previewStore = usePreviewStore()
 const iframeEl = ref(null)
 const isFirstRenderDone = ref(false)
 
-
-
 watch(iframeEl, (el) => {
   if (el) previewStore.setIframeEl(el)
 }, { immediate: true })
