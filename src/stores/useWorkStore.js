@@ -86,6 +86,8 @@ export const useWorkStore = defineStore('work', () => {
   }
 
   const isSaved = ref(true)
+  const isAuthor = ref()
+
   const addViews = (id) => {
     try {
       api.put(`/api/pens/${id}/view`).catch((err) => {
@@ -147,7 +149,7 @@ export const useWorkStore = defineStore('work', () => {
   const createNewWork = async (newWorkData) => {
     try {
     const payload = {
-      title: newWorkData.title || '',
+      title: (newWorkData.title || '').trim() || 'Untitled',
       description: newWorkData.description || '',
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
@@ -162,6 +164,7 @@ export const useWorkStore = defineStore('work', () => {
       resources_js: newWorkData.cdns || [],
       tags: newWorkData.tags || [],
     };
+
     const res = await api.post('/api/pens', payload);
     const createdWork = res.data.data;
     works.value.unshift(res.data.data);
@@ -178,7 +181,7 @@ export const useWorkStore = defineStore('work', () => {
   const saveCurrentWork = async () => {
     try {
       const payload = {
-        title: currentWork.value.title,
+        title: (currentWork.value.title || '').trim() || 'Untitled',
         description: currentWork.value.description,
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
@@ -246,6 +249,7 @@ export const useWorkStore = defineStore('work', () => {
     currentWork,
     currentId,
     isSaved,
+    isAuthor,
     handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,

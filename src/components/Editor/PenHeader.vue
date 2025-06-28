@@ -36,7 +36,7 @@
   const authStore = useAuthStore();
   const toastStore = useToastStore();
   const { userProfile } = storeToRefs(authStore);
-  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
+  const { currentWork, isSaved, isAuthor } = storeToRefs(workStore); //放資料
   const { showToast } = toastStore;
 
   const isAutoPreview = ref(true);
@@ -44,15 +44,14 @@
   const isPro = ref(true);
   
   // 判斷是否為作者
-  const isAuthor = computed(() => {
+  workStore.isAuthor = computed(() => {
     const userId = userProfile.value?.id;
     const authorId = currentWork.value?.userId;
     const isNewWork = !currentWork.value?.id;
 
-    // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
     if (!authorId) return true;
     return isNewWork || userId === authorId;
-  });
+});
   // 初始化 userName
   userName.value =
     currentWork.value?.userName ??
@@ -342,18 +341,7 @@
                   </span>
                 </div>
               </label>
-              <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer">
-                <span>Template</span>
-                <div>
-                  <div class="relative inline-block w-13 h-7 ">
-                    <input type="checkbox" class="opacity-0 w-0 h-0 peer">
-                    <span
-                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
-                  </div>
-                  <span class="ml-2">off</span>   
-                </div>
-              </label>
-              <label class="flex py-2 justify-between border-b border-gray-600 hover:cursor-pointer" >
+              <label class="flex py-2 justify-between hover:cursor-pointer">
                 <span>Auto Save</span>
                 <div>
                   <div class="relative inline-block w-13 h-7 ">
@@ -362,19 +350,6 @@
                     class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"></span>
                   </div>
                   <span class="ml-2">{{ currentWork.isAutoSave ? 'on' : 'off' }}</span>              
-                </div>
-                
-              </label>
-              <label class="flex py-2 justify-between hover:cursor-pointer">
-                <span>Format Code on Save</span>
-                <div>
-                <div class="relative inline-block w-13 h-7 ">
-                  <input type="checkbox" class="opacity-0 w-0 h-0 peer">
-                  <span
-                    class="absolute pointer bg-gray-300 top-0 left-0 right-0 bottom-0 rounded-4xl peer-checked:bg-green-400  transition before:content-[''] before:h-8 before:w-8 before:left-0 before:bottom-[-2px] before:bg-white before:transition  before:absolute before:rounded-4xl  peer-checked:before:translate-x-6"
-                    ></span>
-                </div>
-                <span class="ml-2">off</span>  
                 </div>
               </label>
             </ul>
