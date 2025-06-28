@@ -1,5 +1,5 @@
 <template>
-  <div class="group w-full bg-card-text text-white rounded-lg relative">
+  <div class="group/pen w-full bg-card-text text-white rounded-lg relative">
     <!-- 預覽 -->
     <div class="relative aspect-video overflow-hidden rounded-md bg-black">
       <!-- iframe 預覽 -->
@@ -18,7 +18,7 @@
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+        class="absolute top-2 right-2 opacity-100 lg:opacity-0 group-hover/pen:opacity-100 transition"
       />
     </div>
 
