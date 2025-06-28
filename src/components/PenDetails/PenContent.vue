@@ -33,7 +33,7 @@ const props = defineProps({
     <aside class="meta-section lg:col-start-2 lg:row-span-3 space-y-4">
       <PenShareBox :pen-id="pen.id" :username="pen.username" />
       <PenTimestamps :pen="pen" />
-      <PenStats :likes="pen.favorites" :views="pen.views_count" />
+      <PenStats :pen="pen" :likes="pen.favorites"/>
     </aside>
   </div>
 </template>
