@@ -22,9 +22,7 @@ export const useFavoritesStore = defineStore("favorites", () => {
     if(authStore.user){
     likedRes = await checkFavoriteAPI(penId);
     }
-    const countRes = await countFavoritesAPI(penId);
-    console.log("fetchFavoriteState資料",likedRes?.data, countRes.data);
-    const newState = {
+    const countRes = await countFavoritesAPI(penId);    const newState = {
       isLiked: likedRes?.data?.liked || false,
       favoritesCount: countRes.data.favoritesCount ?? 0,
     };
