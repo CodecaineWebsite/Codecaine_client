@@ -1,20 +1,22 @@
 <template>
-  <div class="group w-full bg-card-text text-white rounded-lg relative">
+  <div class="group/pen w-full bg-card-text text-white rounded-lg relative">
     <!-- 預覽 -->
     <div class="relative aspect-video overflow-hidden rounded-md bg-black">
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          :src="iframeSrc"
+          ref="iframeEl"
+          src="/preview-frame.html"
           sandbox="allow-scripts"
-          class="w-full h-full border-0"
-          loading="lazy"></iframe>
+          referrerpolicy="no-referrer"
+          class="h-full w-full bg-cc-1"
+          title="Preview Frame"></iframe>
       </div>
 
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition" />
+        class="absolute top-2 right-2 opacity-100 lg:opacity-0 group-hover/pen:opacity-100 transition" />
     </div>
 
     <!-- 卡片內容 -->
@@ -97,17 +99,19 @@ import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
-import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
+// import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
 import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
+import { usePreviewStore } from "@/stores/usePreviewStore";
 
 const msgStore = useMsgStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
-const workStore = useWorkStore();
-const { updateCardPreviewSrc } = workStore;
+// const workStore = useWorkStore();
+// const { updateCardPreviewSrc } = workStore;
 const authStore = useAuthStore();
+const previewStore = usePreviewStore();
 
 const router = useRouter();
 const modalStore = useModalStore();
@@ -133,17 +137,30 @@ const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
 const isFollowing = ref(false);
 // 作品預覽
-const iframeSrc = ref("");
-const code = {
-  html: props.pen.html_code || "",
-  css: props.pen.css_code || "",
-  javascript: props.pen.js_code || "",
-  cdns: props.resources_js || [],
-  links: props.resources_css || [],
-};
-onMounted(async () => {
-  const newBlobUrl = updateCardPreviewSrc(code);
-  iframeSrc.value = newBlobUrl;
+const iframeEl = ref(null);
+
+onMounted(() => {
+  iframeEl.value.addEventListener("load", () => {
+    const code = {
+      html: props.pen.html_code || "",
+      css: props.pen.css_code || "",
+      javascript: `
+        try {
+          ${props.pen.js_code || ""}
+        } catch (err) {
+          console.error("User JS Error:", err);
+        }
+      `,
+      htmlClass: props.pen.html_class || "",
+      headStuff: props.pen.head_stuff || "",
+      cdns: Array.isArray(props.pen.resources_js) ? props.pen.resources_js : [],
+      links: Array.isArray(props.pen.resources_css)
+        ? props.pen.resources_css
+        : [],
+    };
+
+    previewStore.sendPreviewCode(iframeEl.value, code);
+  });
 });
 
 // 統計資料

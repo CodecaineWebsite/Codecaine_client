@@ -151,6 +151,7 @@
         isFirstRun = false;
         return
       }
+      if (!currentWork.value.isAutoSave) return; 
       debouncedAutoSave()
     }
   )
