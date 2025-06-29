@@ -51,10 +51,8 @@
             v-for="pen in group"
             :key="pen.id"
             :pen="pen"
-            :is-open="openedDropdownId === pen.id"
             @delete="handleDeletePen"
             @privacy-changed="handlePrivacyChanged"
-            @toggle="toggleDropdown"
           />
         </div>
       </SwiperSlide>
@@ -134,8 +132,6 @@ const atLastPage = ref(false);
 const swiperInstance = ref(null);
 const swiperRef = ref(null);
 
-const openedDropdownId = ref(null);
-
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
 };
@@ -209,15 +205,6 @@ function handleDeletePen(deletedId) {
   }
 }
 
-function handleClickOutside(event) {
-  if (
-    !event.target.closest(".dropdown-toggle") &&
-    !event.target.closest(".dropdown-menu")
-  ) {
-    openedDropdownId.value = null;
-  }
-}
-
 function handlePrivacyChanged({ id, is_private }) {
   if (props.filter === "private" && !is_private) {
     const index = props.pens.findIndex((pen) => pen.id === id);
@@ -232,21 +219,4 @@ function handlePrivacyChanged({ id, is_private }) {
     }
   }
 }
-
-function toggleDropdown(id) {
-  if (openedDropdownId.value === id) {
-    // 如果點的是已經開啟的那一筆，就關掉
-    openedDropdownId.value = null;
-  } else {
-    // 否則就打開這一筆
-    openedDropdownId.value = id;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 </script>
