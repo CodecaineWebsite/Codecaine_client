@@ -1,7 +1,7 @@
 <template>
   <div class="w-full bg-[#131417] p-6 grid gap-6">
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] mb-4">
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] mb-4">
       <div>
         <h3 class="text-xl font-bold mb-2">Update Password</h3>
         <p class="text-sm text-gray-500">
@@ -58,7 +58,7 @@
     </section>
 
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] mb-4">
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] mb-4">
       <div>
         <h3 class="text-xl font-bold mb-2">Email</h3>
         <p class="text-sm text-gray-500">
@@ -105,7 +105,7 @@
       </div>
     </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr]">
+    <section class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)]">
       <div>
         <h3 class="text-xl font-bold mb-2 text-red-500">Danger Zone</h3>
         <p class="text-sm text-gray-500">

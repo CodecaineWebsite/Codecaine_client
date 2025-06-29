@@ -68,8 +68,9 @@
 import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
+import { useToastStore } from "@/stores/useToastStore";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
 import { useRouter, RouterLink } from "vue-router";
-import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
@@ -82,35 +83,24 @@ const props = defineProps({
   },
 });
 
+const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
-const router = useRouter();
 const isLiked = ref(false);
 
-const checkFavorite = async () => {
-  if (!authStore.userProfile) return;
-  const res = await api.get(`/api/favorites/check/${props.pen.id}/`);
-  isLiked.value = res.data.liked;
-};
-
 const handleFavorite = async () => {
-  if (!authStore.userProfile) {
+  if (!authStore.user) {
     modalStore.closeModal();
     return router.push("/login");
   }
 
   try {
-    if (!isLiked.value) {
-      await api.post(`/api/favorites/`, { pen_id: props.pen.id });
-      isLiked.value = true;
-    } else {
-      await api.delete(`/api/favorites/`, {
-        data: { pen_id: props.pen.id },
-      });
-      isLiked.value = false;
-    }
+    await favoritesStore.toggleFavorite(props.pen.id);
   } catch (error) {
-    console.error("Favorite action failed:", error);
+    showToast({
+      message: "Action failed",
+      variant: "danger"
+    });
   }
 };
 
@@ -124,8 +114,8 @@ const goToEditor = () => {
 watch(
   () => props.pen,
   (newPen) => {
-    if (newPen && authStore.userProfile) {
-      checkFavorite();
+    if (newPen && authStore.user) {
+      favoritesStore.fetchFavoriteState(newPen.id);
     }
   },
   { immediate: true }

@@ -46,28 +46,55 @@
     <div class="mb-4 clear-both">
       <h3 class="text-cc-7 text-base mb-2 flex items-center">
         <EyeIcon class="w-4 h-4 fill-current mr-1" />
-        <span class="font-bold mr-1">{{ views }}</span> Views
+        <span class="font-bold mr-1">{{ pen.favoritesCount }}</span> Views
       </h3>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import api from "@/config/api.js"
+import { ref, computed, watch } from "vue";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
+import { useToastStore } from "@/stores/useToastStore";
 import HeartIcon from "@/components/icons/HeartIcon.vue";
 import EyeIcon from "@/components/icons/EyeIcon.vue";
 
+const favoritesStore = useFavoritesStore();
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 const props = defineProps({
-  likes: {
-    type: Array,
-    default: () => [], // [{ id, username, display_name, profile_image_url }]
-  },
-  views: {
-    type: Number,
-    default: 0,
+  pen: {
+    type: Object,
+    required: true
   },
 });
 
 const maxVisible = 6;
-const visibleLikes = computed(() => props.likes.slice(0, maxVisible));
+const likes = ref(props.pen.favorites)
+const visibleLikes = computed(() => likes.value.slice(0, maxVisible));
+
+async function fetchLikes() {
+  try {
+    const res = await api.get(`/api/pens/${props.pen.id}`);
+    likes.value = res.data.favorites;
+  } catch (err) {
+    showToast({
+      message: "Failed to fetch likes",
+      variant: "danger"
+    })
+    console.error("Failed to fetch likes", err);
+  }
+}
+
+
+watch(
+  () => favoritesStore.getFavorite(props.pen.id)?.isLiked,
+  async (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      await fetchLikes();
+    }
+  }
+);
+
 </script>
