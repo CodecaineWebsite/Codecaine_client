@@ -274,7 +274,7 @@
           </div>
         </button>
 
-        <button v-if="viewMode === 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="handleChangeViewMode('pen')">
+        <button v-if="viewMode === 'full'" type="button" class="text-[aliceblue] rounded px-3 md:px-5 py-1 md:py-2 bg-[#444857] editorSmallButton-hover-bgc  hover:cursor-pointer" @click="handleChangeViewMode('dose')">
           <div class="h-7 flex">
             <span class="md:inline hidden">View Source Code</span>
             <PenIcon class="w-4 block sm:hidden"/>
@@ -410,10 +410,10 @@
             >
               <li
                 class="flex py-1 px-5 justify-between transition duration-300"
-                :class="viewMode === 'pen'
+                :class="viewMode === 'dose'
                   ? 'bg-[#404654] text-cc-1'
                   : 'text-[#AEB3BD] hover:bg-[#404654] hover:text-cc-1'"
-                @click.prevent="handleChangeViewMode('pen')"
+                @click.prevent="handleChangeViewMode('dose')"
               >
                 <a href="#" class="flex justify-between w-full">
                   <div>Editor View</div>
