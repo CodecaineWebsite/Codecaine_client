@@ -1,13 +1,13 @@
 <template>
-  <div v-if="isLoggedIn" class="relative" ref="dropdownRef" >
+  <div v-if="authStore.user" class="relative" ref="dropdownRef" >
     <button
       class="dropdown-toggle text-white text-xl font-bold hover:text-gray-300"
-      @click.stop="$emit('toggle')"
+      @click="toggleDropdown"
     >
       •••
     </button>
     <div
-      v-if="isOpen"
+      v-if="showDropdown"
       class="dropdown-menu absolute right-0 bottom-full mb-2 w-48 bg-card-menu text-sm rounded shadow-lg z-50 overflow-hidden border border-gray-700"
     >
       <!-- 追蹤 -->
@@ -54,20 +54,24 @@
 </template>
 
 <script setup>
+import { ref } from "vue"
+import { onClickOutside } from "@vueuse/core";
+import { useAuthStore } from "@/stores/useAuthStore";
 import CheckIcon from "@/components/icons/CheckIcon.vue";
 import LockClosedIcon from "@/components/icons/LockClosedIcon.vue";
 import UnlockIcon from "@/components/icons/UnlockIcon.vue";
 import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
 
-// props
+const authStore = useAuthStore();
+const showDropdown = ref(false);
+const dropdownRef = ref(null);
+
 const props = defineProps({
   isOwner: Boolean,
   isPro: Boolean,
   isPrivate: Boolean,
   isFollowing: Boolean,
   userName: String,
-  isOpen: Boolean,
-  isLoggedIn: Boolean,
 });
 
 // emits
@@ -75,7 +79,6 @@ const emit = defineEmits([
   "follow",
   "togglePrivacy",
   "delete",
-  "toggle"
 ]);
 
 
@@ -92,4 +95,10 @@ const handleTogglePrivacy = () => {
 const handleDelete = () => {
   emit("delete");
 };
+const toggleDropdown = async () => {
+  showDropdown.value = !showDropdown.value;
+};
+onClickOutside(dropdownRef, () => {
+  showDropdown.value = false;
+});
 </script>

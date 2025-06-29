@@ -8,10 +8,8 @@
       v-for="pen in pens"
       :key="pen.id"
       :pen="pen"
-      :is-open="openedDropdownId === pen.id"
       @delete="handleDeletePen"
       @privacy-changed="handlePrivacyChanged"
-      @toggle="toggleDropdown"
     />
   </div>
   <!-- table layout -->
@@ -36,7 +34,6 @@
           v-for="pen in pens"
           :key="pen.id"
           :pen="pen"
-          :is-open="openedDropdownId === pen.id"
           @toggle="toggleDropdown"
           @delete="handleDeletePen"
           @privacy-changed="handlePrivacyChanged"
@@ -47,11 +44,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
 import PenCardRow from "./PenCardRow.vue";
 import PenCard from "./PenCards/PenCard.vue";
-
-const openedDropdownId = ref(null);
 
 const props = defineProps({
   pens: {
@@ -74,17 +68,6 @@ function handleDeletePen(deletedId) {
     props.pens.splice(index, 1);
   }
 }
-
-function handleClickOutside(event) {
-  // 點擊不是按鈕或選單內容時，關閉 dropdown
-  if (
-    !event.target.closest(".dropdown-toggle") &&
-    !event.target.closest(".dropdown-menu")
-  ) {
-    openedDropdownId.value = null;
-  }
-}
-
 function handlePrivacyChanged({ id, is_private }) {
   if (props.filter === "private" && !is_private) {
     const index = props.pens.findIndex((pen) => pen.id === id);
@@ -99,21 +82,4 @@ function handlePrivacyChanged({ id, is_private }) {
     }
   }
 }
-
-function toggleDropdown(id) {
-  if (openedDropdownId.value === id) {
-    // 如果點的是已經開啟的那一筆，就關掉
-    openedDropdownId.value = null;
-  } else {
-    // 否則就打開這一筆
-    openedDropdownId.value = id;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 </script>

@@ -50,7 +50,7 @@
               </a>
               <a
                 v-if="isPro"
-                :href="proLink"
+                href="#"
                 class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
               >
                 PRO
@@ -61,17 +61,14 @@
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
           <PenCardDropdown
-            :is-open="isOpen"
             :is-owner="isOwner"
             :is-pro="isPro"
             :is-private="isPrivate"
             :is-following="isFollowing"
-            :is-logged-in="authStore.user !== null"
             :user-name="userName"
             @follow="handleFollow"
             @togglePrivacy="togglePrivacy"
             @delete="handleDelete"
-            @toggle="$emit('toggle', pen.id)"
           />
         </div>
       </div>
@@ -123,7 +120,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isOpen: Boolean,
 });
 
 // 作品資訊
@@ -260,6 +256,4 @@ const goToFullPage = () => {
 const openDetailModal = () => {
   modalStore.openModal(props.pen.id, "card");
 };
-
-// 需要改為用 store 管理收藏狀態，因為PenCard的收藏按鈕與Modal收藏按鈕狀態不同步
 </script>
