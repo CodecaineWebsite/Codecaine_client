@@ -69,11 +69,12 @@
   </header>
 </template>
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount } from "vue";
+import { ref, onMounted, watch, onBeforeUnmount, computed } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
+import { useToastStore } from "@/stores/useToastStore";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
 import { useRouter, RouterLink } from "vue-router";
-import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
@@ -86,37 +87,31 @@ const props = defineProps({
   },
 });
 
+const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
-const router = useRouter();
-const isLiked = ref(false);
+const toastStore = useToastStore();
+const { showToast } = toastStore;
+
+const favoritesStore = useFavoritesStore()
+const favorite = computed(() => favoritesStore.getFavorite(props.pen.id));
+const isLiked = computed(() => favorite.value.isLiked);
 const isDropdownOpen = ref(false);
 const dropdownRef = ref(null);
 
-const checkFavorite = async () => {
-  if (!authStore.userProfile) return;
-  const res = await api.get(`/api/favorites/check/${props.pen.id}/`);
-  isLiked.value = res.data.liked;
-};
-
 const handleFavorite = async () => {
-  if (!authStore.userProfile) {
+  if (!authStore.user) {
     modalStore.closeModal();
     return router.push("/login");
   }
 
   try {
-    if (!isLiked.value) {
-      await api.post(`/api/favorites/`, { pen_id: props.pen.id });
-      isLiked.value = true;
-    } else {
-      await api.delete(`/api/favorites/`, {
-        data: { pen_id: props.pen.id },
-      });
-      isLiked.value = false;
-    }
+    await favoritesStore.toggleFavorite(props.pen.id);
   } catch (error) {
-    console.error("Favorite action failed:", error);
+    showToast({
+      message: "Action failed",
+      variant: "danger"
+    });
   }
 };
 
@@ -143,8 +138,14 @@ const goToEditor = () => {
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
+  if (props.pen !== undefined) {
+    const stored = favoritesStore.getFavorite(props.pen.id);
+    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
+      await favoritesStore.fetchFavoriteState(props.pen.id);
+    }
+  }
 });
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
@@ -153,8 +154,8 @@ onBeforeUnmount(() => {
 watch(
   () => props.pen,
   (newPen) => {
-    if (newPen && authStore.userProfile) {
-      checkFavorite();
+    if (newPen && authStore.user) {
+      favoritesStore.fetchFavoriteState(newPen.id);
     }
   },
   { immediate: true }

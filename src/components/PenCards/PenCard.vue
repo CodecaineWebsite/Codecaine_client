@@ -75,7 +75,7 @@
 
       <!-- 底部統計按鈕 -->
       <div class="flex gap-2 mt-3">
-        <FavoriteBtn :target-pen="workId" />
+        <PenFavoriteButton :target-pen="workId" />
         <PenCommentButton
           :work-id="workId"
           :comments="comments"
@@ -89,13 +89,13 @@
 </template>
 
 <script setup>
-import api from "@/config/api"; // API 請求配置
+import api from "@/config/api";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
 
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
-import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
+import PenFavoriteButton from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
@@ -274,5 +274,4 @@ const openDetailModal = () => {
   modalStore.openModal(props.pen.id, "card");
 };
 
-// 需要改為用 store 管理收藏狀態，因為PenCard的收藏按鈕與Modal收藏按鈕狀態不同步
 </script>

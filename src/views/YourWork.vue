@@ -542,12 +542,4 @@ async function restoreDose(penId) {
     });
   }
 }
-
-/**
- * TODO:
- * 頁面載入中狀態
- * 加上 toast 通知
- * 加上錯誤處理
- * 這頁太長了需要考慮拆分元件
- */
 </script>
