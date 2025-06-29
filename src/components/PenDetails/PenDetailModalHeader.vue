@@ -44,20 +44,16 @@
         />
       </button>
       <!-- 暫時隱藏元件 功能做好再開啟 -->
-      <!-- <PenDetailDropdown
-        class="dropdown-menu"
-        :is-open="isDropdownOpen"
+      <PenDetailDropdown
         :is-owner="authStore.userProfile?.username === pen.username"
         :is-pro="pen.is_pro"
         :is-private="pen.is_private"
         :is-following="false"
         :user-name="pen.username"
-        :is-logged-in="Boolean(authStore.userProfile)"
-        @toggle="toggleDropdown"
         @follow="onFollow"
         @togglePrivacy="onTogglePrivacy"
         @delete="onDelete"
-      /> -->
+      />
 
       <button
         @click="goToEditor"
@@ -69,7 +65,7 @@
   </header>
 </template>
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount } from "vue";
+import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
 import { useRouter, RouterLink } from "vue-router";
@@ -90,8 +86,6 @@ const authStore = useAuthStore();
 const modalStore = useModalStore();
 const router = useRouter();
 const isLiked = ref(false);
-const isDropdownOpen = ref(false);
-const dropdownRef = ref(null);
 
 const checkFavorite = async () => {
   if (!authStore.userProfile) return;
@@ -120,35 +114,12 @@ const handleFavorite = async () => {
   }
 };
 
-// dropdown 開關
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-function closeDropdown() {
-  isDropdownOpen.value = false;
-}
-
-function handleClickOutside(e) {
-  if (
-    !e.target.closest(".dropdown-toggle") &&
-    !e.target.closest(".dropdown-menu")
-  ) {
-    closeDropdown();
-  }
-}
 
 const goToEditor = () => {
   modalStore.closeModal();
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 
 watch(
   () => props.pen,
