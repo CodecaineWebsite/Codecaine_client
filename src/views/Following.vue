@@ -52,8 +52,6 @@
             :key="pen.id"
             :pen="pen"
             :is-open="openedDropdownId === pen.id"
-            @delete="handleDeletePen"
-            @privacy-changed="handlePrivacyChanged"
             @toggle="toggleDropdown"
           />
         </div>
@@ -202,34 +200,12 @@ watch(isTop, async () => {
   await loadPage(2);
 });
 
-function handleDeletePen(deletedId) {
-  const index = props.pens.findIndex((pen) => pen.id === deletedId);
-  if (index !== -1) {
-    props.pens.splice(index, 1);
-  }
-}
-
 function handleClickOutside(event) {
   if (
     !event.target.closest(".dropdown-toggle") &&
     !event.target.closest(".dropdown-menu")
   ) {
     openedDropdownId.value = null;
-  }
-}
-
-function handlePrivacyChanged({ id, is_private }) {
-  if (props.filter === "private" && !is_private) {
-    const index = props.pens.findIndex((pen) => pen.id === id);
-    if (index !== -1) {
-      props.pens.splice(index, 1);
-    }
-  }
-  if (props.filter === "public" && is_private) {
-    const index = props.pens.findIndex((pen) => pen.id === id);
-    if (index !== -1) {
-      props.pens.splice(index, 1);
-    }
   }
 }
 

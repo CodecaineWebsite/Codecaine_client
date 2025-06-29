@@ -228,8 +228,8 @@ async function reloadTrending() {
   await loadPage(1);
   await loadPage(2);
   nextTick(() => {
-    swiperRef.value?.swiper?.slideTo(0); // 回到第一頁
-    swiperRef.value?.swiper?.update(); // 重建 Swiper
+    swiperRef.value?.swiper?.slideTo(0);
+    swiperRef.value?.swiper?.update();
   });
 }
 </script>
