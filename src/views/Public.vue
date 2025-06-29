@@ -5,15 +5,15 @@
       :key="pens.length"
       :pens="pens"
       :mode="viewMode"
-      @pen-clicked="modalStore.openPenDetailModal($event)"
-    />
+      @pen-clicked="modalStore.openPenDetailModal($event)" />
     <div
       v-else-if="!isLoading && pens.length === 0"
-      class="justify-center flex mt-12"
-    >
+      class="justify-center flex mt-12">
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
         ⚠️ No Doses found.
-        <a href="/pen" class="text-blue-200 hover:text-blue-400">
+        <a
+          href="/dose"
+          class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
       </p>
@@ -22,8 +22,7 @@
       :currentPage="page"
       :totalPages="totalPages"
       @prev="page--"
-      @next="page++"
-    />
+      @next="page++" />
   </div>
 </template>
 
