@@ -68,14 +68,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  likes: {
-    type: Array,
-    default: () => [], // [{ id, username, display_name, profile_image_url }]
-  },
 });
 
 const maxVisible = 6;
-const likes = ref(props.likes)
+const likes = ref(props.pen.favorites)
 const visibleLikes = computed(() => likes.value.slice(0, maxVisible));
 
 async function fetchLikes() {
