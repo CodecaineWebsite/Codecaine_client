@@ -11,7 +11,7 @@
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
         ⚠️ No Loved Doses found.
         <a
-          href="/pen"
+          href="/dose"
           class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
