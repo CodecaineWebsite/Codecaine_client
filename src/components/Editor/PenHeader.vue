@@ -200,22 +200,22 @@
   }
 
   onMounted(async () => {
-  if (currentWork.value?.id !== undefined) {
-    const stored = favoritesStore.getFavorite(currentWork.value?.id);
-    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
-      await favoritesStore.fetchFavoriteState(currentWork.value?.id);
+    if (currentWork.value?.id !== undefined) {
+      const stored = favoritesStore.getFavorite(currentWork.value?.id);
+      if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
+        await favoritesStore.fetchFavoriteState(currentWork.value?.id);
+      }
     }
-  }
-  });
+    });
   watch(
-  () => currentWork.value?.id,
-  (newVal) => {
-    if (newVal) {
-      favoritesStore.fetchFavoriteState(newVal);
-    }
-  },
-  { immediate: true }
-);
+    () => currentWork.value?.id,
+    (newVal) => {
+      if (newVal) {
+        favoritesStore.fetchFavoriteState(newVal);
+      }
+    },
+    { immediate: true }
+  );
 </script>
 
 <template>
