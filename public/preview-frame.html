@@ -12,6 +12,10 @@
 </head>
 <body>
   <script>
+    if (window.top === window) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:sans-serif;">This page cannot be opened directly.</div>';
+      throw new Error('Blocked direct access');
+    }
     // 攔截 console 輸出
     const originalConsole = {
       log: console.log,
