@@ -50,7 +50,7 @@
               </a>
               <a
                 v-if="isPro"
-                href="#"
+                :href="proLink"
                 class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
               >
                 PRO
