@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { debounce } from '@/utils/debounce'
 import { useWorkStore } from '@/stores/useWorkStore'
 import { usePreviewStore } from '@/stores/usePreviewStore'
@@ -10,10 +10,22 @@ const { currentWork } = storeToRefs(workStore)
 const previewStore = usePreviewStore()
 
 const iframeEl = ref(null)
+const isIframeLoaded = ref(false)
 const isFirstRenderDone = ref(false)
 
 watch(iframeEl, (el) => {
   if (el) previewStore.setIframeEl(el)
+}, { immediate: true })
+
+watch(iframeEl, (el) => {
+  if (el) {
+    el.addEventListener('load', () => {
+      console.log('✅ iframe loaded')
+      isIframeLoaded.value = true
+      tryRenderFirstTime()
+    }, { once: true })
+    previewStore.setIframeEl(el)
+  }
 }, { immediate: true })
 
 const hasAnyContent = (work) => {
@@ -26,26 +38,31 @@ const hasAnyContent = (work) => {
   )
 }
 
+const tryRenderFirstTime = () => {
+  if (isFirstRenderDone.value || !isIframeLoaded.value || !currentWork.value) return;
+
+  if (!currentWork.value.id) {
+    return;
+  }
+
+  if (hasAnyContent(currentWork.value)) {
+    previewStore.sendAutoPreviewCode(currentWork.value);
+  }
+  isFirstRenderDone.value = true;
+}
+
 const autoSendToIframe = debounce(() => {
-  previewStore.sendAutoPreviewCode(currentWork.value)
+  if (isIframeLoaded.value) {
+    previewStore.sendAutoPreviewCode(currentWork.value)
+  }
 }, 2000)
 
 function runPreview() {
-  previewStore.sendAutoPreviewCode(currentWork.value)
+  if (isIframeLoaded.value) {
+    previewStore.sendAutoPreviewCode(currentWork.value)
+  }
 }
 defineExpose({ runPreview })
-
-watch(
-  currentWork,
-  (work) => {
-    if (!work || isFirstRenderDone.value) return
-    if (work.isAutoPreview && hasAnyContent(work)) {
-      previewStore.sendAutoPreviewCode(work)
-    }
-    isFirstRenderDone.value = true
-  },
-  { immediate: true }
-)
 
 watch(
   () => [
@@ -58,11 +75,15 @@ watch(
     JSON.stringify(currentWork.value?.links || []),
   ],
   () => {
-    if (!isFirstRenderDone.value) return
-    if (currentWork.value?.isAutoPreview) {
-      autoSendToIframe()
+    if (!isFirstRenderDone.value) {
+      tryRenderFirstTime();
+      return;
     }
-  }
+    if (currentWork.value?.isAutoPreview) {
+      autoSendToIframe();
+    }
+  },
+  { immediate: true }
 )
 </script>
 
