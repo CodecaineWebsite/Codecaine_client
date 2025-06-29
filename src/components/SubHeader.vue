@@ -172,7 +172,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import SidebarToggleIcon from "@/components/icons/SidebarToggleIcon.vue";
-import UserMenu from "./UserMenu.vue";
+import UserMenu from "@/components/UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
 import LogoIcon from "@/components/icons/LogoIcon.vue";
