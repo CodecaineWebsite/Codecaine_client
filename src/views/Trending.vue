@@ -25,8 +25,8 @@
               :key="pen.id"
               :pen="pen"
               :is-open="openedDropdownId === pen.id"
-              @delete="handleDeletePen"
-              @privacy-changed="handlePrivacyChanged"
+              @delete="reloadTrending"
+              @privacy-changed="reloadTrending"
               @toggle="toggleDropdown"
             />
           </div>
@@ -188,10 +188,6 @@ onMounted(async () => {
 // 空資料畫面
 // 載入中畫面
 
-function handleDeletePen(deletedId) {
-  reloadTrending();
-}
-
 function handleClickOutside(event) {
   if (
     !event.target.closest(".dropdown-toggle") &&
@@ -200,11 +196,6 @@ function handleClickOutside(event) {
     openedDropdownId.value = null;
   }
 }
-
-function handlePrivacyChanged({ id, is_private }) {
-  if (is_private) reloadTrending();
-}
-
 function toggleDropdown(id) {
   if (openedDropdownId.value === id) {
     openedDropdownId.value = null;
