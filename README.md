@@ -19,7 +19,8 @@ Codecaine 是一個靈感來自 CodePen 的線上前端開發平台，致力於�
 - **Frontend**：Vue 3 + TailwindCSS + Monaco Editor  
 - **Backend**：Node.js + Express + PostgreSQL  
 - **Authentication**：Firebase Auth  
-- **Storage**：AWS S3  
+- **Storage**：AWS S3
+- **Payment**: Stripe
 - **AI**: OPEN AI
 - **Deploy**：Zeabur
 
