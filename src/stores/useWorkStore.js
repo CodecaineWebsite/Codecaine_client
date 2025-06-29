@@ -84,173 +84,9 @@ export const useWorkStore = defineStore('work', () => {
   const toggleAutoPreview = () => {
     currentWork.value.isAutoPreview = !currentWork.value.isAutoPreview
   }
-  // 更新作品Preview
-  const updatePreviewSrc = () => {
-    const rawJS = currentWork.value.javascript + '\n//# sourceURL=user-code.js';
-    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-    const cssCode = currentWork.value.css;
-    const htmlCode = currentWork.value.html;
-    const { htmlClass = '', headStuff = '' } = currentWork.value || {};
-    const cdnTags = (currentWork.value.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-    const linkTags = (currentWork.value.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
-  
-    const previewData = `
-      <!DOCTYPE html>
-      <html lang="en" class="${htmlClass}">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="
-          default-src 'self';
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
-          style-src 'self' 'unsafe-inline' https:;
-          img-src 'self' data: blob: https:;
-          font-src 'self' https: data:;
-          connect-src 'self' https:;
-          frame-src https:;
-        ">
-        ${headStuff}
-        ${cdnTags}
-        ${linkTags}
-        <style>
-          ${cssCode}
-        </style>
-        <script type="module">
-          const originalConsole = {
-            log: console.log,
-            error: console.error,
-            warn: console.warn,
-            info: console.info
-          };
-  
-          ['log', 'error', 'warn', 'info'].forEach(method => {
-            console[method] = (...args) => {
-              window.parent.postMessage({
-                type: 'log',
-                message: args.map(arg =>
-                  typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' '),
-                level: method
-              }, '*');
-              originalConsole[method](...args);
-            };
-          });
-  
-          window.onerror = function(message, source, lineno, colno, error) {
-            const errorMsg = error
-              ? \`\${error.name}: \${error.message}\`
-              : message;
-            window.parent.postMessage({
-              type: 'log',
-              message: \`\${errorMsg}\\nSource: \${source}\\nLine: \${lineno}, Column: \${colno}\`,
-              level: 'error'
-            }, '*');
-            return true;
-          };
-  
-          window.addEventListener('unhandledrejection', function(event) {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Unhandled Promise rejection: ' + (event.reason?.stack || event.reason),
-              level: 'error'
-            }, '*');
-          });
-  
-          const code = ${JSON.stringify(safeJS)};
-          const blob = new Blob([code], { type: 'application/javascript' });
-          const blobUrl = URL.createObjectURL(blob);
-  
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = blobUrl;
-          script.onload = () => URL.revokeObjectURL(blobUrl);
-          script.onerror = () => {
-            window.parent.postMessage({
-              type: 'log',
-              message: 'Script loading error',
-              level: 'error'
-            }, '*');
-          };
-  
-          document.head.appendChild(script);
-        <\/script>
-      </head>
-      <body>
-        ${htmlCode}
-      </body>
-      </html>
-    `.trim();
-  
-    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    if (window.currentPreviewBlob) {
-      URL.revokeObjectURL(window.currentPreviewBlob);
-    }
-    window.currentPreviewBlob = blobUrl;
-    return blobUrl;
-  };
 
-  const updateCardPreviewSrc = (code) => {
-    const rawJS = code.javascript + '\n//# sourceURL=user-code.js';
-    const safeJS = rawJS.replace(/<\/script>/gi, '<\\/script>');
-    const cssCode = code.css;
-    const htmlCode = code.html;
-    const { htmlClass = '', headStuff = '' } = code || {};
-    const cdnTags = (code.cdns || []).map(url => `<script src="${url}"></script>`).join('\n')
-    const linkTags = (code.links || []).map(url => `<link rel="stylesheet" href="${url}">`).join('\n')
-  
-    const previewData = `
-      <!DOCTYPE html>
-      <html lang="en" class="${htmlClass}">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="
-          default-src 'self';
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:;
-          style-src 'self' 'unsafe-inline' https:;
-          img-src 'self' data: blob: https:;
-          font-src 'self' https: data:;
-          connect-src 'self' https:;
-          frame-src https:;
-        ">
-        ${headStuff}
-        ${cdnTags}
-        ${linkTags}
-        <style>
-          ${cssCode}
-        </style>
-        <script type="module">
-          window.console = {
-            log: () => {},
-            error: () => {},
-            warn: () => {},
-            info: () => {}
-          };
-        
-          const code = ${JSON.stringify(safeJS)};
-          const blob = new Blob([code], { type: 'application/javascript' });
-          const blobUrl = URL.createObjectURL(blob);
-        
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = blobUrl;
-          script.onload = () => URL.revokeObjectURL(blobUrl);
-          document.head.appendChild(script);
-        <\/script>
-      </head>
-      <body>
-        ${htmlCode}
-      </body>
-      </html>
-    `.trim();
-  
-    const blob = new Blob([previewData], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    window.currentPreviewBlob = blobUrl;
-    return blobUrl;
-  };
-  
   const isSaved = ref(true)
-  console.log(isSaved.value);
+  const isAuthor = ref()
 
   const addViews = (id) => {
     try {
@@ -313,7 +149,7 @@ export const useWorkStore = defineStore('work', () => {
   const createNewWork = async (newWorkData) => {
     try {
     const payload = {
-      title: newWorkData.title || '',
+      title: (newWorkData.title || '').trim() || 'Untitled',
       description: newWorkData.description || '',
       html_code: newWorkData.html || '',
       css_code: newWorkData.css || '',
@@ -328,13 +164,13 @@ export const useWorkStore = defineStore('work', () => {
       resources_js: newWorkData.cdns || [],
       tags: newWorkData.tags || [],
     };
+
     const res = await api.post('/api/pens', payload);
     const createdWork = res.data.data;
     works.value.unshift(res.data.data);
     currentId.value = res.data.data.id;
     currentWork.value.id = res.data.data.id;
     isSaved.value = true;
-    console.log('Work created successfully');
     return createdWork;
   } catch (err) {
     console.error('Failed to create work', err);
@@ -345,7 +181,7 @@ export const useWorkStore = defineStore('work', () => {
   const saveCurrentWork = async () => {
     try {
       const payload = {
-        title: currentWork.value.title,
+        title: (currentWork.value.title || '').trim() || 'Untitled',
         description: currentWork.value.description,
         html_code: currentWork.value.html,
         css_code: currentWork.value.css,
@@ -363,7 +199,6 @@ export const useWorkStore = defineStore('work', () => {
       await api.put(`/api/pens/${currentId.value}`, payload);
       currentWork.value.lastSavedTime = new Date();
       isSaved.value = true;
-      console.log('Work saved successfully');
       return true;
     } catch (err) {
       console.error('Failed to save work', err);
@@ -393,7 +228,6 @@ export const useWorkStore = defineStore('work', () => {
     try {
       await api.put(`/api/pens/${id}/delete`);
       currentWork.value.is_deleted = true;
-      console.log('Work deleted');
     } catch (err) {
       console.error('Failed to delete this work', err);
       throw err;
@@ -403,7 +237,6 @@ export const useWorkStore = defineStore('work', () => {
   const deletePenPermanently = async (id) => {
     try {
       const res = await api.delete(`/api/pens/${id}`);
-      console.log('Work permanently deleted');
       return res.data;
     } catch (err) {
       console.error('Failed to permanently delete work', err);
@@ -416,13 +249,12 @@ export const useWorkStore = defineStore('work', () => {
     currentWork,
     currentId,
     isSaved,
+    isAuthor,
     handleInitWork,
     handleCurrentIdChange,
     updateCurrentCode,
     toggleAutoSave,
     toggleAutoPreview,
-    updatePreviewSrc,
-    updateCardPreviewSrc,
     updateCDNs,
     updateLinks,
     updateHtmlClass,

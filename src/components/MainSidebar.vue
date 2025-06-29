@@ -115,12 +115,20 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useLocalStorage } from "@vueuse/core";
 import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
 import Layout from "@/assets/layout.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
 const isSidebarHover = ref(false);
+
+const isSidebarOpen = useLocalStorage("sidebarOpen", true);
+const emit = defineEmits(["toggle"]);
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+  emit("toggle", isSidebarOpen.value);
+};
 
 const goYourWork = () => {
   router.push("/your-work");
@@ -140,15 +148,6 @@ const goHome = () => {
 const goSearch = () => {
   router.push("/search");
 };
-const isSidebarOpen = ref(
-  localStorage.getItem("sidebarOpen") === "false" ? false : true
-);
-const emit = defineEmits(["toggle"]);
-function toggleSidebar() {
-  isSidebarOpen.value = !isSidebarOpen.value;
-  localStorage.setItem("sidebarOpen", isSidebarOpen.value);
-  emit("toggle", isSidebarOpen.value);
-}
 </script>
 
 <style scoped>

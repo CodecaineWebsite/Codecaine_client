@@ -15,10 +15,8 @@ const commentInput = ref(null);
 
 function autoResize() {
   const el = commentInput.value;
-  console.log(el)
   if (el) {
     el.style.height = "auto"; // reset
-    console.log(el.scrollHeight)
     el.style.height = el.scrollHeight + "px"; // set to scrollHeight
     // autoResize目前不管用
   }
@@ -40,11 +38,11 @@ const goLogin = () => {
 
 const submit = () => {
   if (!authStore.user) {
-    emit("error", "請先登入後再發表留言");
+    emit("error", "Please log in before posting a comment.");
     return;
   }
   if (!newComment.value.trim()) {
-    emit("error", "留言內容不能為空");
+    emit("error", "Comment content cannot be empty.");
     return;
   }
   emit("submit", newComment.value.trim());
