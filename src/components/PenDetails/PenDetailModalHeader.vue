@@ -44,20 +44,16 @@
         />
       </button>
       <!-- 暫時隱藏元件 功能做好再開啟 -->
-      <!-- <PenDetailDropdown
-        class="dropdown-menu"
-        :is-open="isDropdownOpen"
+      <PenDetailDropdown
         :is-owner="authStore.userProfile?.username === pen.username"
         :is-pro="pen.is_pro"
         :is-private="pen.is_private"
         :is-following="false"
         :user-name="pen.username"
-        :is-logged-in="Boolean(authStore.userProfile)"
-        @toggle="toggleDropdown"
         @follow="onFollow"
         @togglePrivacy="onTogglePrivacy"
         @delete="onDelete"
-      /> -->
+      />
 
       <button
         @click="goToEditor"
@@ -69,7 +65,7 @@
   </header>
 </template>
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount, computed } from "vue";
+import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
 import { useToastStore } from "@/stores/useToastStore";
@@ -90,14 +86,7 @@ const props = defineProps({
 const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
-const toastStore = useToastStore();
-const { showToast } = toastStore;
-
-const favoritesStore = useFavoritesStore()
-const favorite = computed(() => favoritesStore.getFavorite(props.pen.id));
-const isLiked = computed(() => favorite.value.isLiked);
-const isDropdownOpen = ref(false);
-const dropdownRef = ref(null);
+const isLiked = ref(false);
 
 const handleFavorite = async () => {
   if (!authStore.user) {
@@ -115,41 +104,12 @@ const handleFavorite = async () => {
   }
 };
 
-// dropdown 開關
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-function closeDropdown() {
-  isDropdownOpen.value = false;
-}
-
-function handleClickOutside(e) {
-  if (
-    !e.target.closest(".dropdown-toggle") &&
-    !e.target.closest(".dropdown-menu")
-  ) {
-    closeDropdown();
-  }
-}
 
 const goToEditor = () => {
   modalStore.closeModal();
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
 
-onMounted(async () => {
-  document.addEventListener("click", handleClickOutside);
-  if (props.pen !== undefined) {
-    const stored = favoritesStore.getFavorite(props.pen.id);
-    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
-      await favoritesStore.fetchFavoriteState(props.pen.id);
-    }
-  }
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 
 watch(
   () => props.pen,

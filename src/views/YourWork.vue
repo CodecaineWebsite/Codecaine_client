@@ -468,7 +468,6 @@ async function loadDoses() {
 async function loadDeletedDoses() {
   try {
     const { data } = await api.get("/api/pens/trash");
-
     pens.value = data;
   } catch (err) {
     showToast({
@@ -482,7 +481,6 @@ async function loadTags() {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
   } catch (err) {
-    // 應該可以不加 toast，因為這個功能不是很重要
     console.error("Failed to load tags:", err);
   }
 }
