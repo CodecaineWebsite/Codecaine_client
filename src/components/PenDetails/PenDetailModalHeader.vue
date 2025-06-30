@@ -12,6 +12,7 @@
         <a
           :href="`/${pen.username}`"
           class="flex-shrink truncate max-w-full hover:underline"
+          @click="modalStore.closeModal()"
           >{{ pen.display_name }}</a
         >
         <span
