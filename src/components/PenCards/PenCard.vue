@@ -140,7 +140,7 @@ const userDisplayName = props.pen.user_display_name;
 const userProfileImage = props.pen.profile_image || "/default-avatar.png";
 const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
-const { isFollowing, setFollowing, checkFollow } = useFollowStatus(
+const { isFollowing, checkFollow, handleFollowAction } = useFollowStatus(
   props.pen.username
 );
 // 作品預覽
@@ -181,19 +181,7 @@ const proLink = "/settings/billing";
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
-const handleFollow = async () => {
-  try {
-    if (!isFollowing.value) {
-      const res = await api.post(`/api/follows/${props.pen.username}`);
-      isFollowing.value = true;
-    } else {
-      const res = await api.delete(`/api/follows/${props.pen.username}`);
-      isFollowing.value = false;
-    }
-  } catch (error) {
-    console.error("follow/unfollow error", error);
-  }
-};
+const handleFollow = () => handleFollowAction(props.pen.username);
 
 const handleDelete = () => {
   msgStore.open({

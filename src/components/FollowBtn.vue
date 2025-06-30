@@ -32,23 +32,11 @@ const props = defineProps({
   },
 });
 
-const { isFollowing, setFollowing, checkFollow } = useFollowStatus(
+const { isFollowing, checkFollow, handleFollowAction } = useFollowStatus(
   props.targetUser
 );
 
-const handleClick = async () => {
-  try {
-    if (!isFollowing.value) {
-      const res = await api.post(`/api/follows/${props.targetUser}`);
-      setFollowing(res.data.result);
-    } else {
-      const res = await api.delete(`/api/follows/${props.targetUser}`);
-      setFollowing(res.data.result);
-    }
-  } catch (error) {
-    console.error("fetch follow error ", error);
-  }
-};
+const handleClick = () => handleFollowAction(props.targetUser);
 
 onMounted(() => {
   checkFollow();
