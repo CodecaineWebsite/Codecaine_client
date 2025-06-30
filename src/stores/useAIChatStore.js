@@ -103,7 +103,6 @@ export const useAIChatStore = defineStore('chat', () => {
       });
     } finally {
       isSending.value = false;
-      console.log(historyMessages.value);
     }
   }
 

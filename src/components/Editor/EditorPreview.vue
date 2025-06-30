@@ -78,7 +78,6 @@ watch(
     JSON.stringify(props.currentWork?.links || []),
   ],
   () => {
-    console.log(props.currentWork);
     if (!isFirstRenderDone.value) {
       tryRenderFirstTime();
       return;
