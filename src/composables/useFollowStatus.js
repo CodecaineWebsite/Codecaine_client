@@ -23,7 +23,7 @@ export function useFollowStatus(userId) {
     }
   };
 
-  const handleFollowAction = async (userId) => {
+  const handleFollowAction = async () => {
     try {
       if (!isFollowing.value) {
         const res = await api.post(`/api/follows/${userId}`);
