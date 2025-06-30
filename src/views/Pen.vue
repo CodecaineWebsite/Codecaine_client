@@ -630,7 +630,7 @@
 
         <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
           <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
-            <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
+            <EditorPreview :currentWork="currentWork" ref="previewRef"/>
           </div>
           <div v-show="isConsoleShow">
             <div
