@@ -6,15 +6,14 @@
     <!-- 左區：標題與作者 -->
     <div class="flex flex-1 flex-col min-w-[120px] pr-2 ml-4">
       <h1 class="text-xl font-bold text-white truncate max-w-full">
-        {{ pen?.title || 'Untitled' }}
+        {{ pen?.title || "Untitled" }}
       </h1>
       <div class="flex items-center gap-1 text-sm text-cc-9">
-        <RouterLink
-          :to="`/${pen.username}`"
+        <a
+          :href="`/${pen.username}`"
           class="flex-shrink truncate max-w-full hover:underline"
+          >{{ pen.display_name }}</a
         >
-          {{ pen.display_name }}
-        </RouterLink>
         <span
           v-if="pen.is_pro"
           class="ml-1 bg-cc-yellow text-black text-[10px] font-bold px-1 py-[1px] rounded text-xs"
@@ -93,7 +92,7 @@ const modalStore = useModalStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
 
-const favoritesStore = useFavoritesStore()
+const favoritesStore = useFavoritesStore();
 const favorite = computed(() => favoritesStore.getFavorite(props.pen.id));
 const isLiked = computed(() => favorite.value.isLiked);
 const isDropdownOpen = ref(false);
@@ -110,7 +109,7 @@ const handleFavorite = async () => {
   } catch (error) {
     showToast({
       message: "Action failed",
-      variant: "danger"
+      variant: "danger",
     });
   }
 };
@@ -141,6 +140,7 @@ const goToEditor = () => {
 onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
   if (props.pen !== undefined) {
+    console.log(props.pen.value);
     const stored = favoritesStore.getFavorite(props.pen.id);
     if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
       await favoritesStore.fetchFavoriteState(props.pen.id);
@@ -165,5 +165,4 @@ watch(
 const onFollow = () => {};
 const onTogglePrivacy = () => {};
 const onDelete = () => {};
-
 </script>
