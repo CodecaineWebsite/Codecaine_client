@@ -227,7 +227,6 @@ const handleDelete = () => {
         await api.put(`/api/pens/${workId}/trash`);
         emit("delete", workId);
       } catch (error) {
-        console.log(error)
         showToast({
           message: "Delete failed, please try again later",
           variant: "danger",
