@@ -48,7 +48,6 @@ async function fetchPenDetail() {
   try {
     const res = await api.get(`/api/pens/${props.penId}`);
     pen.value = res.data;
-    console.log(pen.value);
   } catch (err) {
     toastStore.showToast({
       message: "Failed to load works",

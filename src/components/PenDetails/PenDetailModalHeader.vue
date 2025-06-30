@@ -86,6 +86,7 @@ const props = defineProps({
 const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
+const favoritesStore = useFavoritesStore();
 const isLiked = ref(false);
 
 const handleFavorite = async () => {
