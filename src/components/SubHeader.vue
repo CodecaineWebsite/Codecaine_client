@@ -157,7 +157,7 @@
       <!-- 未登入：Search Doses -->
       <div
         v-if="!authStore.idToken"
-        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/search')"
       >
         Search Doses

@@ -90,18 +90,18 @@
           <div class="flex flex-col py-3 px-4 text-cc-1">
             <h2 class="text-[9px] pb-2">Try Our Online Editor</h2>
             <ul
-              class="bg-[#2c303a] font-medium text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
+              class="bg-cc-14 font-medium text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
             >
               <li
                 class="cursor-pointer bg-black start text-center"
                 @click="goDose"
               >
-                <span class="bg-black block px-3 py-3">Start Coding</span>
+                <span class="bg-black block px-3 py-3 text-md text-cc-1 font-medium">Start Coding</span>
               </li>
             </ul>
           </div>
           <div class="mt-1.5">
-            <div class="text-xl p-3 px-4 cursor-pointer btn" @click="goSearch">
+            <div class="text-md text-cc-1 font-medium p-3 px-4 cursor-pointer btn" @click="goSearch">
               Search Doses
             </div>
           </div>
