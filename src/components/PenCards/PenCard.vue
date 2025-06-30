@@ -42,7 +42,7 @@
             >
               {{ title }}
             </a>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
               <a
                 :href="userPageLink"
                 class="block text-sm text-gray-300 hover:underline truncate"
@@ -54,9 +54,9 @@
               <a
                 v-if="isPro"
                 :href="proLink"
-                class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
+                class="leading-none"
               >
-                PRO
+                <ProTag/>
               </a>
             </div>
           </div>
@@ -107,6 +107,7 @@ import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { usePreviewStore } from "@/stores/usePreviewStore";
 import { useFollowStatus } from "@/composables/useFollowStatus";
+import ProTag from "../Editor/ProTag.vue";
 
 const msgStore = useMsgStore();
 const toastStore = useToastStore();
