@@ -32,16 +32,9 @@ const props = defineProps({
   },
 });
 
-const { isFollowing, setFollowing } = useFollowStatus(props.targetUser);
-
-const checkFollow = async () => {
-  try {
-    const res = await api.get(`/api/follows/check/${props.targetUser}`);
-    setFollowing(res.data.isFollowing);
-  } catch (error) {
-    console.error("fetch follow error ", error);
-  }
-};
+const { isFollowing, setFollowing, checkFollow } = useFollowStatus(
+  props.targetUser
+);
 
 const handleClick = async () => {
   try {
