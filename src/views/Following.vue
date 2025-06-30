@@ -197,26 +197,4 @@ watch(isTop, async () => {
   await loadPage(1);
   await loadPage(2);
 });
-
-function handleDeletePen(deletedId) {
-  const index = props.pens.findIndex((pen) => pen.id === deletedId);
-  if (index !== -1) {
-    props.pens.splice(index, 1);
-  }
-}
-
-function handlePrivacyChanged({ id, is_private }) {
-  if (props.filter === "private" && !is_private) {
-    const index = props.pens.findIndex((pen) => pen.id === id);
-    if (index !== -1) {
-      props.pens.splice(index, 1);
-    }
-  }
-  if (props.filter === "public" && is_private) {
-    const index = props.pens.findIndex((pen) => pen.id === id);
-    if (index !== -1) {
-      props.pens.splice(index, 1);
-    }
-  }
-}
 </script>

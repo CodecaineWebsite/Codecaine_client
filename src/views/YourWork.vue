@@ -42,9 +42,9 @@
           class="border-t-2 border-panel bg-panel px-3 py-2 flex flex-col space-y-3 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 text-sm mb-4"
         >
           <!-- Left Controls -->
-          <div class="flex items-stretch space-x-2 relative">
+          <div class="flex flex-wrap items-stretch gap-2 relative">
             <!-- Search -->
-            <div class="flex-1 flex rounded overflow-hidden">
+            <div class=" flex rounded overflow-hidden">
               <input
                 v-model="searchQuery"
                 @keyup.enter="handleSearch"
@@ -102,7 +102,7 @@
               ref="tagsDropdownRef"
               @click.stop
               :class="[
-                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 bg-button-hover',
+                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover',
                 showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
               ]"
             >
@@ -135,7 +135,7 @@
                   </div>
 
                   <ul
-                    class="absolute top-full left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
+                    class="absolute top-[calc(100%+0.25rem)] left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
                   >
                     <li
                       v-for="tag in filteredTags"
