@@ -47,14 +47,6 @@ onClickOutside(dropdownRef, () => {
 
 <template>
   <div class="relative" ref="dropdownRef">
-    <!-- 三點按鈕 -->
-    <button
-      class="inline-flex items-center justify-center relative font-normal truncate cursor-pointer py-[7px] px-[10px] border border-transparent rounded bg-cc-13 hover:bg-cc-12 text-sm text-cc-1"
-      @click="toggleDropdown"
-    >
-      •••
-    </button>
-
     <!-- 下拉選單 -->
     <div
       v-if="showDropdown"
