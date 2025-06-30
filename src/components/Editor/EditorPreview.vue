@@ -1,12 +1,14 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { debounce } from '@/utils/debounce'
-import { useWorkStore } from '@/stores/useWorkStore'
 import { usePreviewStore } from '@/stores/usePreviewStore'
-import { storeToRefs } from 'pinia'
 
-const workStore = useWorkStore()
-const { currentWork } = storeToRefs(workStore)
+const props = defineProps({
+  currentWork: {
+    type: Object,
+    required: true
+  }
+})
 const previewStore = usePreviewStore()
 
 const iframeEl = ref(null)
@@ -20,7 +22,6 @@ watch(iframeEl, (el) => {
 watch(iframeEl, (el) => {
   if (el) {
     el.addEventListener('load', () => {
-      console.log('✅ iframe loaded')
       isIframeLoaded.value = true
       tryRenderFirstTime()
     }, { once: true })
@@ -39,47 +40,50 @@ const hasAnyContent = (work) => {
 }
 
 const tryRenderFirstTime = () => {
-  if (isFirstRenderDone.value || !isIframeLoaded.value || !currentWork.value) return;
-
-  if (!currentWork.value.id) {
+  if (
+    isFirstRenderDone.value ||
+    !isIframeLoaded.value ||
+    !props.currentWork
+  )
     return;
-  }
 
-  if (hasAnyContent(currentWork.value)) {
-    previewStore.sendAutoPreviewCode(currentWork.value);
+  if (hasAnyContent(props.currentWork)) {
+    previewStore.sendAutoPreviewCode(props.currentWork);
   }
   isFirstRenderDone.value = true;
 }
 
 const autoSendToIframe = debounce(() => {
   if (isIframeLoaded.value) {
-    previewStore.sendAutoPreviewCode(currentWork.value)
+    previewStore.sendAutoPreviewCode(props.currentWork)
   }
 }, 2000)
 
 function runPreview() {
   if (isIframeLoaded.value) {
-    previewStore.sendAutoPreviewCode(currentWork.value)
+    previewStore.sendAutoPreviewCode(props.currentWork)
   }
 }
+
 defineExpose({ runPreview })
 
 watch(
   () => [
-    currentWork.value?.html,
-    currentWork.value?.css,
-    currentWork.value?.javascript,
-    currentWork.value?.htmlClass,
-    currentWork.value?.headStuff,
-    JSON.stringify(currentWork.value?.cdns || []),
-    JSON.stringify(currentWork.value?.links || []),
+    props.currentWork?.html,
+    props.currentWork?.css,
+    props.currentWork?.javascript,
+    props.currentWork?.htmlClass,
+    props.currentWork?.headStuff,
+    JSON.stringify(props.currentWork?.cdns || []),
+    JSON.stringify(props.currentWork?.links || []),
   ],
   () => {
+    console.log(props.currentWork);
     if (!isFirstRenderDone.value) {
       tryRenderFirstTime();
       return;
     }
-    if (currentWork.value?.isAutoPreview) {
+    if (props.currentWork?.isAutoPreview) {
       autoSendToIframe();
     }
   },
