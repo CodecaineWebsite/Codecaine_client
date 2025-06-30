@@ -38,7 +38,7 @@
           </div>
         </div>
         <nav v-if="authStore.idToken">
-          <div class="flex flex-col py-3 px-4 text-lg text-white">
+          <div class="flex flex-col py-3 px-4 text-lg text-cc-1">
             <h2
               class="cursor-pointer text-[9px] pb-3 relative create"
               @click="goYourWork"
@@ -46,7 +46,7 @@
               CREATE
             </h2>
             <ul
-              class="bg-[#2c303a] font-medium text-lg text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
+              class="bg-cc-14 font-medium text-base text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
             >
               <li
                 class="cursor-pointer btn p-3 px-4 flex items-center gap-3 group hover:bg-gray-100 transition-colors duration-300"
@@ -56,7 +56,7 @@
                   class="w-4 h-4 text-cc-10 group-hover:text-cc-blue transition-colors duration-300"
                 />
                 <div
-                  class="text-cc-1 group-hover:text-cc-1 transition-colors duration-300"
+                  class="text-cc-1 transition-colors duration-300 font-medium"
                 >
                   Dose
                 </div>
@@ -65,7 +65,7 @@
           </div>
           <div class="mt-1.5">
             <div
-              class="text-xl p-3 px-4 cursor-pointer btn"
+              class="text-base font-medium p-3 px-4 cursor-pointer btn text-cc-1"
               @click="goYourWork"
             >
               Your Work
@@ -73,13 +73,13 @@
           </div>
           <div class="mt-1.5">
             <div
-              class="text-xl p-3 px-4 cursor-pointer btn"
+              class="text-base font-medium p-3 px-4 cursor-pointer btn text-cc-1"
               @click="goFollowing"
             >
               Following
             </div>
             <div
-              class="text-xl p-3 px-4 cursor-pointer btn"
+              class="text-base font-medium p-3 px-4 cursor-pointer btn text-cc-1"
               @click="goTrending"
             >
               Trending
@@ -87,7 +87,7 @@
           </div>
         </nav>
         <nav v-if="!authStore.idToken">
-          <div class="flex flex-col py-3 px-4 text-white">
+          <div class="flex flex-col py-3 px-4 text-cc-1">
             <h2 class="text-[9px] pb-2">Try Our Online Editor</h2>
             <ul
               class="bg-[#2c303a] font-medium text-left mb-1 block w-full transition duration-200 ease-in-out cursor-pointer rounded-b-md"
