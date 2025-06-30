@@ -22,10 +22,8 @@
               v-for="pen in group"
               :key="pen.id"
               :pen="pen"
-              :is-open="openedDropdownId === pen.id"
               @delete="handleDeletePen"
               @privacy-changed="handlePrivacyChanged"
-              @toggle="toggleDropdown"
             />
           </div>
         </SwiperSlide>
@@ -127,8 +125,6 @@ const swiperInstance = ref(null);
 const hasMore = ref(true);
 const atLastPage = ref(false);
 
-const openedDropdownId = ref(null);
-
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
 };
@@ -183,23 +179,10 @@ onMounted(async () => {
   await loadPage(2);
 });
 
-// TODO
-// 空資料畫面
-// 載入中畫面
-
 function handleDeletePen(deletedId) {
   const index = props.pens.findIndex((pen) => pen.id === deletedId);
   if (index !== -1) {
     props.pens.splice(index, 1);
-  }
-}
-
-function handleClickOutside(event) {
-  if (
-    !event.target.closest(".dropdown-toggle") &&
-    !event.target.closest(".dropdown-menu")
-  ) {
-    openedDropdownId.value = null;
   }
 }
 
@@ -218,18 +201,4 @@ function handlePrivacyChanged({ id, is_private }) {
   }
 }
 
-function toggleDropdown(id) {
-  if (openedDropdownId.value === id) {
-    openedDropdownId.value = null;
-  } else {
-    openedDropdownId.value = id;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 </script>

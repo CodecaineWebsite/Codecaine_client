@@ -63,17 +63,14 @@
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
           <PenCardDropdown
-            :is-open="isOpen"
             :is-owner="isOwner"
             :is-pro="isPro"
             :is-private="isPrivate"
             :is-following="isFollowing"
-            :is-logged-in="authStore.user !== null"
             :user-name="userName"
             @follow="handleFollow"
             @togglePrivacy="togglePrivacy"
             @delete="handleDelete"
-            @toggle="$emit('toggle', pen.id)"
           />
         </div>
       </div>
@@ -128,7 +125,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isOpen: Boolean,
 });
 
 // 作品資訊

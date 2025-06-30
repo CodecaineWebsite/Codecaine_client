@@ -41,17 +41,14 @@
     >
       <div class="w-fit flex items-center gap-2 justify-center">
         <PenCardDropdown
-          :is-open="isOpen"
           :is-owner="isOwner"
           :is-pro="isPro"
           :is-private="isPrivate"
           :is-following="isFollowing"
-          :is-logged-in="authStore.user !== null"
           :user-name="userName"
           @follow="handleFollow"
           @togglePrivacy="togglePrivacy"
           @delete="handleDelete"
-          @toggle="() => emit('toggle', pen.id)"
         />
       </div>
     </td>
@@ -82,7 +79,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isOpen: Boolean,
 });
 
 const emit = defineEmits(["toggle"]);
@@ -164,7 +160,6 @@ const handleDelete = () => {
           message: "Delete failed, please try again later",
           variant: "danger",
         });
-        console.log(error)
       } finally {
         msgStore.confirming = false;
         msgStore.close();
