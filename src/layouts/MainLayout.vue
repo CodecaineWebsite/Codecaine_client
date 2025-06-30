@@ -106,7 +106,7 @@ watch(
   display: grid;
   grid-template-rows: 75px 1fr auto;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .sidebar {
