@@ -23,9 +23,24 @@ export function useFollowStatus(userId) {
     }
   };
 
+  const handleFollowAction = async (userId) => {
+    try {
+      if (!isFollowing.value) {
+        const res = await api.post(`/api/follows/${userId}`);
+        setFollowing(res.data.result);
+      } else {
+        const res = await api.delete(`/api/follows/${userId}`);
+        setFollowing(res.data.result);
+      }
+    } catch (error) {
+      console.error(`Failed to follow/unfollow user ${userId}:`, error);
+    }
+  };
+
   return {
     isFollowing,
     setFollowing,
     checkFollow,
+    handleFollowAction,
   };
 }
