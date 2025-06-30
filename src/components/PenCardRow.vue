@@ -1,32 +1,32 @@
 <template>
   <tr
-    class="group w-full border-b border-cc-14 bg-cc-18 lg:bg-transparent grid [grid-template-columns:repeat(3,minmax(auto,1fr))_auto] items-center gap-x-2 gap-y-4 px-3 py-2 lg:table-row lg:px-0 lg:py-0 lg:gap-0 lg:border-none"
+    class="group w-full border-b border-cc-14 bg-cc-18 lg:bg-transparent grid grid-cols-2 md:[grid-template-columns:repeat(3,minmax(auto,1fr))_auto] items-center gap-x-2 gap-y-4 px-3 py-2 lg:table-row lg:px-0 lg:py-0 lg:gap-0 lg:border-none"
   >
     <td
-      class="col-span-4 lg:table-cell py-1 px-2 text-cc-link bg-cc-18 whitespace-nowrap overflow-hidden truncate"
+      class="col-span-2 md:col-span-4 lg:table-cell py-1 px-2 text-cc-link bg-cc-18 whitespace-nowrap overflow-hidden truncate"
     >
       <a :href="editorPageLink">{{ pen.title || "Untitled" }}</a>
     </td>
-    <td class="hidden lg:table-cell py-1 px-2 bg-cc-18 whitespace-nowrap">
+    <td class="hidden lg:table-cell py-1 px-2 lg:bg-cc-18 whitespace-nowrap">
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
         class="opacity-0 group-hover:opacity-100 transition"
       />
     </td>
     <td
-      class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap"
+      class="lg:table-cell py-1 px-2 text-sm text-cc-9 lg:bg-cc-18 whitespace-nowrap"
     >
       <div class="lg:hidden text-xs">Created on</div>
       <div>{{ formatDate(pen.created_at) }}</div>
     </td>
     <td
-      class="lg:table-cell py-1 px-2 text-sm text-cc-9 bg-cc-18 whitespace-nowrap"
+      class="lg:table-cell py-1 px-2 text-sm text-cc-9 lg:bg-cc-18 whitespace-nowrap"
     >
       <div class="lg:hidden text-xs">Updated on</div>
       <div>{{ formatDate(pen.updated_at) }}</div>
     </td>
-    <td class="lg:table-cell py-1 px-2 bg-cc-18 align-middle whitespace-nowrap">
-      <div class="flex gap-2 items-center justify-center">
+    <td class="lg:table-cell py-1 px-2 lg:bg-cc-18 align-middle whitespace-nowrap overflow-visible">
+      <div class="flex gap-2 items-center justify-start lb:justify-center">
         <FavoriteBtn :target-pen="workId" />
         <PenCommentButton
           :work-id="workId"
@@ -37,9 +37,9 @@
       </div>
     </td>
     <td
-      class="w-fit lg:w-auto py-1 px-2 lg:table-cell bg-cc-18 whitespace-nowrap"
+      class="w-full lg:w-auto py-1 px-2 lg:table-cell lg:bg-cc-18 whitespace-nowrap"
     >
-      <div class="w-fit flex items-center gap-2 justify-center">
+      <div class="w-full flex items-center gap-2 justify-end lg:justify-center">
         <PenCardDropdown
           :is-owner="isOwner"
           :is-pro="isPro"
