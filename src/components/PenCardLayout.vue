@@ -34,7 +34,6 @@
           v-for="pen in pens"
           :key="pen.id"
           :pen="pen"
-          @toggle="toggleDropdown"
           @delete="handleDeletePen"
           @privacy-changed="handlePrivacyChanged"
         />
