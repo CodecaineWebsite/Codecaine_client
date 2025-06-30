@@ -22,9 +22,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import api from "@/config/api";
+import { useFollowStatus } from "@/composables/useFollowStatus";
 
 const isHovering = ref(false);
-const isFollowing = ref(false);
 const props = defineProps({
   targetUser: {
     type: [String, Number],
@@ -32,22 +32,25 @@ const props = defineProps({
   },
 });
 
+const { isFollowing, setFollowing } = useFollowStatus(props.targetUser);
+
 const checkFollow = async () => {
   try {
     const res = await api.get(`/api/follows/check/${props.targetUser}`);
-    isFollowing.value = res.data.isFollowing;
+    setFollowing(res.data.isFollowing);
   } catch (error) {
     console.error("fetch follow error ", error);
   }
 };
+
 const handleClick = async () => {
   try {
-    if (isFollowing.value == false) {
+    if (!isFollowing.value) {
       const res = await api.post(`/api/follows/${props.targetUser}`);
-      isFollowing.value = res.data.result;
-    } else if (isFollowing.value == true) {
+      setFollowing(res.data.result);
+    } else {
       const res = await api.delete(`/api/follows/${props.targetUser}`);
-      isFollowing.value = res.data.result;
+      setFollowing(res.data.result);
     }
   } catch (error) {
     console.error("fetch follow error ", error);
