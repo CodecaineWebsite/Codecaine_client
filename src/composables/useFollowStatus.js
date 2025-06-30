@@ -1,4 +1,3 @@
-// composables/useFollowStatus.js
 import { ref } from "vue";
 
 const followMap = new Map();
