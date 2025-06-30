@@ -18,16 +18,15 @@
   import { useWorkStore } from '@/stores/useWorkStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import { useHandleSave } from '@/utils/handleWorkSave';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useRoute } from 'vue-router';
   import DoseFooter from '@/components/Editor/DoseFooter.vue';
   import ToastContainer from "@/components/Toast/ToastContainer.vue";
 
   const route = useRoute();
-  const router = useRouter();
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
-  const { currentWork, currentId, isSaved } = storeToRefs(workStore); //放資料
+  const { handleInitWork, updateCurrentCode, handleCurrentIdChange } = workStore; //放function
+  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
   const { handleSave } = useHandleSave();
   const isPro = ref(false)
 

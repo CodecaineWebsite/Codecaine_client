@@ -10,6 +10,7 @@
           sandbox="allow-scripts"
           referrerpolicy="no-referrer"
           class="h-full w-full bg-cc-1"
+          scrolling="no"
           title="Preview Frame"
         ></iframe>
       </div>
