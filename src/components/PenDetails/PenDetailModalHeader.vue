@@ -6,15 +6,15 @@
     <!-- 左區：標題與作者 -->
     <div class="flex flex-1 flex-col min-w-[120px] pr-2 ml-4">
       <h1 class="text-xl font-bold text-white truncate max-w-full">
-        {{ pen?.title || 'Untitled' }}
+        {{ pen?.title || "Untitled" }}
       </h1>
       <div class="flex items-center gap-1 text-sm text-cc-9">
-        <RouterLink
-          :to="`/${pen.username}`"
+        <a
+          :href="`/${pen.username}`"
           class="flex-shrink truncate max-w-full hover:underline"
+          @click="modalStore.closeModal()"
+          >{{ pen.display_name }}</a
         >
-          {{ pen.display_name }}
-        </RouterLink>
         <span
           v-if="pen.is_pro"
           class="ml-1 bg-cc-yellow text-black text-[10px] font-bold px-1 py-[1px] rounded text-xs"
@@ -100,17 +100,15 @@ const handleFavorite = async () => {
   } catch (error) {
     showToast({
       message: "Action failed",
-      variant: "danger"
+      variant: "danger",
     });
   }
 };
-
 
 const goToEditor = () => {
   modalStore.closeModal();
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
-
 
 watch(
   () => props.pen,
@@ -126,5 +124,4 @@ watch(
 const onFollow = () => {};
 const onTogglePrivacy = () => {};
 const onDelete = () => {};
-
 </script>

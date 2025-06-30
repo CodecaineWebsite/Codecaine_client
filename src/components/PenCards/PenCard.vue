@@ -11,13 +11,15 @@
           referrerpolicy="no-referrer"
           class="h-full w-full bg-cc-1"
           scrolling="no"
-          title="Preview Frame"></iframe>
+          title="Preview Frame"
+        ></iframe>
       </div>
 
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="absolute top-2 right-2 opacity-100 lg:opacity-0 group-hover/pen:opacity-100 transition" />
+        class="absolute top-2 right-2 opacity-100 lg:opacity-0 group-hover/pen:opacity-100 transition"
+      />
     </div>
 
     <!-- 卡片內容 -->
@@ -25,25 +27,26 @@
       <div class="flex items-center justify-between w-full">
         <div class="flex items-center gap-3 min-w-0">
           <!-- 左：頭像 -->
-          <a
-            :href="userPageLink"
-            class="shrink-0">
+          <a :href="userPageLink" class="shrink-0">
             <img
               :src="userProfileImage"
               class="w-10 h-10 rounded-sm object-cover"
-              :alt="userDisplayName + ' 的頭像'" />
+              :alt="userDisplayName + ' 的頭像'"
+            />
           </a>
           <!-- 中：標題與作者 -->
           <div class="flex-1 min-w-0 mr-2">
             <a
               :href="editorPageLink"
-              class="block font-bold text-base text-white w-full max-w-full overflow-hidden whitespace-nowrap truncate">
+              class="block font-bold text-base text-white w-full max-w-full overflow-hidden whitespace-nowrap truncate"
+            >
               {{ title }}
             </a>
             <div class="flex gap-2">
               <a
                 :href="userPageLink"
-                class="block text-sm text-gray-300 hover:underline truncate">
+                class="block text-sm text-gray-300 hover:underline truncate"
+              >
                 <span class="font-medium">{{
                   userDisplayName || userName
                 }}</span>
@@ -51,7 +54,8 @@
               <a
                 v-if="isPro"
                 :href="proLink"
-                class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center">
+                class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
+              >
                 PRO
               </a>
             </div>
@@ -78,10 +82,9 @@
         <PenCommentButton
           :work-id="workId"
           :comments="comments"
-          @openDetailModal="openDetailModal" />
-        <PenViewButton
-          :count="views"
-          @goToFullPage="goToFullPage" />
+          @openDetailModal="openDetailModal"
+        />
+        <PenViewButton :count="views" @goToFullPage="goToFullPage" />
       </div>
     </div>
   </div>
@@ -103,6 +106,7 @@ import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管�
 import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { usePreviewStore } from "@/stores/usePreviewStore";
+import { useFollowStatus } from "@/composables/useFollowStatus";
 
 const msgStore = useMsgStore();
 const toastStore = useToastStore();
@@ -133,7 +137,9 @@ const userDisplayName = props.pen.user_display_name;
 const userProfileImage = props.pen.profile_image || "/default-avatar.png";
 const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
-const isFollowing = ref(false);
+const { isFollowing, checkFollow, handleFollowAction } = useFollowStatus(
+  props.pen.username
+);
 // 作品預覽
 const iframeEl = ref(null);
 
@@ -172,31 +178,7 @@ const proLink = "/settings/billing";
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
-const checkFollow = async () => {
-  if (authStore.user === null || isOwner.value) {
-    isFollowing.value = false;
-    return;
-  }
-  try {
-    const res = await api.get(`/api/follows/check/${userName}`);
-    isFollowing.value = res.data.isFollowing;
-  } catch (error) {
-    console.error("check follow error", error);
-  }
-};
-const handleFollow = async () => {
-  try {
-    if (!isFollowing.value) {
-      const res = await api.post(`/api/follows/${props.pen.username}`);
-      isFollowing.value = true;
-    } else {
-      const res = await api.delete(`/api/follows/${props.pen.username}`);
-      isFollowing.value = false;
-    }
-  } catch (error) {
-    console.error("follow/unfollow error", error);
-  }
-};
+const handleFollow = () => handleFollowAction(props.pen.username);
 
 const handleDelete = () => {
   msgStore.open({
