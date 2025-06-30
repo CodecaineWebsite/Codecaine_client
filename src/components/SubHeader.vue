@@ -111,7 +111,7 @@
     <div
       v-if="isMenuOpen && isCompactScreen"
       ref="dropdownRef"
-      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2"
+      class="absolute top-full left-2 mt-2 bg-cc-16 text-cc-1 w-[220px] rounded-md shadow-xl shadow-gray-950 z-50 py-2"
     >
       <div class="text-[10px] text-gray-400 px-4 mb-2">CREATE</div>
       <div
@@ -122,10 +122,10 @@
           class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"
         ></div>
         <div
-          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
+          class="bg-cc-14 hover:bg-[#1f2025] text-cc-1 text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
         >
-          <Layout class="w-4 h-4 text-cc-1" />
-          <div>
+          <Layout class="w-4 h-4" />
+          <div class="font-medium">
             {{ authStore.idToken ? "Dose" : "Start Coding" }}
           </div>
         </div>
@@ -134,21 +134,21 @@
       <!-- 已登入：功能頁面 -->
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/your-work')"
       >
         Your Work
       </div>
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/following')"
       >
         Following
       </div>
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/trending')"
       >
         Trending
@@ -157,7 +157,7 @@
       <!-- 未登入：Search Doses -->
       <div
         v-if="!authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/search')"
       >
         Search Doses
