@@ -4,12 +4,13 @@
     class="fixed inset-0 bg-black/40 z-50 text-cc-20 overflow-auto"
   >
     <div
+      v-if="pen"
       @click.stop
       class="mx-auto mt-16 mb-10 w-[90%] max-w-[800px] bg-cc-16 rounded-lg shadow-lg relative"
     >
-      <PenDetailModalHeader v-if="from === 'card'" :pen="pen" />
+      <PenDetailModalHeader v-if="from === 'card' && pen" :pen="pen" />
       <!-- iframe 預覽 -->
-      <PenDetailPreviewIframe v-if="from === 'card'" :pen="pen" />
+      <PenDetailPreviewIframe v-if="from === 'card' && pen" :pen="pen" />
 
       <PenDetailContent v-if="pen" :pen="pen" @close="close" />
     </div>
