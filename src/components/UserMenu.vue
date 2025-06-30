@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { signOut } from "firebase/auth";
@@ -9,7 +10,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const showMenu = ref(false);
-const menuRef = ref(null);
+const dropdownRef = ref(null);
 
 const toggleMenu = () => {
   showMenu.value = !showMenu.value;
@@ -26,24 +27,15 @@ const handleLogout = async () => {
   window.location.href = "/";
 };
 
-const handleClickOutside = (event) => {
-  if (menuRef.value && !menuRef.value.contains(event.target)) {
-    showMenu.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
+onClickOutside(dropdownRef, () => {
+  showMenu.value = false;
 });
 </script>
 
 <template>
   <div
     class="relative w-9 h-9 md:w-11 md:h-11"
-    ref="menuRef">
+    ref="dropdownRef">
     <img
       :src="
         authStore.userProfile?.profile_image_url ||

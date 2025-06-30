@@ -44,20 +44,16 @@
         />
       </button>
       <!-- 暫時隱藏元件 功能做好再開啟 -->
-      <!-- <PenDetailDropdown
-        class="dropdown-menu"
-        :is-open="isDropdownOpen"
+      <PenDetailDropdown
         :is-owner="authStore.userProfile?.username === pen.username"
         :is-pro="pen.is_pro"
         :is-private="pen.is_private"
         :is-following="false"
         :user-name="pen.username"
-        :is-logged-in="Boolean(authStore.userProfile)"
-        @toggle="toggleDropdown"
         @follow="onFollow"
         @togglePrivacy="onTogglePrivacy"
         @delete="onDelete"
-      /> -->
+      />
 
       <button
         @click="goToEditor"
@@ -69,11 +65,12 @@
   </header>
 </template>
 <script setup>
-import { ref, onMounted, watch, onBeforeUnmount } from "vue";
+import { ref, watch } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
+import { useToastStore } from "@/stores/useToastStore";
+import { useFavoritesStore } from "@/stores/useFavoritesStore";
 import { useRouter, RouterLink } from "vue-router";
-import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
@@ -86,75 +83,40 @@ const props = defineProps({
   },
 });
 
+const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
-const router = useRouter();
+const favoritesStore = useFavoritesStore();
 const isLiked = ref(false);
-const isDropdownOpen = ref(false);
-const dropdownRef = ref(null);
-
-const checkFavorite = async () => {
-  if (!authStore.userProfile) return;
-  const res = await api.get(`/api/favorites/check/${props.pen.id}/`);
-  isLiked.value = res.data.liked;
-};
 
 const handleFavorite = async () => {
-  if (!authStore.userProfile) {
+  if (!authStore.user) {
     modalStore.closeModal();
     return router.push("/login");
   }
 
   try {
-    if (!isLiked.value) {
-      await api.post(`/api/favorites/`, { pen_id: props.pen.id });
-      isLiked.value = true;
-    } else {
-      await api.delete(`/api/favorites/`, {
-        data: { pen_id: props.pen.id },
-      });
-      isLiked.value = false;
-    }
+    await favoritesStore.toggleFavorite(props.pen.id);
   } catch (error) {
-    console.error("Favorite action failed:", error);
+    showToast({
+      message: "Action failed",
+      variant: "danger"
+    });
   }
 };
 
-// dropdown 開關
-const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-function closeDropdown() {
-  isDropdownOpen.value = false;
-}
-
-function handleClickOutside(e) {
-  if (
-    !e.target.closest(".dropdown-toggle") &&
-    !e.target.closest(".dropdown-menu")
-  ) {
-    closeDropdown();
-  }
-}
 
 const goToEditor = () => {
   modalStore.closeModal();
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 
 watch(
   () => props.pen,
   (newPen) => {
-    if (newPen && authStore.userProfile) {
-      checkFavorite();
+    if (newPen && authStore.user) {
+      favoritesStore.fetchFavoriteState(newPen.id);
     }
   },
   { immediate: true }

@@ -24,10 +24,8 @@
               v-for="pen in group"
               :key="pen.id"
               :pen="pen"
-              :is-open="openedDropdownId === pen.id"
-              @delete="reloadTrending"
-              @privacy-changed="reloadTrending"
-              @toggle="toggleDropdown"
+              @delete="handleDeletePen"
+              @privacy-changed="handlePrivacyChanged"
             />
           </div>
         </SwiperSlide>
@@ -129,8 +127,6 @@ const swiperInstance = ref(null);
 const hasMore = ref(true);
 const atLastPage = ref(false);
 
-const openedDropdownId = ref(null);
-
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
 };
@@ -183,34 +179,6 @@ onMounted(async () => {
   await loadPage(1);
   await loadPage(2);
 });
-
-// TODO
-// 空資料畫面
-// 載入中畫面
-
-function handleClickOutside(event) {
-  if (
-    !event.target.closest(".dropdown-toggle") &&
-    !event.target.closest(".dropdown-menu")
-  ) {
-    openedDropdownId.value = null;
-  }
-}
-function toggleDropdown(id) {
-  if (openedDropdownId.value === id) {
-    openedDropdownId.value = null;
-  } else {
-    openedDropdownId.value = id;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
-
 async function reloadTrending() {
   pages.value = [];
   loadedPages.value.clear();

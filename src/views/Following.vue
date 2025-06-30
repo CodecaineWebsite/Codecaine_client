@@ -51,8 +51,8 @@
             v-for="pen in group"
             :key="pen.id"
             :pen="pen"
-            :is-open="openedDropdownId === pen.id"
-            @toggle="toggleDropdown"
+            @delete="handleDeletePen"
+            @privacy-changed="handlePrivacyChanged"
           />
         </div>
       </SwiperSlide>
@@ -132,8 +132,6 @@ const atLastPage = ref(false);
 const swiperInstance = ref(null);
 const swiperRef = ref(null);
 
-const openedDropdownId = ref(null);
-
 const onSwiperInit = (swiper) => {
   swiperInstance.value = swiper;
 };
@@ -198,31 +196,5 @@ watch(isTop, async () => {
   hasMore.value = true;
   await loadPage(1);
   await loadPage(2);
-});
-
-function handleClickOutside(event) {
-  if (
-    !event.target.closest(".dropdown-toggle") &&
-    !event.target.closest(".dropdown-menu")
-  ) {
-    openedDropdownId.value = null;
-  }
-}
-
-function toggleDropdown(id) {
-  if (openedDropdownId.value === id) {
-    // 如果點的是已經開啟的那一筆，就關掉
-    openedDropdownId.value = null;
-  } else {
-    // 否則就打開這一筆
-    openedDropdownId.value = id;
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
 });
 </script>

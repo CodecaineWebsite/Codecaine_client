@@ -18,7 +18,6 @@
 <script setup>
 import { useToastStore } from "@/stores/useToastStore";
 const toastStore = useToastStore();
-console.log(toastStore);
 
 const props = defineProps({
   penId: {
