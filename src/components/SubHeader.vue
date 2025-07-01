@@ -6,12 +6,9 @@
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <div
-        class="w-8 bg-white h-8 rounded-full flex justify-center items-center"
-        @click="goToHome"
-      >
-        <LogoIcon alt="icon" class="w-6 h-6 text-black" />
-      </div>
+      <button @click="goToHome">
+        <LogoIcon alt="icon" class="w-10 h-10 text-white cursor-pointer" />
+      </button>
       <button
         @click.stop="
           toggleDropdown;
@@ -20,7 +17,7 @@
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
         title="Toggle Navigation"
       >
-        <SidebarToggleIcon :expanded="isMenuOpen" />
+        <SidebarToggleIcon :expanded="isMenuOpen" class="cursor-pointer" />
       </button>
     </div>
 
@@ -33,7 +30,7 @@
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r cursor-pointer"
+        class="hover:bg-cc-16 relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r cursor-pointer"
       >
         {{ tab }}
         <span

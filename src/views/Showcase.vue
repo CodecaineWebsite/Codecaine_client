@@ -14,7 +14,7 @@
         class="text-cc-1 p-4 bg-cc-14 rounded-md hover:bg-cc-13 transition-all cursor-pointer"
         @click="goAllCaines"
       >
-        View All Caines
+        View All Doses
       </button>
     </div>
     <div
@@ -22,7 +22,7 @@
       v-else-if="!isLoading && pens.length === 0"
     >
       <p class="text-4xl bg-gray-800 p-12 rounded-lg">
-        ⚠️ No Caines found.
+        ⚠️ No Doses found.
         <a href="/dose" class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
