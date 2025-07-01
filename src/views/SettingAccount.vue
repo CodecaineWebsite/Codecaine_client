@@ -196,7 +196,6 @@ const handleChangeEmail = async () => {
     await updateEmail(user, email.value);
     emailMessage.value = res.data.message;
     emailMessageType.value = "success";
-    console.log(res.data);
   } catch (error) {
     switch (error.code) {
       case "auth/invalid-credential":

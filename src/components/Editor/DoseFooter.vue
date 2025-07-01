@@ -41,7 +41,6 @@ const handleMoveToTrash = async () => {
     const success = await moveToTrash(id);
 
     if (success) {
-      console.log(`Work ID: ${id} has been moved to the trash`);
       showToast({
         message: `Work ID: ${id} has been moved to the trash`,
         variant: "success",
