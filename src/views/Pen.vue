@@ -1,5 +1,6 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, onBeforeUnmount, watch } from 'vue';
+  import { onBeforeRouteLeave } from 'vue-router'
   import Settings from '../assets/settings.vue';
   import Close from '../assets/close.vue';
   import HTMLIcon from '../assets/html.vue';
@@ -455,6 +456,34 @@
   const handleOpenAIChat = () => {
     isShowAIChat.value = true
   }
+
+  onMounted(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  });
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  });
+
+  const handleBeforeUnload = (e) => {
+    if (!isSaved.value) {
+      e.preventDefault();
+      e.returnValue = ''; // 顯示預設訊息
+      return '';
+    }
+  };
+  onBeforeRouteLeave((to, from, next) => {
+  if (!isSaved.value) {
+    const answer = window.confirm('您有未儲存的更動，確定要離開？')
+    if (!answer) {
+      next(false) // 阻止導航
+    } else {
+      next() // 允許導航
+    }
+  } else {
+    next() // 直接導航
+  }
+})
 </script>
 
 <template>
