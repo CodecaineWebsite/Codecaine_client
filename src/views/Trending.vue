@@ -24,8 +24,8 @@
               v-for="pen in group"
               :key="pen.id"
               :pen="pen"
-              @delete="handleDeletePen"
-              @privacy-changed="handlePrivacyChanged"
+              @delete="reloadTrending"
+              @privacy-changed="reloadTrending"
             />
           </div>
         </SwiperSlide>
@@ -108,7 +108,7 @@
 
 <script setup>
 import { nextTick } from "vue";
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation } from "swiper/modules";
 import { useToastStore } from "@/stores/useToastStore";
