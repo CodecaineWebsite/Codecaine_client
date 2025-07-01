@@ -1,6 +1,7 @@
 <template>
   <div class="inline-flex rounded overflow-hidden">
     <button
+      class="cursor-pointer"
       :class="[
         'px-3 py-2',
         viewMode === 'grid' ? 'bg-grid-active' : 'bg-button bg-list-hover',
@@ -16,6 +17,7 @@
       />
     </button>
     <button
+      class="cursor-pointer"
       :class="[
         'px-3 py-2 border-l border-default',
         viewMode === 'table' ? 'bg-grid-active' : 'bg-button bg-list-hover',

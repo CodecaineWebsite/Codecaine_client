@@ -12,7 +12,7 @@
       <button
         :disabled="restoring || deleting"
         @click="handleRestore"
-        class="px-2 py-0.5 rounded-xs text-xs whitespace-nowrap"
+        class="px-2 py-0.5 rounded-xs text-xs whitespace-nowrap cursor-pointer"
         :class="
           restoring ? 'text-cc-9' : 'bg-cc-13 text-white hover:bg-green-700'
         "
@@ -23,7 +23,7 @@
       <button
         :disabled="restoring || deleting"
         @click="showDeleteModal = true"
-        class="px-2 py-0.5 rounded-xs text-xs whitespace-nowrap"
+        class="px-2 py-0.5 rounded-xs text-xs whitespace-nowrap cursor-pointer"
         :class="deleting ? 'text-cc-9' : 'bg-cc-13 text-white hover:bg-red-600'"
       >
         {{ deleting ? "Deleting..." : "Delete Permanently" }}

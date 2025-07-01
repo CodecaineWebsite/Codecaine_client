@@ -13,7 +13,10 @@
         <LogoIcon alt="icon" class="w-6 h-6 text-black" />
       </div>
       <button
-        @click.stop="toggleDropdown; isMenuOpen = !isMenuOpen"
+        @click.stop="
+          toggleDropdown;
+          isMenuOpen = !isMenuOpen;
+        "
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
         title="Toggle Navigation"
       >
@@ -30,7 +33,7 @@
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
+        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r cursor-pointer"
       >
         {{ tab }}
         <span
@@ -65,14 +68,14 @@
           <button
             v-if="authStore.idToken"
             @mousedown="selectSearchTab('your-work')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <YourWorkIcon class="fill-current w-3 mr-1 text-cc-10" />
             Your Work
           </button>
           <button
             @mousedown="selectSearchTab('doses')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <PensIcon
               class="fill-current w-3 mr-1"
