@@ -21,9 +21,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/config/api";
 import { useFollowStatus } from "@/composables/useFollowStatus";
+import { useAuthStore } from "@/stores/useAuthStore";
 
+const authStore = useAuthStore();
 const isHovering = ref(false);
 const props = defineProps({
   targetUser: {
@@ -38,7 +39,13 @@ const { isFollowing, checkFollow, handleFollowAction } = useFollowStatus(
 
 const handleClick = () => handleFollowAction(props.targetUser);
 
+const checkStatus = () => {
+  if (authStore.user) {
+    checkFollow();
+  }
+};
+
 onMounted(() => {
-  checkFollow();
+  checkStatus();
 });
 </script>

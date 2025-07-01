@@ -240,10 +240,14 @@ const togglePrivacy = async () => {
   }
 };
 
-onMounted(() => {
-  if (!isOwner.value) {
+const checkStatus = () => {
+  if (authStore.user && !isOwner.value) {
     checkFollow();
   }
+};
+
+onMounted(() => {
+  checkStatus();
 });
 
 const goToFullPage = () => {
