@@ -15,7 +15,7 @@
 
     <div
       v-if="showDropdown"
-      class="absolute right-0 mt-2 w-72 bg-[#23262f] border border-[#2C303A] rounded shadow-lg z-50"
+      class="absolute lg:right-0 lg:mt-2 lg:w-72 w-72 mt-7 -right-12 bg-[#23262f] border border-[#2C303A] rounded shadow-lg z-50"
     >
       <ul>
         <li
