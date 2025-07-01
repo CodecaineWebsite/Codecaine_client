@@ -1,7 +1,7 @@
 <template>
   <div class="relative" ref="dropdownRef">
     <button
-      class="relative focus:outline-none cursor-pointer translate-y-1"
+      class="relative focus:outline-none cursor-pointer flex"
       @click="toggleDropdown"
     >
       <BellIcon />

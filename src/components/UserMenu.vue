@@ -45,7 +45,7 @@ onClickOutside(dropdownRef, () => {
     />
     <div
       v-if="showMenu"
-      class="absolute right-0 mt-2 w-40 bg-cc-16 text-cc-1 font-bold rounded-md shadow-md shadow-gray-950 z-50 overflow-hidden"
+      class="absolute right-0 mt-2.5 w-40 bg-cc-16 text-cc-1 font-bold rounded-md shadow-md shadow-gray-950 z-50 overflow-hidden"
     >
       <ul class="flex flex-col text-sm">
         <li>

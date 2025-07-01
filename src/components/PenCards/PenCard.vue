@@ -42,7 +42,7 @@
             >
               {{ title }}
             </a>
-            <div class="flex gap-0">
+            <div class="flex gap-2">
               <a
                 :href="userPageLink"
                 class="block text-sm text-gray-300 hover:underline truncate"
