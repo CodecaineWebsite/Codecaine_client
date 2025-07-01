@@ -14,6 +14,7 @@ import SettingSelect from "@/components/Editor/SettingSelect.vue";
 import Cdnjs from "@/components/Editor/Cdnjs.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import TrashCanIcon from "@/components/icons/TrashCanIcon.vue";
+import { useEscapeToClose } from '@/components/Editor/useEscapeToClose.js';
 
 const toastStore = useToastStore();
 const workStore = useWorkStore();
@@ -37,11 +38,12 @@ const props = defineProps({
   },
 });
 
+
 const isAuthor = computed(() => {
   const userId = userProfile.value?.id;
   const authorId = currentWork.value?.userId;
   const isNewWork = !currentWork.value?.id;
-
+  
   // 若 userId 尚未設定完成，暫時回傳 true 避免錯判
   if (!authorId) return true;
   return isNewWork || userId === authorId;
@@ -53,9 +55,9 @@ const tabs = [
   { label: "HTML", key: "html" },
   { label: "CSS", key: "css" },
   { label: "JS", key: "js" },
-...(isAuthor.value ? [{ label: "Dose Detail", key: "detail", gapBefore: true }] : []),
-...(isAuthor.value ? [{ label: "Privacy", key: "privacy"}] : []),
-...(isAuthor.value ? [{ label: "Behavior", key: "behavior"}] : [{ label: "Behavior", key: "behavior", gapBefore: true }]),
+  ...(isAuthor.value ? [{ label: "Dose Detail", key: "detail", gapBefore: true }] : []),
+  ...(isAuthor.value ? [{ label: "Privacy", key: "privacy"}] : []),
+  ...(isAuthor.value ? [{ label: "Behavior", key: "behavior"}] : [{ label: "Behavior", key: "behavior", gapBefore: true }]),
   { label: "Editor", key: "editor" },
 ];
 
@@ -64,7 +66,6 @@ const headStuff = ref(currentWork.value.headStuff)
 const cdns = ref(currentWork.value.cdns)
 const links = ref(currentWork.value.links)
 const isPro = ref(currentWork.value.isPro)
-const tabSize = ref(currentWork.value.tabSize)
 const doseDescription = ref(currentWork.value.description)
 
 watch(
@@ -87,18 +88,9 @@ watch(htmlClass, (newhtmlClass) => {
   workStore.updateHtmlClass(newhtmlClass)
 }, { deep: true })
 
-watch(headStuff, (newStuff) => {
-  workStore.updateHeadStuff(newStuff)
-}, { deep: true })
-
-watch(doseDescription, (newVal) => {
-  currentWork.value.description = newVal;
-});
-
 const activeTab = ref(props.selectedTab);
 const cdnInput = ref([]);
 const linkInput = ref("");
-const srcDoc = ref("");
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
 function handleSelectedCDN(packageData) {
@@ -192,6 +184,7 @@ const handleSaveAndClose = () => {
 const closeModal = () => {
   emit("close");
 }
+useEscapeToClose(() => emit('close'));
 </script>
 <template>
   <div
@@ -352,7 +345,7 @@ const closeModal = () => {
               id="penDescription"
               label="Dose Description"
               placeholder="Explain what's going on in your Dose here. This text is searchable, so it can also help others find your work. Remember to credit others where credit is due. Markdown supported."
-              v-model="doseDescription"
+              v-model="currentWork.description"
               class="placeholder:text-xs h-24"
             />
             <SettingTagInput/>
@@ -482,7 +475,7 @@ const closeModal = () => {
           >
             <SettingSelect
               id="codeIndentWidth"
-              v-model="tabSize"
+              v-model="currentWork.tabSize"
               label="Code Indent width"
             >
               <option :value="1">1</option>

@@ -1,5 +1,5 @@
 <script setup>
-	import { provide, ref, watch, nextTick, computed, onMounted} from 'vue';
+	import { provide, ref, watch, nextTick, computed, onMounted, onBeforeUnmount} from 'vue';
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { useWorkStore } from '@/stores/useWorkStore'; 
@@ -30,7 +30,6 @@
   const handleLogin = () => {
     router.push('/login')
   }
-
   const workStore = useWorkStore();
   const authStore = useAuthStore();
   const favoritesStore = useFavoritesStore();
@@ -38,7 +37,6 @@
   const { userProfile } = storeToRefs(authStore);
   const { currentWork, isSaved, isAuthor } = storeToRefs(workStore); //放資料
   const { showToast } = toastStore;
-
   const isAutoPreview = ref(true);
   const userName = ref('');
   const isPro = ref(true);
@@ -92,6 +90,7 @@
   const navListVisible = ref(false);
   const saveOptionVisible = ref(false);
   const layoutOptionVisible = ref(false);
+  const isLoginModalShow = ref(false)
   const isEditing = ref(false);
   const settingOptionVisible = ref(false);
   const selectedTab = ref('');
@@ -101,7 +100,7 @@
   })
   provide('title', title)
 
-  const isLoginModalShow = ref(false)
+
   const { handleSave } = useHandleSave();
 
   const handleWorkSave = async () => {
@@ -119,7 +118,6 @@
       handleSave()
     }
   };
-
   const toggleSave = () => {
     saveOptionVisible.value = !saveOptionVisible.value    
   };
@@ -133,7 +131,6 @@
   const toggleList = () => {
     navListVisible.value = !navListVisible.value
   };
-
 
   const layoutOptions = [
     { id: 'left', rotation: -90, display: 'flex-row'},
@@ -149,39 +146,31 @@
   }
 
   const titleInput = ref(null);
-
   const toggleEdit = () => {
     isEditing.value = true
     nextTick(() => {
       titleInput.value?.focus();
     });
   };
-
   const stopEdit = () => {
     isEditing.value = false
   };
 
   const emit = defineEmits(['run-preview'])
-
   function runPreview() {
     emit('run-preview')
   }
   const segments = route.path.split('/');
   const section = segments[2];
   const viewMode = ref(section)
-
   const handleChangeViewMode = (mode) => {
     viewMode.value = mode;
     router.push(`/${userName.value}/${viewMode.value}/${currentWork.value.id}`)
   }
-
   defineExpose({ toggleSetting, handleWorkAutoSave });
-
-  // 收藏功能
-
+  
   const favorite = computed(() => favoritesStore.getFavorite(currentWork.value?.id));
   const isLiked = computed(() => favorite.value.isLiked);
-
   const toggleFavorite = async () => {
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
@@ -195,7 +184,6 @@
     console.error("fetch favorite error ", error);
   }
   }
-
   onMounted(async () => {
     if (currentWork.value?.id !== undefined) {
       const stored = favoritesStore.getFavorite(currentWork.value?.id);
@@ -213,6 +201,21 @@
     },
     { immediate: true }
   );
+
+  function close() {
+    navListVisible.value = false
+    saveOptionVisible.value = false
+    layoutOptionVisible.value = false
+    isLoginModalShow.value = false
+    settingOptionVisible.value = false
+  }
+  function handleKeydown(e) {
+    if (e.key === 'Escape') {
+      close();
+    }
+  }
+  onMounted(() => window.addEventListener('keydown', handleKeydown));
+  onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown));
 </script>
 
 <template>
