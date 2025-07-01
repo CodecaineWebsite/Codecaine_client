@@ -1,37 +1,40 @@
 <template>
   <header
-    ref="dropdownRef"
-    class="relative bg-cc-20 text-cc-1 w-full px-2 py-2 sm:px-4 sm:py-2 border-b-3 border-cc-14 flex items-center gap-2 sm:gap-4"
+    class="relative bg-cc-20 text-cc-1 w-full px-2 sm:px-4 sm:h-17 border-b-3 border-cc-14 flex items-center gap-2"
   >
     <!-- Logo + SidebarToggleIcon：830px 以下顯示 -->
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <div class="w-8 bg-white h-8 rounded-full flex justify-center items-center" @click="goToHome">
-        <LogoIcon alt="icon" class="w-6 h-6 text-black" />
-      </div>
+      <button @click="goToHome" class="w-10">
+        <LogoIcon alt="icon" class="w-10 h-10 text-white cursor-pointer" />
+      </button>
       <button
-        @click.stop="isMenuOpen = !isMenuOpen"
+        ref="toggleButtonRef"
+        @click.stop="toggleDropdown"
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
         title="Toggle Navigation"
       >
-        <SidebarToggleIcon :expanded="isMenuOpen" />
+        <SidebarToggleIcon :expanded="isMenuOpen" class="cursor-pointer" />
       </button>
     </div>
 
     <!-- Tabs（登入 + 大於 634px） -->
     <div
       v-if="authStore.idToken && !isVerySmallScreen"
-      class="flex items-center space-x-px flex-shrink-0">
+      class="flex items-center space-x-px flex-shrink-0"
+    >
       <button
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r">
+        class="hover:bg-cc-16 relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r cursor-pointer"
+      >
         {{ tab }}
         <span
           class="absolute bottom-0 left-0 h-1 bg-cc-green transition-all duration-300"
-          :class="activeTab === tab ? 'w-full' : 'w-0'"></span>
+          :class="activeTab === tab ? 'w-full' : 'w-0'"
+        ></span>
       </button>
     </div>
 
@@ -60,14 +63,14 @@
           <button
             v-if="authStore.idToken"
             @mousedown="selectSearchTab('your-work')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13  hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <YourWorkIcon class="fill-current w-3 mr-1 text-cc-10" />
             Your Work
           </button>
           <button
             @mousedown="selectSearchTab('doses')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <PensIcon
               class="fill-current w-3 mr-1"
@@ -84,13 +87,15 @@
       <template v-if="!authStore.idToken">
         <button
           class="bg-green-500 text-cc-20 h-9 px-4 rounded hover:bg-green-400 font-semibold"
-          @click="goToPath('/signup')">
+          @click="goToPath('/signup')"
+        >
           Sign Up
         </button>
         <button
           v-if="route.name !== 'login'"
           class="bg-cc-13 h-9 px-4 rounded hover:bg-cc-12 font-semibold"
-          @click="goToPath('/login')">
+          @click="goToPath('/login')"
+        >
           Log In
         </button>
       </template>
@@ -103,26 +108,23 @@
     <!-- 下拉選單：830px 以下 -->
     <div
       v-if="isMenuOpen && isCompactScreen"
-      class="absolute top-full left-2 mt-2 bg-[#1e1f26] text-white w-[220px] rounded-md shadow-xl z-50 py-2">
+      ref="dropdownRef"
+      class="absolute top-full left-2 bg-cc-16 text-cc-1 w-[220px] rounded-md shadow-xl shadow-gray-950 z-50 py-2"
+    >
       <div class="text-[10px] text-gray-400 px-4 mb-2">CREATE</div>
-
-      <!-- ✏️ 登入顯示 Caine，未登入顯示 Start Coding -->
       <div
         @click="goToPath('/dose')"
-        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2">
+        class="cursor-pointer rounded-md overflow-hidden mb-2 mx-2"
+      >
         <div
-          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"></div>
+          class="h-[2px] w-full bg-gradient-to-r from-[#4fcf70] via-[#fad648] via-[#a767e5] via-[#12bcfe] to-[#44ce7b]"
+        ></div>
         <div
-          class="bg-[#2c303a] hover:bg-[#1f2025] text-white text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
+          class="bg-cc-14 hover:bg-[#1f2025] text-cc-1 text-sm px-4 py-3 font-medium text-center flex items-center justify-center gap-2"
         >
-          <Layout
-            class="w-4 h-4 text-cc-1"
-          />
-          <div>
-            {{ authStore.idToken ? 
-              "Dose" : 
-              "Start Coding" 
-            }}
+          <Layout class="w-4 h-4" />
+          <div class="font-medium">
+            {{ authStore.idToken ? "Dose" : "Start Coding" }}
           </div>
         </div>
       </div>
@@ -130,27 +132,30 @@
       <!-- 已登入：功能頁面 -->
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/your-work')">
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
+        @click="goToPath('/your-work')"
+      >
         Your Work
       </div>
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/following')">
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
+        @click="goToPath('/following')"
+      >
         Following
       </div>
       <div
         v-if="authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
-        @click="goToPath('/trending')">
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
+        @click="goToPath('/trending')"
+      >
         Trending
       </div>
 
       <!-- 未登入：Search Doses -->
       <div
         v-if="!authStore.idToken"
-        class="cursor-pointer hover:bg-[#131417] px-4 py-2 text-sm"
+        class="cursor-pointer hover:bg-cc-17 px-4 py-2 text-sm font-medium"
         @click="goToPath('/search')"
       >
         Search Doses
@@ -161,13 +166,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import { onClickOutside } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/useAuthStore";
 import SidebarToggleIcon from "@/components/icons/SidebarToggleIcon.vue";
-import UserMenu from "./UserMenu.vue";
+import UserMenu from "@/components/UserMenu.vue";
 import YourWorkIcon from "@/components/icons/YourWorkIcon.vue";
 import PensIcon from "@/components/icons/PensIcon.vue";
-import LogoIcon from '@/components/icons/LogoIcon.vue';
+import LogoIcon from "@/components/icons/LogoIcon.vue";
 import Notify from "@/components/Notify.vue";
 import Layout from "@/assets/layout.vue";
 
@@ -195,8 +201,8 @@ const activeTab = computed(() => {
 });
 
 const goToHome = () => {
-  router.push('/');
-}
+  router.push("/");
+};
 
 const goToPath = (pathOrLocation) => {
   isMenuOpen.value = false;
@@ -220,25 +226,29 @@ const handleSearchSubmit = () => {
 const selectSearchTab = (tab) => {
   searchTab.value = tab;
   if (tab === "your-work") goToPath("/your-work");
-  else if (tab === "doses") goToPath({ path: "/search/doses", query: { q: "" } });
+  else if (tab === "doses")
+    goToPath({ path: "/search/doses", query: { q: "" } });
 };
 
 const handleResize = () => {
   screenWidth.value = window.innerWidth;
 };
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    isMenuOpen.value = false;
-  }
+const toggleDropdown = () => {
+  isMenuOpen.value = !isMenuOpen.value;
 };
+
+const toggleButtonRef = ref(null)
+onClickOutside(dropdownRef, (event) => {
+  if (toggleButtonRef.value?.contains(event.target)) return;
+  isMenuOpen.value = false;
+});
+
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
-  document.addEventListener("click", handleClickOutside);
 });
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
-  document.removeEventListener("click", handleClickOutside);
 });
 </script>

@@ -39,16 +39,17 @@
     @cancel="msg.close(false)"
   >
     <template #title>{{ msg.title }}</template>
-    <template #message
-      ><p>{{ msg.message }}</p></template
-    >
+    <template #message>
+      <div v-html="msg.message" />
+    </template>
   </ConfirmModal>
 
   <ToastContainer />
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch } from "vue";
+import { useLocalStorage, useWindowSize, whenever } from "@vueuse/core";
 import { useModalStore } from "@/stores/useModalStore";
 import SubHeader from "@/components/SubHeader.vue";
 import SubFooter from "@/components/SubFooter.vue";
@@ -61,9 +62,11 @@ import ToastContainer from "@/components/Toast/ToastContainer.vue";
 const msg = useMsgStore();
 const modalStore = useModalStore();
 const isMounted = ref(false);
-const screenWidth = ref(window.innerWidth);
+
+const isSidebarOpen = useLocalStorage("sidebarOpen", true);
+const { width: screenWidth } = useWindowSize();
+
 const isCompactScreen = computed(() => screenWidth.value <= 830);
-const isSidebarOpen = ref(true);
 
 const layoutColumns = computed(() => {
   if (isCompactScreen.value) {
@@ -78,37 +81,24 @@ const layoutAreas = computed(() => {
   }
   return `"sidebar header" "sidebar content" "sidebar footer"`;
 });
+
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
-  localStorage.setItem("sidebarOpen", isSidebarOpen.value);
 };
-const handleResize = () => {
-  screenWidth.value = window.innerWidth;
-  if (screenWidth.value <= 830) {
+
+whenever(isCompactScreen, (compact) => {
+  if (compact) {
     isSidebarOpen.value = false;
-  } else {
-    const stored = localStorage.getItem("sidebarOpen");
-    if (stored !== null) {
-      isSidebarOpen.value = stored === "true";
-    }
   }
-};
-
-watch(screenWidth, () => handleResize());
-
-onMounted(() => {
-  const storedSidebarOpen = localStorage.getItem("sidebarOpen");
-  if (storedSidebarOpen !== null) {
-    isSidebarOpen.value = storedSidebarOpen === "true";
-  }
-  screenWidth.value = window.innerWidth;
-  window.addEventListener("resize", handleResize);
-  isMounted.value = true;
 });
 
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-});
+watch(
+  () => isCompactScreen.value,
+  () => {
+    isMounted.value = true;
+  },
+  { immediate: true }
+);
 </script>
 
 <style>
@@ -116,7 +106,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-rows: 75px 1fr auto;
   min-height: 100vh;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .sidebar {

@@ -18,7 +18,6 @@
 <script setup>
 import { useToastStore } from "@/stores/useToastStore";
 const toastStore = useToastStore();
-console.log(toastStore);
 
 const props = defineProps({
   penId: {
@@ -32,7 +31,7 @@ const props = defineProps({
 });
 
 function copyLink() {
-  const url = `${window.location.origin}/${props.username}/pen/${props.penId}`;
+  const url = `${window.location.origin}/${props.username}/dose/${props.penId}`;
 
   navigator.clipboard
     .writeText(url)

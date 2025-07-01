@@ -6,6 +6,7 @@
         class="flex items-center space-x-6 text-sm font-semibold pt-4 pb-1 text-[16.5px]"
       >
         <button
+          class="cursor-pointer"
           v-for="tab in tabs"
           :key="tab"
           @click="activeTab = tab"
@@ -21,7 +22,7 @@
         <!-- New Dose button -->
         <div class="ml-auto">
           <button
-            class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2"
+            class="bg-cc-13 px-2 py-1 text-xs hover:bg-cc-12 rounded-xs flex items-center space-x-2 cursor-pointer"
             @click="goDose"
           >
             <PensIcon class="fill-current w-3 h-3 text-cc-1" />
@@ -42,9 +43,9 @@
           class="border-t-2 border-panel bg-panel px-3 py-2 flex flex-col space-y-3 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 text-sm mb-4"
         >
           <!-- Left Controls -->
-          <div class="flex items-stretch space-x-2 relative">
+          <div class="flex flex-wrap items-stretch gap-2 relative">
             <!-- Search -->
-            <div class="flex-1 flex rounded overflow-hidden">
+            <div class="flex rounded overflow-hidden">
               <input
                 v-model="searchQuery"
                 @keyup.enter="handleSearch"
@@ -54,7 +55,7 @@
               />
               <button
                 @click="handleSearch"
-                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r"
+                class="bg-button text-cc-1 text-sm px-4 py-1 border border-l-0 border-default bg-button-hover rounded-r cursor-pointer"
               >
                 Search
               </button>
@@ -68,7 +69,7 @@
             >
               <button
                 @click="toggleFilters"
-                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded"
+                class="flex items-center space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover rounded cursor-pointer"
               >
                 <FiltersIcon class="fill-current w-4 h-4 text-cc-1" />
                 <span>{{
@@ -98,18 +99,18 @@
 
             <!-- Tags 按鈕-->
             <div
+              class="cursor-pointer"
               v-if="activeTab === 'Doses'"
               ref="tagsDropdownRef"
-              @click.stop
+              @click.stop="showTags = !showTags"
               :class="[
-                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 bg-button-hover',
+                ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover',
                 showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
               ]"
             >
               <!-- Toggle 開關 -->
               <button
-                @click="showTags = !showTags"
-                class="flex items-center space-x-2 text-cc-1"
+                class="flex items-center space-x-2 text-cc-1 cursor-pointer"
               >
                 <TagsIcon class="fill-current w-4 h-4" />
               </button>
@@ -135,7 +136,7 @@
                   </div>
 
                   <ul
-                    class="absolute top-full left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
+                    class="absolute top-[calc(100%+0.25rem)] left-0 max-h-48 overflow-auto bg-cc-14 rounded-b-md w-[calc(100%+12px)] z-50"
                   >
                     <li
                       v-for="tag in filteredTags"
@@ -151,7 +152,7 @@
                 <!-- 沒展開時顯示選到的 tag 或字樣 -->
                 <div
                   v-else
-                  class="flex items-center gap-2 cursor-pointer"
+                  class="flex items-center gap-2"
                   @click="openTagMenu"
                 >
                   <span class="text-sm">
@@ -172,7 +173,7 @@
           <!-- Right Controls -->
           <div class="flex items-stretch space-x-2">
             <!-- View Mode -->
-            <ViewModeChange @update:viewMode="viewMode = $event" />
+            <ViewModeChange />
 
             <!-- Sort Dropdown -->
             <select
@@ -189,6 +190,7 @@
               class="inline-flex rounded overflow-hidden border border-default"
             >
               <button
+                class="cursor-pointer"
                 :class="[
                   'px-3 py-2',
                   sortDirection === 'desc'
@@ -206,6 +208,7 @@
                 />
               </button>
               <button
+                class="cursor-pointer"
                 :class="[
                   'px-3 py-2 border-l border-default',
                   sortDirection === 'asc'
@@ -327,6 +330,7 @@ import TagsIcon from "@/components/icons/TagsIcon.vue";
 import DescIcon from "@/components/icons/DescIcon.vue";
 import AscIcon from "@/components/icons/AscIcon.vue";
 import { useToastStore } from "@/stores/useToastStore";
+import { useLocalStorage } from "@vueuse/core";
 
 const toastStore = useToastStore();
 const router = useRouter();
@@ -349,7 +353,7 @@ const showFilters = ref(false);
 const filters = ref({
   privacy: "all",
 });
-const viewMode = ref("grid");
+const viewMode = useLocalStorage("dosesViewMode", "grid");
 const sortOption = ref("created");
 const sortDirection = ref("desc");
 const showTags = ref(false);
@@ -467,7 +471,6 @@ async function loadDoses() {
 async function loadDeletedDoses() {
   try {
     const { data } = await api.get("/api/pens/trash");
-
     pens.value = data;
   } catch (err) {
     showToast({
@@ -481,7 +484,6 @@ async function loadTags() {
     const { data } = await api.get("/api/my/tags");
     tags.value = data;
   } catch (err) {
-    // 應該可以不加 toast，因為這個功能不是很重要
     console.error("Failed to load tags:", err);
   }
 }
@@ -541,12 +543,4 @@ async function restoreDose(penId) {
     });
   }
 }
-
-/**
- * TODO:
- * 頁面載入中狀態
- * 加上 toast 通知
- * 加上錯誤處理
- * 這頁太長了需要考慮拆分元件
- */
 </script>

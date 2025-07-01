@@ -1,5 +1,5 @@
 <template>
-  <span class="inline-block bg-cc-yellow px-1 mx-2 rounded text-xs font-bold text-black">
+  <span class="inline-block bg-cc-yellow px-1 rounded text-xs font-black text-black">
     Pro
   </span>
 </template>

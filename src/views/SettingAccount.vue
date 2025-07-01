@@ -1,7 +1,7 @@
 <template>
   <div class="w-full bg-[#131417] p-6 grid gap-6">
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] mb-4">
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] mb-4">
       <div>
         <h3 class="text-xl font-bold mb-2">Update Password</h3>
         <p class="text-sm text-gray-500">
@@ -58,7 +58,7 @@
     </section>
 
     <section
-      class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr] mb-4">
+      class="grid grid-cols-1 md:grid-cols-[minmax(140px,330px)_minmax(365px,760px)] mb-4">
       <div>
         <h3 class="text-xl font-bold mb-2">Email</h3>
         <p class="text-sm text-gray-500">
@@ -102,23 +102,6 @@
             </button>
           </div>
         </form>
-      </div>
-    </section>
-
-    <section class="grid grid-cols-1 md:grid-cols-[minmax(210px,330px)_1fr]">
-      <div>
-        <h3 class="text-xl font-bold mb-2 text-red-500">Danger Zone</h3>
-        <p class="text-sm text-gray-500">
-          Deleting your account will wipe all information about you and content
-          you’ve created on CodePen.
-        </p>
-      </div>
-      <div
-        class="w-full max-w-160 bg-[#1E1F26] rounded-lg flex flex-col gap-4 p-6">
-        <button
-          class="mt-2 px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700 transition cursor-pointer">
-          Deleting Account
-        </button>
       </div>
     </section>
   </div>

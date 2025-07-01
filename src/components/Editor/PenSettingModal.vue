@@ -93,7 +93,7 @@ const cdnInput = ref([]);
 const linkInput = ref("");
 
 const isValidUrl = (url) => /^https?:\/\/.+/.test(url);
-function handleSelectedPackage(packageData) {
+function handleSelectedCDN(packageData) {
   const selectedCDN = packageData.latest;
   if (!isValidUrl(selectedCDN)) {
     showToast({
@@ -134,6 +134,25 @@ const addCDN = () => {
 const removeCDN = (index) => {
   cdns.value.splice(index, 1);
 };
+function handleSelectedLINK(packageData) {
+  const selectedLINK = packageData.latest;
+  if (!isValidUrl(selectedLINK)) {
+    showToast({
+      message: "Please enter a valid Link URL (must start with http or https)",
+      variant: "danger",
+    });
+    return;
+  }
+  if (links.value.includes(selectedLINK)) {
+    showToast({
+      message: "This CDN has already been added!",
+      variant: "danger",
+    });
+    return;
+  }
+  links.value.push(selectedLINK);
+  linkInput.value = "";
+}
 const addLink = () => {
   const url = linkInput.value.trim();
   if (!isValidUrl(url)) {
@@ -235,35 +254,42 @@ useEscapeToClose(() => emit('close'));
           </div>
 
           <div v-show="activeTab === 'css'" class="w-full flex flex-col gap-4">
-            <SettingInput
+            <SettingCard
               id="addExternalStylesheets"
               label="Add External Stylesheets / Doses"
-              placeholder="Enter Link script URL"
-              v-model="linkInput"
-              @keyup.enter="addLink"
             >
+              <Cdnjs @select="handleSelectedLINK" />
+              <label>
+                <input
+                  v-model="linkInput"
+                  @keyup.enter="addLink"
+                  type="text"
+                  placeholder="Enter Link URL"
+                  class="appearance-none w-full border border-gray-300 rounded-sm px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-500 mb-3 placeholder:text-gray-500"
+                />
+              </label>
               <button
                 @click="addLink"
-                class="mb-4 bg-gray-600 text-white w-full mt-3 px-3 py-1 rounded hover:bg-gray-700 "
+                class="mb-4 bg-gray-600 text-white w-full px-3 py-1 rounded hover:bg-gray-700"
               >
-                ➕ 加入 Link
+                ➕ Add Link
               </button>
-              <ul class="mb-4 list-disc list-inside">
-                  <li
-                    v-for="(link, index) in links"
-                    :key="link"
-                    class="flex items-center justify-between gap-2"
-                  >
-                    <span class="break-words max-w-[80%]">{{ link }}</span>
+              <ul class="mb-4">
+                <li
+                  v-for="(link, index) in links"
+                  :key="link"
+                  class="appearance-none w-full border border-gray-300 rounded-sm px-2 py-2 mb-2 bg-white text-gray-500 flex items-center justify-between"
+                >
+                  <span class="max-w-[90%] text-xs truncate">{{ link }}</span>
                   <button
-                  @click="removeLink(index)"
+                    @click="removeLink(index)"
                     class="text-red-500 hover:text-red-700 text-sm"
                   >
                     <TrashCanIcon class="w-4"/>
                   </button>
-                  </li>
-                </ul>
-            </SettingInput>
+                </li>
+              </ul>
+            </SettingCard>
           </div>
 
           <div v-show="activeTab === 'js'" class="w-full flex flex-col gap-4">
@@ -271,7 +297,7 @@ useEscapeToClose(() => emit('close'));
               id="addExternalScripts"
               label="Add External Scripts / Doses"
             >
-              <Cdnjs @select="handleSelectedPackage" />
+              <Cdnjs @select="handleSelectedCDN" />
               <label>
                 <input
                   v-model="cdnInput"

@@ -9,6 +9,7 @@
         v-for="n in pagedNotifications"
         class="flex gap-3 items-start p-4 mb-2 rounded-lg transition bg-[#23262f] hover:bg-[#2C303A] border border-transparent hover:border-[#05DF72] cursor-pointer"
         :class="{ 'opacity-80': n.is_read }"
+        @click="handleNotificationClick(n)"
       >
         <img
           v-if="n.sender && n.sender.profile_image_url"
@@ -22,13 +23,18 @@
           </div>
           <div class="text-sm text-gray-300">
             <template v-if="n.type === 'comment'">
-              Commented on <span class="font-semibold">{{ n.pen?.title }}</span
+              Commented on
+              <span class="font-semibold">{{
+                n.pen?.title || "Untitled Dose"
+              }}</span
               >:
               <span class="italic">"{{ n.comment?.content }}"</span>
             </template>
             <template v-else-if="n.type === 'favorite'">
               Favorited your pen
-              <span class="font-semibold">{{ n.pen?.title }}</span>
+              <span class="font-semibold">{{
+                n.pen?.title || "Untitled Dose"
+              }}</span>
             </template>
             <template v-else-if="n.type === 'follow'">
               Started following you
@@ -63,12 +69,17 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useNotifyStore } from "@/stores/useNotifyStore";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { navigateByNotification } from "@/utils/notify";
 import PaginationNav from "@/components/PaginationNav.vue";
 
+const authStore = useAuthStore();
 const notifyStore = useNotifyStore();
 
+const router = useRouter();
 const page = ref(1);
 const pageSize = 8;
 const totalPages = computed(() =>
@@ -83,6 +94,9 @@ const pagedNotifications = computed(() => {
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString();
+};
+const handleNotificationClick = (n) => {
+  navigateByNotification(n, router, authStore);
 };
 
 onMounted(async () => {

@@ -1,37 +1,33 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import { debounce } from '@/utils/debounce'
+import { usePreviewStore } from '@/stores/usePreviewStore'
 
 const props = defineProps({
-  currentWork: Object,
-  updatePreviewSrc: Function
-})
-
-const iframeSrc = ref('')
-let currentBlobUrl = null
-
-function revokeOldUrl() {
-  if (currentBlobUrl) {
-    URL.revokeObjectURL(currentBlobUrl)
-    currentBlobUrl = null
+  currentWork: {
+    type: Object,
+    required: true
   }
-}
+})
+const previewStore = usePreviewStore()
 
-const autoUpdateIframe = debounce(() => {
-  updateIframe();
-}, 2000)
+const iframeEl = ref(null)
+const isIframeLoaded = ref(false)
+const isFirstRenderDone = ref(false)
 
-const updateIframe =() => {
-  revokeOldUrl()
-  const newBlobUrl = props.updatePreviewSrc()
-  iframeSrc.value = newBlobUrl
-  currentBlobUrl = newBlobUrl
-}
+watch(iframeEl, (el) => {
+  if (el) previewStore.setIframeEl(el)
+}, { immediate: true })
 
-function runPreview() {
-  updateIframe()
-}
-defineExpose({ runPreview })
+watch(iframeEl, (el) => {
+  if (el) {
+    el.addEventListener('load', () => {
+      isIframeLoaded.value = true
+      tryRenderFirstTime()
+    }, { once: true })
+    previewStore.setIframeEl(el)
+  }
+}, { immediate: true })
 
 const hasAnyContent = (work) => {
   return Boolean(
@@ -40,21 +36,36 @@ const hasAnyContent = (work) => {
     work.javascript?.trim() ||
     work.htmlClass?.trim() ||
     work.headStuff?.trim()
-  );
+  )
 }
-const isFirstRenderDone = ref(false);
 
-watch(
-  () => props.currentWork,
-  (work) => {
-    if (!work || isFirstRenderDone.value) return;
-    if (work.isAutoPreview && hasAnyContent(work)) {
-      updateIframe();
-    }
-    isFirstRenderDone.value = true;
-  },
-  { immediate: true }
-);
+const tryRenderFirstTime = () => {
+  if (
+    isFirstRenderDone.value ||
+    !isIframeLoaded.value ||
+    !props.currentWork
+  )
+    return;
+
+  if (hasAnyContent(props.currentWork)) {
+    previewStore.sendAutoPreviewCode(props.currentWork);
+  }
+  isFirstRenderDone.value = true;
+}
+
+const autoSendToIframe = debounce(() => {
+  if (isIframeLoaded.value) {
+    previewStore.sendAutoPreviewCode(props.currentWork)
+  }
+}, 2000)
+
+function runPreview() {
+  if (isIframeLoaded.value) {
+    previewStore.sendAutoPreviewCode(props.currentWork)
+  }
+}
+
+defineExpose({ runPreview })
 
 watch(
   () => [
@@ -67,20 +78,25 @@ watch(
     JSON.stringify(props.currentWork?.links || []),
   ],
   () => {
-    if (!isFirstRenderDone.value) return;
-
-    if (props.currentWork?.isAutoPreview) {
-      autoUpdateIframe();
+    if (!isFirstRenderDone.value) {
+      tryRenderFirstTime();
+      return;
     }
-  }
-);
-
-onUnmounted(() => {
-  revokeOldUrl()
-})
-
+    if (props.currentWork?.isAutoPreview) {
+      autoSendToIframe();
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <iframe :src="iframeSrc" sandbox="allow-scripts" class="h-full w-full" title="Preview Frame"></iframe>
+  <iframe
+    ref="iframeEl"
+    src="/auto-preview-frame.html"
+    sandbox="allow-scripts"
+    referrerpolicy="no-referrer"
+    class="h-full w-full"
+    title="Preview Frame"
+  ></iframe>
 </template>

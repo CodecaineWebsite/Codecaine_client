@@ -1,21 +1,24 @@
 <template>
-  <div class="group w-full bg-card-text text-white rounded-lg relative">
+  <div class="group/pen w-full bg-card-text text-white rounded-lg relative">
     <!-- 預覽 -->
     <div class="relative aspect-video overflow-hidden rounded-md bg-black">
       <!-- iframe 預覽 -->
       <div class="absolute inset-0 origin-top-left scale-50 w-[200%] h-[200%]">
         <iframe
-          :src="iframeSrc"
+          ref="iframeEl"
+          src="/preview-frame.html"
           sandbox="allow-scripts"
-          class="w-full h-full border-0"
-          loading="lazy"
+          referrerpolicy="no-referrer"
+          class="h-full w-full bg-cc-1"
+          scrolling="no"
+          title="Preview Frame"
         ></iframe>
       </div>
 
       <!-- 圖片右上角的方塊小連結 跳出 Modal -->
       <PenDetailsButton
         @open-detail-modal="openDetailModal"
-        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+        class="absolute top-2 right-2 opacity-100 lg:opacity-0 group-hover/pen:opacity-100 transition"
       />
     </div>
 
@@ -27,7 +30,7 @@
           <a :href="userPageLink" class="shrink-0">
             <img
               :src="userProfileImage"
-              class="w-10 h-10 rounded-sm"
+              class="w-10 h-10 rounded-sm object-cover"
               :alt="userDisplayName + ' 的頭像'"
             />
           </a>
@@ -44,14 +47,16 @@
                 :href="userPageLink"
                 class="block text-sm text-gray-300 hover:underline truncate"
               >
-                <span class="font-medium">{{ userDisplayName }}</span>
+                <span class="font-medium">{{
+                  userDisplayName || userName
+                }}</span>
               </a>
               <a
                 v-if="isPro"
                 :href="proLink"
-                class="bg-yellow-400 text-black text-[10px] font-bold px-1 py-[1px] rounded hover:bg-yellow-300 transition inline-flex items-center justify-center"
+                class="leading-none"
               >
-                PRO
+                <ProTag/>
               </a>
             </div>
           </div>
@@ -59,24 +64,21 @@
         <!-- 右：操作選單 -->
         <div class="flex items-center gap-2">
           <PenCardDropdown
-            :is-open="isOpen"
             :is-owner="isOwner"
             :is-pro="isPro"
             :is-private="isPrivate"
             :is-following="isFollowing"
-            :is-logged-in="authStore.user !== null"
             :user-name="userName"
             @follow="handleFollow"
             @togglePrivacy="togglePrivacy"
             @delete="handleDelete"
-            @toggle="$emit('toggle', pen.id)"
           />
         </div>
       </div>
 
       <!-- 底部統計按鈕 -->
       <div class="flex gap-2 mt-3">
-        <FavoriteBtn :target-pen="workId" />
+        <PenFavoriteButton :target-pen="workId" />
         <PenCommentButton
           :work-id="workId"
           :comments="comments"
@@ -89,26 +91,31 @@
 </template>
 
 <script setup>
-import api from "@/config/api"; // API 請求配置
+import api from "@/config/api";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import PenCardDropdown from "@/components/PenCards/PenCardDropdown.vue"; // 作品卡下拉選單元件
-import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon.vue"; // 元件改名
 
 import PenDetailsButton from "@/components/PenCards/PenDetailsButton.vue";
-import FavoriteBtn from "@/components/PenCards/PenFavoriteButton.vue";
+import PenFavoriteButton from "@/components/PenCards/PenFavoriteButton.vue";
 import PenCommentButton from "@/components/PenCards/PenCommentButton.vue";
 import PenViewButton from "@/components/PenCards/PenViewButton.vue";
 import { useModalStore } from "@/stores/useModalStore";
-import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
+// import { useWorkStore } from "@/stores/useWorkStore.js"; // 作品狀態管理
 import { useAuthStore } from "@/stores/useAuthStore.js"; // 使用者狀態管理
+import { useMsgStore } from "@/stores/useMsgStore";
 import { useToastStore } from "@/stores/useToastStore";
+import { usePreviewStore } from "@/stores/usePreviewStore";
+import { useFollowStatus } from "@/composables/useFollowStatus";
+import ProTag from "../Editor/ProTag.vue";
 
+const msgStore = useMsgStore();
 const toastStore = useToastStore();
 const { showToast } = toastStore;
-const workStore = useWorkStore();
-const { updateCardPreviewSrc } = workStore;
+// const workStore = useWorkStore();
+// const { updateCardPreviewSrc } = workStore;
 const authStore = useAuthStore();
+const previewStore = usePreviewStore();
 
 const router = useRouter();
 const modalStore = useModalStore();
@@ -120,7 +127,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isOpen: Boolean,
 });
 
 // 作品資訊
@@ -132,19 +138,34 @@ const userDisplayName = props.pen.user_display_name;
 const userProfileImage = props.pen.profile_image || "/default-avatar.png";
 const isPro = props.pen.is_pro || false;
 const isPrivate = ref(props.pen.is_private === true);
-const isFollowing = ref(false);
+const { isFollowing, checkFollow, handleFollowAction } = useFollowStatus(
+  props.pen.username
+);
 // 作品預覽
-const iframeSrc = ref("");
-const code = {
-  html: props.pen.html_code || "",
-  css: props.pen.css_code || "",
-  javascript: props.pen.js_code || "",
-  cdns: props.resources_js || [],
-  links: props.resources_css || [],
-};
-onMounted(async () => {
-  const newBlobUrl = updateCardPreviewSrc(code);
-  iframeSrc.value = newBlobUrl;
+const iframeEl = ref(null);
+
+onMounted(() => {
+  iframeEl.value.addEventListener("load", () => {
+    const code = {
+      html: props.pen.html_code || "",
+      css: props.pen.css_code || "",
+      javascript: `
+        try {
+          ${props.pen.js_code || ""}
+        } catch (err) {
+          console.error("User JS Error:", err);
+        }
+      `,
+      htmlClass: props.pen.html_class || "",
+      headStuff: props.pen.head_stuff || "",
+      cdns: Array.isArray(props.pen.resources_js) ? props.pen.resources_js : [],
+      links: Array.isArray(props.pen.resources_css)
+        ? props.pen.resources_css
+        : [],
+    };
+
+    previewStore.sendPreviewCode(iframeEl.value, code);
+  });
 });
 
 // 統計資料
@@ -154,48 +175,51 @@ const views = props.pen.views_count;
 // 連結
 const editorPageLink = `/${userName}/dose/${workId}`;
 const userPageLink = `/${userName}`;
-const proLink = "/features/pro"; //目前還沒設定，先參考官方route暫定 /features/pro
+const proLink = "/settings/billing";
 
 const isOwner = computed(() => authStore.userProfile?.username === userName);
 
-const checkFollow = async () => {
-  if (authStore.user === null || isOwner.value) {
-    isFollowing.value = false;
-    return;
-  }
-  try {
-    const res = await api.get(`/api/follows/check/${userName}`);
-    isFollowing.value = res.data.isFollowing;
-  } catch (error) {
-    console.error("check follow error", error);
-  }
-};
-const handleFollow = async () => {
-  try {
-    if (!isFollowing.value) {
-      const res = await api.post(`/api/follows/${props.pen.username}`);
-      isFollowing.value = true;
-    } else {
-      const res = await api.delete(`/api/follows/${props.pen.username}`);
-      isFollowing.value = false;
-    }
-  } catch (error) {
-    console.error("follow/unfollow error", error);
-  }
-};
+const handleFollow = () => handleFollowAction(props.pen.username);
 
-const handleDelete = async () => {
-  if (!confirm("Are you sure you want to delete this dose?")) return;
-
-  try {
-    await api.put(`/api/pens/${workId}/trash`);
-    emit("delete", workId);
-  } catch (error) {
-    showToast({
-      message: "Delete failed, please try again later",
-      variant: "danger",
-    });
-  }
+const handleDelete = () => {
+  msgStore.open({
+    title: "Are you sure you want to delete this Dose?",
+    message: `
+      <p class="mb-5">Here's what happens when you delete a Dose:</p>
+      <ul class="list-disc list-outside pl-4">
+        <li>This Dose will no longer be accessible on Codecaine.</li>
+        <li>
+          This Dose will be moved to the
+          <a class="text-cc-blue underline" href="#" onclick="window.toDeleteLink?.()">Deleted Items section of Your Work</a>
+          for 3 days.
+        </li>
+        <li>
+          After 3 days, the Dose is permanently deleted.
+          You can also manually delete it from your Deleted Items.
+        </li>
+      </ul>
+    `,
+    variant: "danger",
+    confirmText: "I understand, delete my Dose",
+    cancelText: "Cancel",
+    confirming: false,
+    loadingText: "Deleting...",
+    onConfirm: async () => {
+      try {
+        msgStore.confirming = true;
+        await api.put(`/api/pens/${workId}/trash`);
+        emit("delete", workId);
+      } catch (error) {
+        showToast({
+          message: "Delete failed, please try again later",
+          variant: "danger",
+        });
+      } finally {
+        msgStore.confirming = false;
+        msgStore.close();
+      }
+    },
+  });
 };
 
 const togglePrivacy = async () => {
@@ -217,10 +241,14 @@ const togglePrivacy = async () => {
   }
 };
 
-onMounted(() => {
-  if (!isOwner.value) {
+const checkStatus = () => {
+  if (authStore.user && !isOwner.value) {
     checkFollow();
   }
+};
+
+onMounted(() => {
+  checkStatus();
 });
 
 const goToFullPage = () => {
@@ -230,13 +258,4 @@ const goToFullPage = () => {
 const openDetailModal = () => {
   modalStore.openModal(props.pen.id, "card");
 };
-
-/**
- * TODO:
- * 1. 完成追蹤作者功能
- * 2. 若作品卡為使用者的作品，則顯示刪除按鈕
- * API:
- * 按追蹤將作者加入追蹤清單
- * 按刪除將作品從使用者的作品清單中刪除
- */
 </script>

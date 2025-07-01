@@ -3,13 +3,14 @@
     <div class="pt-4" v-if="userInfo">
       <header class="profile-header">
         <div class="md:pt-[110px] md:pb-[75px] relative pt-5 pb-5">
-          <div class="text-center text-4xl pb-3 min-h-[2.5rem]">
+          <div class="text-center flex items-center justify-center text-4xl pb-3 min-h-[2.5rem]">
             {{ userInfo.display_name || "\u00A0" }}
             <span
               v-if="userInfo.is_pro"
               class="bg-yellow-300 text-black text-xl font-bold px-1 py-[1px] rounded"
               >PRO</span
             >
+            
           </div>
           <div class="text-center pb-2 text-gray-400">
             @{{ userInfo.username }}
@@ -138,6 +139,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useMsgStore } from "@/stores/useMsgStore";
 import api from "@/config/api";
 import FollowBtn from "@/components/FollowBtn.vue";
+import ProTag from "@/components/Editor/ProTag.vue";
 
 const msg = useMsgStore();
 const router = useRouter();

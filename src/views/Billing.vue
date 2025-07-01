@@ -1,26 +1,25 @@
 <template>
   <div class="flex flex-col gap-4 mx-auto p-6 h-full w-full">
-    <div class="max-w-3xl mx-auto p-6">
-      <div class="bg-gray-700 rounded-lg p-4">
+    <div class="max-w-3xl mx-auto p-6 w-full">
+      <div class="bg-cc-16 rounded-lg p-4 border-2 border-cc-yellow border-dashed">
         <div>
           <h2 class="text-2xl font-bold mb-4 text-center">Why subscribe us?</h2>
-          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <li>☑️No ads</li>
-            <li>☑️Unlimited public and private Pens</li>
-            <li>☑️Access to exclusive features</li>
-            <li>☑️Support the development of Codecaine</li>
+          <ul class="list-disc mx-auto max-w-85 md:text-lg text-sm space-y-1 pl-5">
+            <li>Unlimited public and private Doses</li>
+            <li>Access to exclusive features</li>
+            <li>Support the development of Codecaine</li>
           </ul>
           <div
-            class="flex justify-end items-center gap-3 mt-4 mb-2"
+            class="block md:flex justify-end items-center gap-3 mt-4 mb-2"
             v-if="!authStore.userProfile?.is_pro">
             <div
-              class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-1"
+              class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-2 md:py-1"
               style="letter-spacing: 1px">
               Only NT$120 / month
             </div>
             <button
               @click="subscribe"
-              class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click">
+              class="w-full md:w-auto bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click">
               Subscribe
             </button>
           </div>
@@ -28,33 +27,24 @@
       </div>
       <div
         v-if="authStore.userProfile?.is_pro && subscriptionInfo"
-        class="relative rounded-xl p-8 mt-6 mb-6 bg-gradient-to-br from-yellow-200 via-pink-200 to-purple-200 shadow-xl overflow-hidden animate-fade-in-up">
-        <!-- Confetti Icon -->
-        <div
-          class="absolute left-4 top-4 text-4xl pointer-events-none select-none">
-          🎉
+        class="relative card-dark-glow p-8 rounded-xl mt-6 mb-6 w-full max-w-3xl mx-auto text-white overflow-hidden transition-all duration-300">
+        <div class="flex items-center justify-center h-20 pt-6">
+          <CodecaineIcon class="w-75"/>
         </div>
-        <div
-          class="absolute right-4 top-4 text-4xl pointer-events-none select-none">
-          🎊
-        </div>
-        <h2
-          class="text-2xl font-bold mb-4 text-center text-purple-900 drop-shadow">
-          Payment
-        </h2>
+
         <div>
           <div
-            class="font-extrabold mt-6 text-green-700 text-center text-3xl drop-shadow animate-fade-in-up">
+            class="font-extrabold m-4 text-cc-yellow text-center text-xl md:text-2xl drop-shadow animate-fade-in-up">
             You are currently subscribed to Codecaine.
           </div>
-          <div class="text-center mt-2 text-lg text-gray-800 font-semibold">
+          <div class="text-center mt-2 text-lg text-cc-1 font-semibold">
             Start Date: {{ subscriptionInfo.subscribed_at || "—" }}<br />
             <template v-if="subscriptionInfo.cancel_at_period_end">
               Subscription will expire on
               {{ subscriptionInfo.current_period_end || "—" }} (cancellation
               requested)
             </template>
-            <template v-else>
+            <template v-else class="my-1">
               Next billing date:
               {{ subscriptionInfo.current_period_end || "—" }}
             </template>
@@ -64,7 +54,8 @@
             class="mt-4">
             <button
               @click="showunsubscribeModal = true"
-              class="mt-6 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded shadow-lg transition-colors cursor-pointer shake-on-click">
+              class="mt-6 text-white font-bold py-1 shadow-lg transition-colors cursor-pointer shake-on-click border-b-2 border-cc-1 transition duration-300 ease-in-out
+         hover:border-pink-400">
               Cancel Subscription
             </button>
             <ConfirmModal
@@ -132,6 +123,7 @@ import { useRoute } from "vue-router";
 import api from "@/config/api";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 import { useMsgStore } from "@/stores/useMsgStore";
+import CodecaineIcon from "@/components/icons/CodecaineIcon.vue";
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -231,5 +223,32 @@ onMounted(() => {
 .shake-on-click:active {
   transform: translateY(3px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.card-dark-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0)
+  );
+  transition: width 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 1rem;
+  backdrop-filter: blur(2px);
+}
+.card-dark-glow:hover::after {
+  width: 100%;
+}
+
+.card-dark-glow > * {
+  position: relative;
+  z-index: 1;
 }
 </style>

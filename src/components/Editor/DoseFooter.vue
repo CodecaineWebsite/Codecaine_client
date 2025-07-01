@@ -18,7 +18,7 @@ const workStore = useWorkStore();
 const modalStore = useModalStore();
 const { showToast } = toastStore;
 const { moveToTrash } = workStore;
-const { currentId } = storeToRefs(workStore);
+const { currentId, isAuthor } = storeToRefs(workStore);
 
 const deleting = ref(false);
 
@@ -92,7 +92,7 @@ const handleToggleConsole = () => {
       <ul class="list-disc list-outside pl-4">
         <li>This Dose will no longer be accessible on Codecaine.</li>
         <li>This Dose will be moved to the <a class="text-cc-blue" href="#" @click.prevent="toDelete">Deleted Items section of Your Work</a> for 3 days.</li>
-        <li>After 3 days, the Pen is permanently deleted. You can also manually delete it from your Deleted Items.</li>
+        <li>After 3 days, the Dose is permanently deleted. You can also manually delete it from your Deleted Items.</li>
       </ul>
     </template>
   </ConfirmModal>
@@ -118,7 +118,7 @@ const handleToggleConsole = () => {
       <EditorSmallButton
         class="hover:bg-cc-red"
         @click.prevent="showDeleteModal = true"
-        v-if="currentId > 0"
+        v-if="currentId > 0 && isAuthor"
       >
         Delete
       </EditorSmallButton>

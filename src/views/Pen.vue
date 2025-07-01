@@ -1,5 +1,6 @@
 <script setup>
 	import { ref, onMounted, onUnmounted, onBeforeUnmount, watch } from 'vue';
+  import { onBeforeRouteLeave } from 'vue-router'
   import Settings from '../assets/settings.vue';
   import Close from '../assets/close.vue';
   import HTMLIcon from '../assets/html.vue';
@@ -18,16 +19,16 @@
   import { useWorkStore } from '@/stores/useWorkStore';
   import { useAuthStore } from '@/stores/useAuthStore';
   import { useHandleSave } from '@/utils/handleWorkSave';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useRoute } from 'vue-router';
   import DoseFooter from '@/components/Editor/DoseFooter.vue';
   import ToastContainer from "@/components/Toast/ToastContainer.vue";
+  import ConfirmModal from '@/components/ui/ConfirmModal.vue';
 
   const route = useRoute();
-  const router = useRouter();
   const workStore = useWorkStore();
   const authStore = useAuthStore();
-  const { handleInitWork, updateCurrentCode, handleCurrentIdChange, updatePreviewSrc, moveToTrash } = workStore; //放function
-  const { currentWork, currentId, isSaved } = storeToRefs(workStore); //放資料
+  const { handleInitWork, updateCurrentCode, handleCurrentIdChange } = workStore; //放function
+  const { currentWork, isSaved } = storeToRefs(workStore); //放資料
   const { handleSave } = useHandleSave();
   const isPro = ref(false)
 
@@ -124,9 +125,11 @@
   }, { deep: true });
 
   let isFirstRun = true;
+  
   const debouncedAutoSave = debounce(() => {
     penHeader.value?.handleWorkAutoSave()
-  }, 2000)
+  }, 30000)
+
   watch( () => [
       currentWork.value.id,
       currentWork.value.title,
@@ -151,6 +154,7 @@
         isFirstRun = false;
         return
       }
+      if (!currentWork.value.isAutoSave) return; 
       debouncedAutoSave()
     }
   )
@@ -455,9 +459,73 @@
   const handleOpenAIChat = () => {
     isShowAIChat.value = true
   }
+
+  onMounted(() => {
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  });
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  });
+
+  const handleBeforeUnload = (e) => {
+    if (!isSaved.value) {
+      e.preventDefault();
+      e.returnValue = ''; // 顯示預設訊息
+      return '';
+    }
+  };
+
+  const showModal = ref(false)
+  let nextRoute = null
+
+  onBeforeRouteLeave((to, from, next) => {
+    if (!isSaved.value) {
+      showModal.value = true
+      nextRoute = next // 暫存導航 callback
+    } else {
+      next()
+    }
+  })
+
+  const confirmLeave = () => {
+    showModal.value = false
+    if (nextRoute) nextRoute()
+  }
+
+  const cancelLeave = () => {
+    showModal.value = false
+    if (nextRoute) nextRoute(false)
+  }
+
 </script>
 
 <template>
+
+  <ConfirmModal
+    v-if="showModal"
+    variant="danger"
+    :confirm-text="'Leave'"
+    :cancelText="'Cancel'"
+    :loadingText="'Leaving...'"
+    @confirm="confirmLeave"
+    @cancel="cancelLeave"
+  >
+    <template #title>
+      You have unsaved changes that will be lost if you leave:
+    </template>
+
+    <template #message>
+      <p class="mb-5">
+        Here's what happens when you delete a Dose:
+      </p>
+      <ul class="list-disc list-outside pl-4">
+        <li>Any edits you’ve made will not be saved.</li>
+        <li>Make sure to save your work before leaving if you want to keep your changes.</li>
+        <li>Leaving now will discard all unsaved progress.</li>
+      </ul>
+    </template>
+  </ConfirmModal>
   <ToastContainer />
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
@@ -630,7 +698,7 @@
 
         <div class="flex-1 overflow-hidden flex flex-col justify-between bg-cc-1" ref="previewContainer">
           <div class="overflow-auto flex-none shrink min-w-0 min-h-0 w-full h-full">
-            <EditorPreview :updatePreviewSrc="updatePreviewSrc" :currentWork="currentWork" ref="previewRef"/>
+            <EditorPreview :currentWork="currentWork" ref="previewRef"/>
           </div>
           <div v-show="isConsoleShow">
             <div
