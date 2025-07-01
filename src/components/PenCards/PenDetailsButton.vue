@@ -1,7 +1,7 @@
 <template>
   <button
     @click="$emit('openDetailModal')"
-    class="bg-black/50 rounded p-1"
+    class="bg-black/50 rounded p-1 cursor-pointer"
   >
     <ExternalLinkIcon class="w-4 fill-current" />
   </button>
