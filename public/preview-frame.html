@@ -30,76 +30,110 @@
     window.onerror = () => {};
     window.addEventListener('unhandledrejection', () => {});
 
-  
-    // 監聽父層傳來的資料，更新預覽內容
-    window.addEventListener('message', async (event) => {
-      if (!event.data || event.data.type !== 'render') return;
-  
-      const {
-        html = '',
-        css = '',
-        javascript = '',
-        htmlClass = '',
-        headStuff = '',
-        cdns = [],
-        links = [],
-      } = event.data.payload;
-  
-      document.documentElement.className = htmlClass || '';
-  
-      document.head.innerHTML = `<meta charset="UTF-8">`;
-  
-      // 插入 headStuff
-      const tmpDiv = document.createElement('div');
-      tmpDiv.innerHTML = headStuff;
-      Array.from(tmpDiv.childNodes).forEach(node => {
-        document.head.appendChild(node);
-      });
-  
-      // 插入 links
-      links.forEach(url => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = url;
-        document.head.appendChild(link);
-      });
-  
-      // 插入 cdns
-      cdns.forEach(url => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = false;
-        document.head.appendChild(script);
-      });
-  
-      // 插入 CSS
-      const style = document.createElement('style');
-      style.textContent = css;
-      document.head.appendChild(style);
-  
-      // 插入 HTML
-      document.body.innerHTML = html;
-  
-      // 插入使用者 JS
-      const jsBlob = new Blob([javascript + '\n//# sourceURL=user-code.js'], {
-        type: 'application/javascript'
-      });
-      const blobUrl = URL.createObjectURL(jsBlob);
-  
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = blobUrl;
-      script.onload = () => URL.revokeObjectURL(blobUrl);
-      script.onerror = () => {
-        parent.postMessage({
-          type: 'log',
-          message: 'Script loading error',
-          level: 'error'
-        }, '*');
-      };
-  
-      document.body.appendChild(script);
+    const loadLinks = (links) => {
+      return Promise.all(
+        links.map(url => {
+          return new Promise((resolve, reject) => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            link.onload = resolve;
+            link.onerror = reject;
+            document.head.appendChild(link);
+          });
+        })
+      );
+    };
+    const loadCDNScripts = (cdns) => {
+      return Promise.all(
+        cdns.map(url => {
+          return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.async = false;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        })
+      );
+    };
+
+  window.addEventListener('message', async (event) => {
+    if (!event.data || event.data.type !== 'render') return;
+
+    const {
+      html = '',
+      css = '',
+      javascript = '',
+      htmlClass = '',
+      headStuff = '',
+      cdns = [],
+      links = [],
+    } = event.data.payload;
+
+    document.documentElement.className = htmlClass || '';
+    document.head.innerHTML = `<meta charset="UTF-8">`;
+
+    // 加 headStuff
+    const tmpDiv = document.createElement('div');
+    tmpDiv.innerHTML = headStuff;
+    Array.from(tmpDiv.childNodes).forEach(node => {
+      document.head.appendChild(node);
     });
+
+    // 加 CSS
+    const style = document.createElement('style');
+    style.textContent = css;
+    document.head.appendChild(style);
+
+    // 加 HTML
+    document.body.innerHTML = html;
+    
+    // 等待 Links 載入完
+    try {
+      await loadLinks(links);
+    } catch (e) {
+      parent.postMessage({
+        type: 'log',
+        level: 'error',
+        message: 'Failed to load one or more CSS links',
+      }, '*');
+        return;
+    }
+    // 等 CDN script 載入完
+    try {
+      await loadCDNScripts(cdns);
+    } catch (e) {
+      parent.postMessage({
+        type: 'log',
+        message: 'Failed to load one or more CDN scripts',
+        level: 'error'
+      }, '*');
+      return;
+    }
+
+    // 加 user JS
+    const jsBlob = new Blob([javascript + '\n//# sourceURL=user-code.js'], {
+      type: 'application/javascript'
+    });
+    const blobUrl = URL.createObjectURL(jsBlob);
+
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = blobUrl;
+    script.onload = () => URL.revokeObjectURL(blobUrl);
+    script.onerror = () => {
+      parent.postMessage({
+        type: 'log',
+        message: 'Script loading error',
+        level: 'error'
+      }, '*');
+    };
+
+    document.body.appendChild(script);
+  });
+
   </script>
 </body>
 </html>
