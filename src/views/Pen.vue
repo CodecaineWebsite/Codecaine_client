@@ -22,6 +22,7 @@
   import { useRoute } from 'vue-router';
   import DoseFooter from '@/components/Editor/DoseFooter.vue';
   import ToastContainer from "@/components/Toast/ToastContainer.vue";
+  import ConfirmModal from '@/components/ui/ConfirmModal.vue';
 
   const route = useRoute();
   const workStore = useWorkStore();
@@ -124,9 +125,11 @@
   }, { deep: true });
 
   let isFirstRun = true;
+  
   const debouncedAutoSave = debounce(() => {
     penHeader.value?.handleWorkAutoSave()
-  }, 2000)
+  }, 30000)
+
   watch( () => [
       currentWork.value.id,
       currentWork.value.title,
@@ -472,21 +475,57 @@
       return '';
     }
   };
+
+  const showModal = ref(false)
+  let nextRoute = null
+
   onBeforeRouteLeave((to, from, next) => {
-  if (!isSaved.value) {
-    const answer = window.confirm('您有未儲存的更動，確定要離開？')
-    if (!answer) {
-      next(false) // 阻止導航
+    if (!isSaved.value) {
+      showModal.value = true
+      nextRoute = next // 暫存導航 callback
     } else {
-      next() // 允許導航
+      next()
     }
-  } else {
-    next() // 直接導航
+  })
+
+  const confirmLeave = () => {
+    showModal.value = false
+    if (nextRoute) nextRoute()
   }
-})
+
+  const cancelLeave = () => {
+    showModal.value = false
+    if (nextRoute) nextRoute(false)
+  }
+
 </script>
 
 <template>
+
+  <ConfirmModal
+    v-if="showModal"
+    variant="danger"
+    :confirm-text="'Leave'"
+    :cancelText="'Cancel'"
+    :loadingText="'Leaving...'"
+    @confirm="confirmLeave"
+    @cancel="cancelLeave"
+  >
+    <template #title>
+      You have unsaved changes that will be lost if you leave:
+    </template>
+
+    <template #message>
+      <p class="mb-5">
+        Here's what happens when you delete a Dose:
+      </p>
+      <ul class="list-disc list-outside pl-4">
+        <li>Any edits you’ve made will not be saved.</li>
+        <li>Make sure to save your work before leaving if you want to keep your changes.</li>
+        <li>Leaving now will discard all unsaved progress.</li>
+      </ul>
+    </template>
+  </ConfirmModal>
   <ToastContainer />
   <div class="flex flex-col h-dvh">
     <AnonLoginModal/>
