@@ -15,7 +15,7 @@
 
     <div
       v-if="showDropdown"
-      class="absolute lg:right-0 lg:mt-2 lg:w-72 w-54 mt-7 -right-12 bg-[#23262f] border border-[#2C303A] rounded shadow-lg z-50"
+      class="absolute lg:right-0 lg:mt-2 lg:w-72 w-56 mt-7 -right-12 bg-[#23262f] border border-[#2C303A] rounded shadow-lg z-50"
     >
       <ul>
         <li
@@ -112,17 +112,15 @@ const getNotificationLimit = () => {
   return window.innerWidth < 1024 ? 4 : 7;
 };
 
-// 截斷標題長度
 const truncateTitle = (title) => {
   if (!title) return "";
-  const maxLength = window.innerWidth < 1024 ? 15 : 25; // 手機版更短
+  const maxLength = window.innerWidth < 1024 ? 15 : 25;
   return title.length > maxLength ? title.slice(0, maxLength) + "..." : title;
 };
 
-// 截斷評論內容長度
 const truncateContent = (content) => {
   if (!content) return "";
-  const maxLength = window.innerWidth < 1024 ? 20 : 30; // 手機版更短
+  const maxLength = window.innerWidth < 1024 ? 20 : 30;
   return content.length > maxLength
     ? content.slice(0, maxLength) + "..."
     : content;
