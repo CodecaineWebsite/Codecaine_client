@@ -6,12 +6,9 @@
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <div
-        class="w-8 bg-white h-8 rounded-full flex justify-center items-center"
-        @click="goToHome"
-      >
-        <LogoIcon alt="icon" class="w-6 h-6 text-black" />
-      </div>
+      <button @click="goToHome">
+        <LogoIcon alt="icon" class="w-10 h-10 text-white cursor-pointer" />
+      </button>
       <button
         @click.stop="toggleDropdown; isMenuOpen = !isMenuOpen"
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
