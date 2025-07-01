@@ -11,7 +11,7 @@
         <label class="relative inline-block w-[30px] h-4 align-middle">
           <input type="checkbox" v-model="isTop" class="sr-only peer" />
           <span
-            class="absolute inset-0 bg-cc-13 rounded-full peer-checked:bg-cc-13 transition"
+            class="absolute inset-0 bg-cc-13 rounded-full peer-checked:bg-cc-13 transition cursor-pointer"
           ></span>
           <span
             class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-[14px]"
