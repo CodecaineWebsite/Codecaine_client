@@ -70,6 +70,10 @@
 
   /* AI chat theme */
   --color-cc-chat-bg: #1e1e1e;
+
+  /* Follow Button */
+  --color-cc-follow-btn-bg: #45CE72;
+  --color-cc-follow-btn-hover-bg: #248C46;
 }
 
 .editor-bgc {
