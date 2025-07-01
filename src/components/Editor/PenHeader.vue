@@ -7,12 +7,10 @@
   import { useFavoritesStore } from '@/stores/useFavoritesStore';
   import { useToastStore } from "@/stores/useToastStore";
 
-  import api from "@/config/api";
   import UserMenu from '@/components/UserMenu.vue';
   import PenIcon from '@/components/icons/PenIcon.vue';
   import PenSettingModal from '@/components/Editor/PenSettingModal.vue';
   import ProTag from './ProTag.vue';
-  import Icon from '@/assets/icon.svg';
   import Edit from '@/assets/edit.vue';
   import Like from '@/assets/like.vue';
   import Run from '@/assets/run.vue';
@@ -184,7 +182,6 @@
   const favorite = computed(() => favoritesStore.getFavorite(currentWork.value?.id));
   const isLiked = computed(() => favorite.value.isLiked);
 
-
   const toggleFavorite = async () => {
     if (!isLoggedIn.value) {
       isLoginModalShow.value = true;
@@ -304,7 +301,7 @@
           </button>
           <div v-if="saveOptionVisible" class="fixed inset-0 transition-opacity duration-200" @click="toggleSave"></div>
           <ul 
-            v-if="saveOptionVisible" class="absolute z-50 flex flex-col rounded-sm top-12 right-0 bg-cc-16 text-white w-60 justify-around shadow-md shadow-gray-950 px-5 py-1"
+            v-if="saveOptionVisible" class="absolute z-50 flex flex-col rounded-sm top-13.5 right-0 bg-cc-16 text-white w-60 justify-around shadow-md shadow-gray-950 px-5 py-1"
           >
             <label class="flex py-2  justify-between border-b border-gray-600 hover:cursor-pointer">
               <span class="font-bold">Private <ProTag/> </span>
@@ -392,7 +389,7 @@
           </div>
         </button>
         <div v-if="layoutOptionVisible" class="fixed inset-0 z-40 transition-opacity duration-200" @click="toggleLayout"></div>
-        <div v-if="layoutOptionVisible" class="absolute z-50 bg-cc-16 top-12 right-0 pt-3 pb-1 rounded-lg shadow-md shadow-gray-950">
+        <div v-if="layoutOptionVisible" class="absolute z-50 bg-cc-16 top-13.5 right-0 pt-3 pb-1 rounded-lg shadow-md shadow-gray-950">
           <div class="px-3 text-white font-bold">
             <span>Change View</span>
           </div>
@@ -450,7 +447,7 @@
         </div>
       </button>
       <div v-if="isLoggedIn" class="mx-1 rounded hover:cursor-pointer">
-        <UserMenu />
+        <UserMenu/>
       </div>
     </div>
   </nav>

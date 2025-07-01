@@ -1,6 +1,6 @@
 <template>
   <header
-    class="relative bg-cc-20 text-cc-1 w-full px-2 py-2 sm:px-4 sm:py-2 border-b-3 border-cc-14 flex items-center gap-2"
+    class="relative bg-cc-20 text-cc-1 w-full px-2 sm:px-4 sm:h-17 border-b-3 border-cc-14 flex items-center gap-2"
   >
     <!-- Logo + SidebarToggleIcon：830px 以下顯示 -->
     <div
@@ -109,7 +109,7 @@
     <div
       v-if="isMenuOpen && isCompactScreen"
       ref="dropdownRef"
-      class="absolute top-full left-2 mt-2 bg-cc-16 text-cc-1 w-[220px] rounded-md shadow-xl shadow-gray-950 z-50 py-2"
+      class="absolute top-full left-2 bg-cc-16 text-cc-1 w-[220px] rounded-md shadow-xl shadow-gray-950 z-50 py-2"
     >
       <div class="text-[10px] text-gray-400 px-4 mb-2">CREATE</div>
       <div
