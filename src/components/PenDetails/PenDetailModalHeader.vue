@@ -15,7 +15,13 @@
           @click="modalStore.closeModal()"
           >{{ pen.display_name }}</a
         >
-        <ProTag v-if="pen.is_pro"/>
+        <a
+          v-if="pen.is_pro"
+          :href="proLink"
+          class="leading-none"
+        >
+          <ProTag/>
+        </a>
         <FollowBtn
           v-if="
             authStore.userProfile &&
@@ -78,6 +84,7 @@ const props = defineProps({
   },
 });
 
+const proLink = "/settings/billing";
 const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
