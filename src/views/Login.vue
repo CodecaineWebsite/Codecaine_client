@@ -3,7 +3,7 @@
     <div class="mx-auto w-full">
       <div class="max-w-[960px] w-full px-4 sm:px-8 md:pl-28 md:pr-0 mx-auto">
         <div class="text-xl font-bold text-white tracking-wide select-none">
-          CodeCaine
+          Codecaine
         </div>
         <div
           class="text-3xl sm:text-5xl md:text-[4.5rem] font-extrabold select-none pb-4"
