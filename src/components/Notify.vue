@@ -1,7 +1,7 @@
 <template>
   <div class="relative" ref="dropdownRef">
     <button
-      class="relative focus:outline-none cursor-pointer"
+      class="relative focus:outline-none cursor-pointer translate-y-1"
       @click="toggleDropdown"
     >
       <BellIcon />
@@ -20,7 +20,6 @@
       <ul>
         <li
           v-for="n in notifyStore.notifications.slice(0, 7)"
-          :key="n.id"
           class="px-4 py-2 hover:bg-[#2C303A] cursor-pointer flex gap-2 items-start transition"
           @click="handleNotificationClick(n)"
         >
