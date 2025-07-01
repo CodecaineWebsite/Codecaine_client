@@ -32,7 +32,7 @@ const fetchPackages = debounce(async (value) => {
       params: {
         search: value,
         fields: 'filename,description,version',
-        limit: 100
+        limit: 1000
       }
     });
     const rawResults = data.results;
@@ -51,7 +51,7 @@ const fetchPackages = debounce(async (value) => {
   } finally {
     isLoading.value = false;
   }
-}, 200);
+}, 800);
 // 監聽 keyword 輸入
 watch(keyword, (val) => {
   selectedIndex.value = -1;
