@@ -4,22 +4,22 @@
       <div class="bg-cc-16 rounded-lg p-4 border-2 border-cc-yellow border-dashed">
         <div>
           <h2 class="text-2xl font-bold mb-4 text-center">Why subscribe us?</h2>
-          <ul class="list-disc mx-auto w-80 text-lg">
+          <ul class="list-disc mx-auto max-w-85 md:text-lg text-sm space-y-1 pl-5">
             <li>Unlimited public and private Doses</li>
             <li>Access to exclusive features</li>
             <li>Support the development of Codecaine</li>
           </ul>
           <div
-            class="flex justify-end items-center gap-3 mt-4 mb-2"
+            class="block md:flex justify-end items-center gap-3 mt-4 mb-2"
             v-if="!authStore.userProfile?.is_pro">
             <div
-              class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-1"
+              class="text-lg font-extrabold text-gray-300 drop-shadow px-3 py-2 md:py-1"
               style="letter-spacing: 1px">
               Only NT$120 / month
             </div>
             <button
               @click="subscribe"
-              class="bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click">
+              class="w-full md:w-auto bg-yellow-300 hover:bg-yellow-500 text-black hover:text-white font-bold py-2 px-4 rounded cursor-pointer transition-colors shake-on-click">
               Subscribe
             </button>
           </div>
@@ -34,7 +34,7 @@
 
         <div>
           <div
-            class="font-extrabold m-4 text-cc-yellow text-center text-2xl drop-shadow animate-fade-in-up">
+            class="font-extrabold m-4 text-cc-yellow text-center text-xl md:text-2xl drop-shadow animate-fade-in-up">
             You are currently subscribed to Codecaine.
           </div>
           <div class="text-center mt-2 text-lg text-cc-1 font-semibold">
