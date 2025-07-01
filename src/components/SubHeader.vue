@@ -1,16 +1,17 @@
 <template>
   <header
-    class="relative bg-cc-20 text-cc-1 w-full px-2 py-2 sm:px-4 sm:py-2 border-b-3 border-cc-14 flex items-center gap-2 sm:gap-4"
+    class="relative bg-cc-20 text-cc-1 w-full px-2 py-2 sm:px-4 sm:py-2 border-b-3 border-cc-14 flex items-center gap-2"
   >
     <!-- Logo + SidebarToggleIcon：830px 以下顯示 -->
     <div
       class="flex items-center space-x-2 flex-shrink-0 hidden max-[830px]:flex"
     >
-      <button @click="goToHome">
+      <button @click="goToHome" class="w-10">
         <LogoIcon alt="icon" class="w-10 h-10 text-white cursor-pointer" />
       </button>
       <button
-        @click.stop="toggleDropdown; isMenuOpen = !isMenuOpen"
+        ref="toggleButtonRef"
+        @click.stop="toggleDropdown"
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
         title="Toggle Navigation"
       >
@@ -233,13 +234,16 @@ const handleResize = () => {
   screenWidth.value = window.innerWidth;
 };
 
-const toggleDropdown = async () => {
+const toggleDropdown = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-onClickOutside(dropdownRef, () => {
+const toggleButtonRef = ref(null)
+onClickOutside(dropdownRef, (event) => {
+  if (toggleButtonRef.value?.contains(event.target)) return;
   isMenuOpen.value = false;
 });
+
 
 onMounted(() => {
   window.addEventListener("resize", handleResize);
