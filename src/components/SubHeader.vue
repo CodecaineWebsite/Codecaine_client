@@ -14,7 +14,7 @@
         class="w-9 h-9 flex items-center justify-center bg-cc-14 hover:bg-cc-13 rounded transition"
         title="Toggle Navigation"
       >
-        <SidebarToggleIcon :expanded="isMenuOpen" />
+        <SidebarToggleIcon :expanded="isMenuOpen" class="cursor-pointer" />
       </button>
     </div>
 
@@ -27,7 +27,7 @@
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
+        class="hover:bg-cc-16 cursor-pointer relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
       >
         {{ tab }}
         <span
