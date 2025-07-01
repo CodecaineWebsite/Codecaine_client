@@ -115,6 +115,14 @@
   }
 }
 
+.card-dark-glow {
+  @apply relative text-white rounded-2xl overflow-hidden transition-all duration-400;
+  background-color: #2a2b31;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.06);
+}
+
 .bg-panel {
   background-color: #1e1f26;
 }
