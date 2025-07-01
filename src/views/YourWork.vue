@@ -99,11 +99,10 @@
 
             <!-- Tags 按鈕-->
             <div
-              @click="showTags = !showTags"
               class="cursor-pointer"
               v-if="activeTab === 'Doses'"
               ref="tagsDropdownRef"
-              @click.stop
+              @click.stop="showTags = !showTags"
               :class="[
                 ' relative flex items-stretch space-x-2 bg-button text-cc-1 text-sm px-3 py-1 bg-button-hover',
                 showTags ? 'rounded-tl rounded-tr rounded-bl' : 'rounded',
