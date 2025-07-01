@@ -28,7 +28,7 @@
         v-for="tab in tabs"
         :key="tab"
         @click="goToPath('/' + tab.toLowerCase().replace(' ', '-'))"
-        class="hover:bg-cc-16 cursor-pointer relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r"
+        class="hover:bg-cc-16 relative h-9 px-4 text-sm bg-cc-14 hover:text-cc-1 focus:outline-none first:rounded-l last:rounded-r cursor-pointer"
       >
         {{ tab }}
         <span
@@ -63,14 +63,14 @@
           <button
             v-if="authStore.idToken"
             @mousedown="selectSearchTab('your-work')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-xs hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <YourWorkIcon class="fill-current w-3 mr-1 text-cc-10" />
             Your Work
           </button>
           <button
             @mousedown="selectSearchTab('doses')"
-            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center"
+            class="px-2 py-1 rounded bg-cc-14 text-cc-10 text-sm hover:bg-cc-13 hover:text-cc-5 transition flex items-center cursor-pointer"
           >
             <PensIcon
               class="fill-current w-3 mr-1"

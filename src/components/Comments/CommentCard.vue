@@ -131,7 +131,7 @@ const createdTimeAgo = computed(() => {
       />
       <div
         @click="goToProfile"
-        class="overflow-hidden whitespace-nowrap text-ellipsis text-sm text-cc-link font-semibold col-start-2 row-start-1"
+        class="hover:underline cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis text-sm text-cc-link font-semibold col-start-2 row-start-1"
       >
         {{ comment.user?.display_name || "unknown user" }}
         <span class="text-cc-link"
@@ -143,7 +143,7 @@ const createdTimeAgo = computed(() => {
       </div>
       <button
         @click="emit('mention', `@${comment.user?.username} `)"
-        class="text-cc-1 bg-cc-13 py-0.5 rounded-xs text-xs hover:bg-cc-12 col-start-3 row-start-1 self-start"
+        class="cursor-pointer text-cc-1 bg-cc-13 py-0.5 rounded-xs text-xs hover:bg-cc-12 col-start-3 row-start-1 self-start"
       >
         Reply
       </button>
@@ -187,14 +187,14 @@ const createdTimeAgo = computed(() => {
       >
         <button
           @click="startEdit"
-          class="text-cc-1 bg-cc-13 px-1.5 py-0.5 rounded-xs text-xs hover:bg-cc-green hover:text-cc-20 col-start-3 row-start-1 self-start justify-items-center"
+          class="cursor-pointer text-cc-1 bg-cc-13 px-1.5 py-0.5 rounded-xs text-xs hover:bg-cc-green hover:text-cc-20 col-start-3 row-start-1 self-start justify-items-center"
         >
           <PenIcon class="inline w-2.5 h-2.5 mr-1 fill-current" />
           Edit
         </button>
         <button
           @click="deleteComment"
-          class="text-cc-1 bg-cc-13 px-1.5 py-0.5 rounded-xs text-xs hover:bg-cc-red hover:text-cc-20 col-start-3 row-start-1 self-start justify-items-center"
+          class="cursor-pointer text-cc-1 bg-cc-13 px-1.5 py-0.5 rounded-xs text-xs hover:bg-cc-red hover:text-cc-20 col-start-3 row-start-1 self-start justify-items-center"
         >
           <TrashCanIcon class="inline w-3 h-3 mr-1 fill-current" />
           Delete
