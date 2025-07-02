@@ -232,11 +232,11 @@
               v-model="title"
               @blur="stopEdit"
               @keyup.enter="stopEdit"
-              class="h-3 md:h-5 bg-transparent text-white font-black text-sm md:text-lg leading-none outline-none w-full appearance-none"
+              class="bg-transparent text-white font-black text-sm md:text-lg leading-tight outline-none w-full appearance-none"
             />
           </template>
           <template v-else>
-            <span class="h-3 md:h-5 text-white font-black text-sm md:text-lg leading-none overflow-hidden text-ellipsis whitespace-nowrap">
+            <span class="inline-block text-white font-black text-sm md:text-lg leading-tight overflow-hidden text-ellipsis whitespace-nowrap max-w-[160px] md:max-w-[280px]">
               {{ title.length ? title : "Untitled" }}
             </span>
           </template>
