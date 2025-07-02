@@ -15,12 +15,8 @@
           @click="modalStore.closeModal()"
           >{{ pen.display_name }}</a
         >
-        <a
-          v-if="pen.is_pro"
-          :href="proLink"
-          class="leading-none"
-        >
-          <ProTag/>
+        <a v-if="pen.is_pro" :href="proLink" class="leading-none">
+          <ProTag />
         </a>
         <FollowBtn
           v-if="
@@ -66,12 +62,12 @@
   </header>
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, watch, computed } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useModalStore } from "@/stores/useModalStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { useFavoritesStore } from "@/stores/useFavoritesStore";
-import { useRouter, RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 import FollowBtn from "@/components/FollowBtn.vue";
 import ProTag from "@/components/Editor/ProTag.vue";
 import PenDetailDropdown from "@/components/PenDetails/PenDetailDropdown.vue";
@@ -88,10 +84,14 @@ const proLink = "/settings/billing";
 const router = useRouter();
 const authStore = useAuthStore();
 const modalStore = useModalStore();
+const toastStore = useToastStore();
+const { showToast } = toastStore;
 const favoritesStore = useFavoritesStore();
-const isLiked = ref(false);
+const favorite = computed(() => favoritesStore.getFavorite(props.pen.id));
+const isLiked = computed(() => favorite.value.isLiked);
 
 const handleFavorite = async () => {
+  console.log("handleFavorite called");
   if (!authStore.user) {
     modalStore.closeModal();
     return router.push("/login");
@@ -99,11 +99,15 @@ const handleFavorite = async () => {
 
   try {
     await favoritesStore.toggleFavorite(props.pen.id);
+    console.log("try toggleFavorite called");
   } catch (error) {
+    console.log(error);
     showToast({
       message: "Action failed",
       variant: "danger",
     });
+  } finally {
+    console.log(isLiked)
   }
 };
 
@@ -111,7 +115,14 @@ const goToEditor = () => {
   modalStore.closeModal();
   router.push(`/${props.pen.username}/dose/${props.pen.id}`);
 };
-
+onMounted(async () => {
+  if (props.pen !== undefined) {
+    const stored = favoritesStore.getFavorite(props.pen.id);
+    if (stored.isLiked === undefined || stored.favoritesCount === undefined) {
+      await favoritesStore.fetchFavoriteState(props.pen.id);
+    }
+  }
+});
 watch(
   () => props.pen,
   (newPen) => {
