@@ -87,7 +87,7 @@
             maxlength="20"
             @input="handleUsernameInput"
             @keypress="preventInvalidChars"
-            placeholder="letters, numbers, underscore only"
+            placeholder="All languages supported, no spaces"
           />
           <div v-if="usernameError" class="text-red-400 text-xs mt-1">
             {{ usernameError }}
@@ -202,7 +202,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { watchDebounced } from "@vueuse/core";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AvatarUploaderModal from "@/components/ui/AvatarUploaderModal.vue";
 import api from "@/config/api";
@@ -221,6 +222,51 @@ const bio = ref("");
 const message = ref(null);
 const usernameError = ref(null);
 
+const isUsernameValid = computed(() => {
+  const value = userName.value.trim();
+
+  if (!value) return "Username is required.";
+  if (value.length < 2) return "Username must be at least 2 characters.";
+  if (value.length > 20) return "Username must be 20 characters or less.";
+  if (/\s/.test(value)) return "Username cannot contain spaces.";
+  if (/[<>:\"/\\|?*]/.test(value))
+    return "Username contains invalid characters for URLs.";
+
+  return null;
+});
+
+const preventInvalidChars = (event) => {
+  const char = event.key;
+  const isSpace = /\s/.test(char);
+  const isControlKey = [
+    "Backspace",
+    "Delete",
+    "Tab",
+    "Enter",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ].includes(char);
+
+  if (isSpace && !isControlKey) {
+    event.preventDefault();
+  }
+};
+
+const handleUsernameInput = (event) => {
+  let value = event.target.value;
+  const cleanValue = value.replace(/\s/g, "");
+
+  if (cleanValue !== value) {
+    userName.value = cleanValue;
+    event.target.value = cleanValue;
+  }
+};
+
+// Other existing functions remain unchanged
 const handleCroppedBlob = (blob) => {
   fileName.value = originalFileName.value;
   croppedAvatarBlob.value = blob;
@@ -229,7 +275,6 @@ const handleCroppedBlob = (blob) => {
     avatarUrl.value = event.target.result;
   };
   reader.readAsDataURL(blob);
-
   isCropModalOpen.value = false;
 };
 
@@ -253,16 +298,16 @@ const saveProfile = async (target = "profile") => {
       };
       return;
     }
-
-    if (!validateUsername({ target: { value: userName.value } })) {
+    if (isUsernameValid.value) {
       message.value = {
         type: "error",
-        text: usernameError.value || "Invalid username format.",
+        text: isUsernameValid.value,
         target: "profile",
       };
       return;
     }
   }
+
   try {
     const userId = authStore.userProfile.id;
     const formData = new FormData();
@@ -318,73 +363,13 @@ const saveProfile = async (target = "profile") => {
   }
 };
 
-const preventInvalidChars = (event) => {
-  const char = event.key;
-  const isSpace = /\s/.test(char);
-  const isControlKey = [
-    "Backspace",
-    "Delete",
-    "Tab",
-    "Enter",
-    "ArrowLeft",
-    "ArrowRight",
-    "ArrowUp",
-    "ArrowDown",
-    "Home",
-    "End",
-  ].includes(event.key);
-
-  if (isSpace && !isControlKey) {
-    event.preventDefault();
-  }
-};
-
-const handleUsernameInput = (event) => {
-  let value = event.target.value;
-
-  const cleanValue = value.replace(/\s/g, "");
-
-  if (cleanValue !== value) {
-    userName.value = cleanValue;
-    event.target.value = cleanValue;
-  }
-
-  validateUsername(event);
-};
-
-const validateUsername = (event) => {
-  const value = event.target.value;
-
-  usernameError.value = null;
-
-  if (!value) {
-    usernameError.value = "Username is required.";
-    return false;
-  }
-
-  if (value.length > 20) {
-    usernameError.value = "Username must be 20 characters or less.";
-    return false;
-  }
-
-  if (value.length < 2) {
-    usernameError.value = "Username must be at least 2 characters.";
-    return false;
-  }
-
-  if (/\s/.test(value)) {
-    usernameError.value = "Username cannot contain spaces.";
-    return false;
-  }
-
-  const unsafeChars = /[<>:"\/\\|?*]/;
-  if (unsafeChars.test(value)) {
-    usernameError.value = "Username contains invalid characters for URLs.";
-    return false;
-  }
-
-  return true;
-};
+watchDebounced(
+  userName,
+  () => {
+    usernameError.value = isUsernameValid.value;
+  },
+  { debounce: 300, immediate: true }
+);
 
 onMounted(() => {
   if (authStore.userProfile) {
