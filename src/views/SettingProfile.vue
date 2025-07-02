@@ -78,9 +78,23 @@
           <input
             v-model="userName"
             type="text"
-            class="w-full px-3 py-2 rounded bg-white text-black border-2 border-gray-600 focus:outline-none focus:border-[#05DF72] transition"
-            maxlength="50"
+            class="w-full px-3 py-2 rounded bg-white text-black border-2 transition"
+            :class="
+              usernameError
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-gray-600 focus:border-[#05DF72]'
+            "
+            maxlength="20"
+            @input="handleUsernameInput"
+            @keypress="preventInvalidChars"
+            placeholder="letters, numbers, underscore only"
           />
+          <div v-if="usernameError" class="text-red-400 text-xs mt-1">
+            {{ usernameError }}
+          </div>
+          <div v-else-if="userName" class="text-green-400 text-xs mt-1">
+            ✓ Username is valid
+          </div>
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-white text-sm">Display Name</label>
@@ -195,7 +209,7 @@ import api from "@/config/api";
 
 const isCropModalOpen = ref(false);
 const croppedAvatarBlob = ref(null);
-const originalFileName = ref("avatar.jpg"); // fallback
+const originalFileName = ref("avatar.jpg");
 const authStore = useAuthStore();
 const avatarUrl = ref("");
 const fileName = ref("");
@@ -205,6 +219,7 @@ const displayName = ref("");
 const location = ref("");
 const bio = ref("");
 const message = ref(null);
+const usernameError = ref(null);
 
 const handleCroppedBlob = (blob) => {
   fileName.value = originalFileName.value;
@@ -215,8 +230,9 @@ const handleCroppedBlob = (blob) => {
   };
   reader.readAsDataURL(blob);
 
-  isCropModalOpen.value=false;
+  isCropModalOpen.value = false;
 };
+
 const isValidUrl = (url) => {
   if (!url) return true;
   try {
@@ -226,14 +242,26 @@ const isValidUrl = (url) => {
     return false;
   }
 };
+
 const saveProfile = async (target = "profile") => {
-  if (target === "profile" && !userName.value.trim()) {
-    message.value = {
-      type: "error",
-      text: "Username is required.",
-      target: "profile",
-    };
-    return;
+  if (target === "profile") {
+    if (!userName.value.trim()) {
+      message.value = {
+        type: "error",
+        text: "Username is required.",
+        target: "profile",
+      };
+      return;
+    }
+
+    if (!validateUsername({ target: { value: userName.value } })) {
+      message.value = {
+        type: "error",
+        text: usernameError.value || "Invalid username format.",
+        target: "profile",
+      };
+      return;
+    }
   }
   try {
     const userId = authStore.userProfile.id;
@@ -246,7 +274,11 @@ const saveProfile = async (target = "profile") => {
     }
     if (target == "avatar") {
       if (croppedAvatarBlob.value) {
-        const file = new File([croppedAvatarBlob.value], originalFileName.value, { type: 'image/jpeg' })
+        const file = new File(
+          [croppedAvatarBlob.value],
+          originalFileName.value,
+          { type: "image/jpeg" }
+        );
         formData.append("profile_image", file);
       }
     }
@@ -284,6 +316,74 @@ const saveProfile = async (target = "profile") => {
     };
     console.error(err);
   }
+};
+
+const preventInvalidChars = (event) => {
+  const char = event.key;
+  const isSpace = /\s/.test(char);
+  const isControlKey = [
+    "Backspace",
+    "Delete",
+    "Tab",
+    "Enter",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Home",
+    "End",
+  ].includes(event.key);
+
+  if (isSpace && !isControlKey) {
+    event.preventDefault();
+  }
+};
+
+const handleUsernameInput = (event) => {
+  let value = event.target.value;
+
+  const cleanValue = value.replace(/\s/g, "");
+
+  if (cleanValue !== value) {
+    userName.value = cleanValue;
+    event.target.value = cleanValue;
+  }
+
+  validateUsername(event);
+};
+
+const validateUsername = (event) => {
+  const value = event.target.value;
+
+  usernameError.value = null;
+
+  if (!value) {
+    usernameError.value = "Username is required.";
+    return false;
+  }
+
+  if (value.length > 20) {
+    usernameError.value = "Username must be 20 characters or less.";
+    return false;
+  }
+
+  if (value.length < 2) {
+    usernameError.value = "Username must be at least 2 characters.";
+    return false;
+  }
+
+  if (/\s/.test(value)) {
+    usernameError.value = "Username cannot contain spaces.";
+    return false;
+  }
+
+  const unsafeChars = /[<>:"\/\\|?*]/;
+  if (unsafeChars.test(value)) {
+    usernameError.value = "Username contains invalid characters for URLs.";
+    return false;
+  }
+
+  return true;
 };
 
 onMounted(() => {
