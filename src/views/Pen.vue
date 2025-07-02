@@ -527,7 +527,7 @@
     </template>
   </ConfirmModal>
   <ToastContainer />
-  <div class="flex flex-col h-dvh">
+  <div class="flex flex-col h-dvh overflow-hidden">
     <AnonLoginModal/>
     <AIChatButton ref="aiChatButtonRef" @handleOpenAIChat = "handleOpenAIChat" v-if="isPro"/>
     <PenHeader @run-preview="handleRunPreview" :currentWork = "currentWork" ref="penHeader"/>
