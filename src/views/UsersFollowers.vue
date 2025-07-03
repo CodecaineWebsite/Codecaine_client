@@ -26,12 +26,12 @@
           :profile-image="user.profile_image" />
       </li>
     </ul>
-    <div
-      class="content justify-center flex mt-6"
+        <div
+      class="max-w-xl p-8 mb-5 mx-auto bg-cc-14 text-center rounded"
       v-else>
-      <div class="text-4xl bg-gray-800 p-12 rounded-lg">
-        <p>You don't have any followers yet.</p>
-      </div>
+      <h1 class="mb-2 leading-[1.1] font-archivo text-4xl">
+        You don't have any followers yet.
+      </h1>
     </div>
   </div>
   <div>
