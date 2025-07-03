@@ -232,9 +232,3 @@ function updateRouteQuery() {
   </main>
 </template>
 <style scoped></style>
-
-<!-- TODO: 準備載入中畫面 -->
-
-<!-- TODO: 把切換 tab 的方式與顯示結果頁面的方式改成 RouterLink 跟 RouterView -->
-
-<!-- TODO: 導入作品卡 -->

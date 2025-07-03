@@ -4,24 +4,26 @@
       v-if="!isLoading && pens.length > 0"
       :pens="pens"
       :mode="viewMode"
-      @pen-clicked="modalStore.openPenDetailModal($event)" />
+      @pen-clicked="modalStore.openPenDetailModal($event)"
+    />
     <div
       v-else-if="!isLoading && pens.length === 0"
-      class="justify-center flex mt-12">
-      <p class="text-4xl bg-gray-800 p-12 rounded-lg">
-        ⚠️ No Loved Doses found.
-        <a
-          href="/dose"
-          class="text-blue-200 hover:text-blue-400">
+      class="max-w-xl p-8 mb-5 mx-auto bg-cc-14 text-center rounded"
+    >
+      <h1 class="mb-2 leading-[1.1] font-archivo text-4xl">
+        No Loved Doses found.
+        
+      </h1>
+      <a href="/dose" class="text-blue-200 hover:text-blue-400">
           Go create some first!
         </a>
-      </p>
     </div>
     <PaginationNav
       :currentPage="page"
       :totalPages="totalPages"
       @prev="page--"
-      @next="page++" />
+      @next="page++"
+    />
   </div>
 </template>
 
