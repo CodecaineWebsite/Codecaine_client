@@ -5,7 +5,7 @@
 	<div class="flex justify-between">
 	<label for="tags">Tags</label>
 	<span class="text-xs align-text-bottom"
-		>comma separated, max of five</span
+		> Press Enter to add tag, max of five</span
 	>
 	</div>
 	<div class="relative">
